@@ -1,0 +1,1 @@
+export { useGetBoletas } from "./useGetBoletas";
