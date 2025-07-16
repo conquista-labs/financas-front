@@ -1,15 +1,25 @@
 @import url("@rarui/styles/dist/index.css");
 
 :root {
-  --rarui-colors-surface-brand: rgba(0, 33, 229, 1);
-  --rarui-colors-surface-brand-hover: rgba(0, 33, 229, 0.1);
-  --rarui-colors-surface-brand-press: rgba(0, 33, 229, 0.2);
-  --rarui-colors-surface-brand-subdued: rgba(204, 211, 255, 1);
+  --rarui-colors-surface-brand: rgba(42, 42, 42, 1);
+  --rarui-colors-surface-brand-hover: rgba(42, 42, 42, 0.1);
+  --rarui-colors-surface-brand-press: rgba(42, 42, 42, 0.2);
+  --rarui-colors-surface-brand-subdued: rgba(42, 42, 42, 0.1);
   --rarui-colors-surface-on-brand-hover: rgba(0, 0, 0, 0.15);
   --rarui-colors-surface-on-brand-press: rgba(255, 255, 255, 0.25);
-  --rarui-colors-content-brand: rgba(0, 33, 229, 1);
-  --rarui-colors-content-brand-alt: rgba(77, 102, 255, 1);
+  --rarui-colors-content-brand: rgba(42, 42, 42, 1);
   --rarui-colors-content-on-brand: rgba(250, 251, 255, 1);
-  --rarui-colors-border-brand: rgba(153, 168, 255, 1);
-  --rarui-colors-border-brand-alt: rgba(0, 33, 229, 1);
+  --rarui-colors-content-brand-alt: rgba(165, 165, 165, 1);
+  --rarui-colors-border-brand: rgba(199, 199, 199, 1);
+  --rarui-colors-border-brand-alt: rgba(42, 42, 42, 1);
+
+  --rarui-fontFamily-body:
+    Comfortaa, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
+    arial, sans-serif;
+  --rarui-fontFamily-heading:
+    Comfortaa, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
+    arial, sans-serif;
+  --rarui-fontFamily-button:
+    Comfortaa, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
+    arial, sans-serif;
 }

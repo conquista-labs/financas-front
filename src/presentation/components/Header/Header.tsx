@@ -1,6 +1,8 @@
 import React from "react";
 import { Avatar, Box, Icon, IconButton } from "@rarui-react/components";
 import { MenuIcon, UserFilledIcon } from "@rarui/icons";
+
+import Logo from "@/presentation/assets/images/logo.svg?react";
 import type { HeaderProps } from "./header.types";
 
 const Header: React.FC<HeaderProps> = ({ handleMenu }) => (
@@ -17,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({ handleMenu }) => (
     justifyContent="space-between"
     padding="$xs"
   >
-    <Box>
+    <Box display="flex" gap="$md" alignItems="center">
       <IconButton
         size="small"
         appearance="neutral"
@@ -25,6 +27,8 @@ const Header: React.FC<HeaderProps> = ({ handleMenu }) => (
         source={<MenuIcon size="medium" />}
         onClick={handleMenu}
       />
+
+      <Icon color="$brand" source={<Logo height={40} />} />
     </Box>
     <Box>
       <Avatar

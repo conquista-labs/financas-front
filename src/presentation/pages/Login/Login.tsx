@@ -24,8 +24,8 @@ const Login: React.FC = () => {
         >
           <Box width="360px">
             <Header
-              title="Acesso ao Portal"
-              subtitle="Bem-vindo de volta! Entre com seus dados para fazer login."
+              title="Bem-vindos de volta!"
+              subtitle="Faça login para gerenciar seus gastos e acompanhar suas finanças."
             />
             <Form />
           </Box>

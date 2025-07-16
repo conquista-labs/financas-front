@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Divider, Title } from "@rarui-react/components";
-import BANNER_LOGIN from "@/presentation/assets/images/banner_login.png";
+import BANNER_LOGIN from "@/presentation/assets/images/banner.png";
 
 const Banner: React.FC = () => (
   <Box
@@ -13,6 +13,7 @@ const Banner: React.FC = () => (
     backgroundRepeat="no-repeat"
     backgroundSize="cover"
     backgroundColor="$brand"
+    backgroundPosition="right"
     width="50%"
     maxWidth="730px"
     gap="$s"
@@ -20,8 +21,8 @@ const Banner: React.FC = () => (
     pr="$none"
   >
     <Box width="384px">
-      <Title color="$on-brand" fontSize="$hero" fontWeight="$regular">
-        Essencial é viver bem
+      <Title as="h2" color="$on-brand" fontSize="$xl" fontWeight="$regular">
+        Cuidar do que é nosso, todos os dias!
       </Title>
     </Box>
     <Divider color="$invert" thickness="$2" />

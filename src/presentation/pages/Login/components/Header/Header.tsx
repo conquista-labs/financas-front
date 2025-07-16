@@ -1,12 +1,12 @@
-import { Box, Text } from "@rarui-react/components";
+import { Box, Icon, Text } from "@rarui-react/components";
 
-import LOGO from "@/presentation/assets/images/logo-zelo.svg";
+import Logo from "@/presentation/assets/images/logo.svg?react";
 import { type HeaderProps } from "./header.types";
 
 const Header: React.FC<HeaderProps> = ({ title, subtitle }) => (
   <>
-    <Box mb="$4xl" width="100%">
-      <img src={LOGO} alt="Zelo logo" />
+    <Box mb="$lg" width="100%">
+      <Icon color="$brand" source={<Logo />} />
     </Box>
     <Box display="flex" flexDirection="column" mb="$lg" width="100%" gap="$3xs">
       <Text fontWeight="$bold" fontSize="$xl" lineHeight="$xl">

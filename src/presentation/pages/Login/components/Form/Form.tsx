@@ -49,8 +49,6 @@ const Form: React.FC = () => {
         });
       },
     });
-    // setAuth(fakeResponse);
-    // navigate(urlRouters.fund.listing);
   };
 
   return (
@@ -92,7 +90,7 @@ const Form: React.FC = () => {
         // disabled={isPending}
       >
         <Text fontSize="$m" color="$on-brand">
-          Fazer login
+          Vamos lá
           {/* {isPending ? "•︎•︎•︎" : "Fazer login"} */}
         </Text>
         <Icon
