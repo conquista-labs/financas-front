@@ -14,7 +14,7 @@ import { MailOutlinedIcon, ArrowLineRightIcon } from "@rarui/icons";
 import { urlRouters } from "@/presentation/router/router.definitions";
 import { usePostAuth } from "@/presentation/hooks/api";
 import { useAuthStore } from "@/presentation/store";
-import { Input } from "@/presentation/components";
+import { Input, Loading } from "@/presentation/components";
 import { PostLoginRequest } from "@/domain/usecases";
 import { defaultValues, schema } from "./form.definitions";
 
@@ -34,7 +34,7 @@ const Form: React.FC = () => {
   const handleLogin = (data: PostLoginRequest) => {
     mutate(data, {
       onSuccess: (response) => {
-        setAuth(response.data);
+        setAuth({ access_token: response.data.access_token });
         navigate(urlRouters.root);
       },
       onError: (error) => {
@@ -96,6 +96,7 @@ const Form: React.FC = () => {
       <Text fontSize="$xs" textAlign="center" color="$secondary">
         Versão: 1.0.0
       </Text>
+      <Loading isLoading={isPending} />
     </Box>
   );
 };

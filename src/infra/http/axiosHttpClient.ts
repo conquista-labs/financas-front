@@ -23,7 +23,7 @@ export class AxiosHttpClient implements HttpClient {
 
       return {
         statusCode: axiosResponse.status,
-        body: axiosResponse.data?.data,
+        body: axiosResponse.data,
         message: axiosResponse.data?.message ?? "",
       };
     } catch (error: unknown) {
@@ -31,7 +31,7 @@ export class AxiosHttpClient implements HttpClient {
         const axiosResponse = error.response;
         return {
           statusCode: axiosResponse?.status ?? HttpStatusCode.serverError,
-          body: axiosResponse?.data.data ?? null,
+          body: axiosResponse?.data ?? null,
           message: axiosResponse?.data?.message ?? "Unknown error",
         };
       }

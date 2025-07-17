@@ -245,17 +245,28 @@ components:
         - nome
         - email
         - createdAt
-    GetPessoasResponse:
+    PessoaPaginatedData:
       type: object
       properties:
         meta:
           $ref: '#/components/schemas/PaginationMeta'
-        data:
+        rows:
           type: array
           items:
             $ref: '#/components/schemas/Pessoa'
       required:
         - meta
+        - rows
+    GetPessoasResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/PessoaPaginatedData'
+      required:
+        - message
         - data
     GetPessoaResponse:
       type: object

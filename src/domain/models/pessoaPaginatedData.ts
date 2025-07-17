@@ -9,9 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PessoaPaginatedData } from "./pessoaPaginatedData";
+import { PaginationMeta } from "./paginationMeta";
+import { Pessoa } from "./pessoa";
 
-export interface GetPessoasResponse {
-  message: string;
-  data: PessoaPaginatedData;
+export interface PessoaPaginatedData {
+  meta: PaginationMeta;
+  rows: Array<Pessoa>;
 }

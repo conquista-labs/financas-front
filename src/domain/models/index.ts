@@ -10,4 +10,5 @@ export * from "./loginRequest";
 export * from "./loginResponse";
 export * from "./paginationMeta";
 export * from "./pessoa";
+export * from "./pessoaPaginatedData";
 export * from "./registerRequest";
