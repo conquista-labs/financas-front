@@ -1,0 +1,1 @@
+export { usePostAuth } from "./usePostAuth";

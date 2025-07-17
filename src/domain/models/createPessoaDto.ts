@@ -16,6 +16,10 @@ export interface CreatePessoaDto {
    */
   nome: string;
   /**
+   * Status da pessoa
+   */
+  ativo?: boolean;
+  /**
    * Email da pessoa
    */
   email?: string;

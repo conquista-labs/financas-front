@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/presentation/components/Table";
+} from "@/presentation/components/Table/Table";
 
 interface IDataTableProps<Data, Value> {
   columns: ColumnDef<Data, Value>[];

@@ -1,0 +1,1 @@
+export { useDeletePessoasId } from "./useDeletePessoasId";

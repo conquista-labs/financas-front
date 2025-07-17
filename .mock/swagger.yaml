@@ -5,12 +5,12 @@ paths:
       operationId: PessoasController_findAll
       parameters: []
       responses:
-        "200":
+        '200':
           description: Lista de pessoas retornada com sucesso.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApiResponseDto"
+                $ref: '#/components/schemas/ApiResponseDto'
       security:
         - access-token: []
       summary: Listar todas as pessoas
@@ -24,14 +24,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreatePessoaDto"
+              $ref: '#/components/schemas/CreatePessoaDto'
       responses:
-        "201":
+        '201':
           description: Pessoa criada com sucesso.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PessoaResponseDto"
+                $ref: '#/components/schemas/PessoaResponseDto'
       security:
         - access-token: []
       summary: Criar nova pessoa
@@ -48,13 +48,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Pessoa encontrada.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PessoaResponseDto"
-        "404":
+                $ref: '#/components/schemas/PessoaResponseDto'
+        '404':
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -75,15 +75,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdatePessoaDto"
+              $ref: '#/components/schemas/UpdatePessoaDto'
       responses:
-        "200":
+        '200':
           description: Pessoa atualizada com sucesso.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PessoaResponseDto"
-        "404":
+                $ref: '#/components/schemas/PessoaResponseDto'
+        '404':
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -100,13 +100,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: Pessoa removida com sucesso.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PessoaResponseDto"
-        "404":
+                $ref: '#/components/schemas/PessoaResponseDto'
+        '404':
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -122,16 +122,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RegisterDto"
+              $ref: '#/components/schemas/RegisterDto'
       responses:
-        "201":
+        '201':
           description: Usuário registrado com sucesso
           content:
             application/json:
               schema:
                 example:
                   message: Usuário registrado com sucesso
-        "400":
+        '400':
           description: Email já cadastrado
           content:
             application/json:
@@ -152,16 +152,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginDto"
+              $ref: '#/components/schemas/LoginDto'
       responses:
-        "200":
+        '200':
           description: Retorna token de acesso JWT
           content:
             application/json:
               schema:
                 example:
                   access_token: jwt.token.aqui
-        "401":
+        '401':
           description: Credenciais inválidas
           content:
             application/json:
@@ -176,7 +176,7 @@ paths:
 info:
   title: API de finanças M&J
   description: API de controle financeiro do Júnior e da Vivi
-  version: "1.0"
+  version: '1.0'
   contact: {}
 tags: []
 servers: []
@@ -214,7 +214,7 @@ components:
         createdAt:
           format: date-time
           type: string
-          example: "2025-07-14T12:34:56Z"
+          example: '2025-07-14T12:34:56Z'
       required:
         - id
         - nome
@@ -226,6 +226,9 @@ components:
         nome:
           type: string
           description: Nome da pessoa
+        ativo:
+          type: boolean
+          description: Status da pessoa
         email:
           type: string
           description: Email da pessoa
@@ -242,7 +245,7 @@ components:
           example: vivi@email.com
         password:
           type: string
-          example: "123456"
+          example: '123456'
         nome:
           type: string
           example: Vivi
@@ -258,7 +261,7 @@ components:
           example: conquista.engcomp@gmail.com
         password:
           type: string
-          example: "123456"
+          example: '123456'
       required:
         - email
         - password

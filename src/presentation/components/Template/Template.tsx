@@ -13,7 +13,7 @@ const Template: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Box display="flex">
         <Menu open={menuOpen} />
         <Sidebar open={menuOpen} handleMenu={handleMenu} />
-        <Box as="main" width="100%" padding="$xs" backgroundColor="$secondary">
+        <Box as="main" width="100%" padding="$xs" backgroundColor="$background">
           {children}
         </Box>
       </Box>

@@ -16,7 +16,7 @@ export const MENUS = [
   {
     id: 2,
     title: "Pessoas",
-    link: "/pessoas",
+    link: urlRouters.people,
     icon: <UsersFilledIcon size="medium" height={18} width={18} />,
   },
   {

@@ -1,0 +1,1 @@
+export { usePostPessoas } from "./usePostPessoas";

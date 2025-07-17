@@ -23,3 +23,25 @@
     Comfortaa, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
     arial, sans-serif;
 }
+
+[class*="rarui-theme-dark_variables"] {
+  --rarui-colors-surface-brand: rgba(254, 254, 213, 1);
+  --rarui-colors-surface-brand-hover: rgba(254, 254, 213, 0.1);
+  --rarui-colors-surface-brand-press: rgba(254, 254, 213, 0.2);
+  --rarui-colors-surface-brand-subdued: rgba(254, 254, 213, 0.1);
+  --rarui-colors-content-brand: rgba(254, 254, 213, 1);
+  --rarui-colors-content-brand-alt: rgba(254, 254, 231, 1);
+  --rarui-colors-content-on-brand: rgba(42, 42, 42, 1);
+  --rarui-colors-border-brand: rgba(255, 255, 239, 1);
+  --rarui-colors-border-brand-alt: rgba(254, 254, 213, 1);
+
+  --rarui-fontFamily-body:
+    Comfortaa, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
+    arial, sans-serif;
+  --rarui-fontFamily-heading:
+    Comfortaa, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
+    arial, sans-serif;
+  --rarui-fontFamily-button:
+    Comfortaa, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
+    arial, sans-serif;
+}

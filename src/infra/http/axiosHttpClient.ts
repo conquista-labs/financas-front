@@ -21,7 +21,6 @@ export class AxiosHttpClient implements HttpClient {
           qs.stringify(params, { arrayFormat: "repeat" }),
       });
 
-      console.log("axiosResponse", axiosResponse.data);
       return {
         statusCode: axiosResponse.status,
         body: axiosResponse.data?.data,

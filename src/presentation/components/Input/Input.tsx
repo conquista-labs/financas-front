@@ -21,7 +21,7 @@ const Input: React.FC<InputProps> = ({
   });
 
   return (
-    <Box display="flex" flexDirection="column" gap="$3xs">
+    <Box display="flex" flexDirection="column" gap="$3xs" width="100%">
       <Label htmlFor={id}>{label}</Label>
       {CustomComponent ? (
         <CustomComponent

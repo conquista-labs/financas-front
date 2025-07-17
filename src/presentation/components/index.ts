@@ -1,8 +1,11 @@
+export { Breadcrumb } from "./Breadcrumb";
 export { Header } from "./Header";
 export { Menu } from "./Menu";
 export { Input } from "./Input";
+export { Toggle } from "./Toggle";
 export { Loading } from "./Loading";
 export { Logo } from "./Logo";
 export { Sidebar } from "./Sidebar";
 export { Suspense } from "./Suspense";
 export { Template } from "./Template";
+export { Table, ColumnsDefinitions } from "./Table";

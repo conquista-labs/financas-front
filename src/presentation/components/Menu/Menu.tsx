@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { Box, Tooltip, Text } from "@rarui-react/components";
 
 import type { MenuProps } from "./menu.types";
@@ -45,7 +45,8 @@ const Menu: React.FC<MenuProps> = () => {
             }
           >
             <Box
-              as="button"
+              as={Link}
+              to={menu.link}
               display="flex"
               height="40px"
               width="50px"

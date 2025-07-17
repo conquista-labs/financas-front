@@ -1,0 +1,1 @@
+export { usePatchPessoasId } from "./usePatchPessoasId";

@@ -1,1 +1,0 @@
-export { useGetBoletas } from "./useGetBoletas";

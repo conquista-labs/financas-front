@@ -9,7 +9,7 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle }) => (
       <Icon color="$brand" source={<Logo />} />
     </Box>
     <Box display="flex" flexDirection="column" mb="$lg" width="100%" gap="$3xs">
-      <Text fontWeight="$bold" fontSize="$xl" lineHeight="$xl">
+      <Text color="$primary" fontWeight="$bold" fontSize="$xl" lineHeight="$xl">
         {title}
       </Text>
       <Text fontSize="$m" lineHeight="$m" color="$secondary">

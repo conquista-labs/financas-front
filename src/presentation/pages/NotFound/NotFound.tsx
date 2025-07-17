@@ -1,7 +1,7 @@
 import { Box, Button, Text, Title } from "@rarui-react/components";
 import { useNavigate } from "react-router-dom";
 
-import { urlRouters } from "@/presentation/router";
+import { urlRouters } from "@/presentation/router/router.definitions";
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate();

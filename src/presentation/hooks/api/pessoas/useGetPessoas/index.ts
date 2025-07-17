@@ -1,0 +1,1 @@
+export { useGetPessoas } from "./useGetPessoas";

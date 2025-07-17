@@ -1,0 +1,1 @@
+export { useGetPessoasId } from "./useGetPessoasId";

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { setNavigate } from "@/presentation/router";
+import { setNavigate } from "@/presentation/router/router.definitions";
 import { useAuthStore } from "@/presentation/store";
 
 import PrivateRoute from "./private-route";

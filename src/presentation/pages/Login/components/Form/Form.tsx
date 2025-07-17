@@ -11,17 +11,16 @@ import {
 import { useToast } from "@rarui-react/components/dist/Toast";
 import { MailOutlinedIcon, ArrowLineRightIcon } from "@rarui/icons";
 
-import { useAuth } from "@/presentation/hooks/api";
+import { urlRouters } from "@/presentation/router/router.definitions";
+import { usePostAuth } from "@/presentation/hooks/api";
 import { useAuthStore } from "@/presentation/store";
-
-import { urlRouters } from "@/presentation/router";
 import { Input } from "@/presentation/components";
 
 import { defaultValues, schema } from "./form.definitions";
 import type { LoginDto } from "@/domain/models";
 const Form: React.FC = () => {
   const { setAuth } = useAuthStore();
-  const { mutate } = useAuth();
+  const { mutate, isPending } = usePostAuth();
   const { addToast } = useToast();
 
   const navigate = useNavigate();
@@ -33,14 +32,12 @@ const Form: React.FC = () => {
   });
 
   const handleLogin = (data: LoginDto) => {
-    console.log("data", data);
     mutate(data, {
       onSuccess: (response) => {
         setAuth(response);
         navigate(urlRouters.root);
       },
       onError: (error) => {
-        console.log(error);
         addToast({
           title: error.message,
           appearance: "error",
@@ -87,12 +84,9 @@ const Form: React.FC = () => {
         full
         appearance="brand"
         size="large"
-        // disabled={isPending}
+        disabled={isPending}
       >
-        <Text fontSize="$m" color="$on-brand">
-          Vamos lá
-          {/* {isPending ? "•︎•︎•︎" : "Fazer login"} */}
-        </Text>
+        Vamos lá
         <Icon
           color="$currentColor"
           source={<ArrowLineRightIcon size="medium" />}

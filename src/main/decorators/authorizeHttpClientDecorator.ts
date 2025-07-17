@@ -20,10 +20,10 @@ export class AuthorizeHttpClientDecorator implements HttpClient {
   async request<T>(data: HttpRequest): Promise<HttpResponse<T>> {
     const auth = this.authProvider.getAuth();
 
-    if (auth.token) {
+    if (auth.access_token) {
       Object.assign(data, {
         headers: Object.assign(data.headers || {}, {
-          Authorization: `Bearer ${auth?.token ?? "test"}`,
+          Authorization: `Bearer ${auth?.access_token ?? "test"}`,
         }),
       });
     }
