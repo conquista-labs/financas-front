@@ -6,9 +6,9 @@ import { Suspense, Template } from "@/presentation/components";
 import {
   Home,
   NotFound,
-  People,
-  CreatePeople,
-  EditPeople,
+  Peoples,
+  CreatePeoples,
+  EditPeoples,
 } from "@/presentation/pages";
 
 const PrivateRoute: React.FC = () => (
@@ -35,7 +35,7 @@ const PrivateRoute: React.FC = () => (
         path={urlRouters.people}
         element={
           <Suspense>
-            <People />
+            <Peoples />
           </Suspense>
         }
       />
@@ -43,7 +43,7 @@ const PrivateRoute: React.FC = () => (
         path={urlRouters.createPeople}
         element={
           <Suspense>
-            <CreatePeople />
+            <CreatePeoples />
           </Suspense>
         }
       />
@@ -51,7 +51,7 @@ const PrivateRoute: React.FC = () => (
         path={urlRouters.editPeople}
         element={
           <Suspense>
-            <EditPeople />
+            <EditPeoples />
           </Suspense>
         }
       />

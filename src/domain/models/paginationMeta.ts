@@ -10,7 +10,18 @@
  * Do not edit the class manually.
  */
 
-export interface LoginDto {
-  email: string;
-  password: string;
+export interface PaginationMeta {
+  /**
+   * Página atual
+   */
+  page: number;
+  /**
+   * Limite de itens por página
+   */
+  perPage: number;
+  /**
+   * Total de itens encontrados
+   */
+  total: number;
+  lastPage: number;
 }

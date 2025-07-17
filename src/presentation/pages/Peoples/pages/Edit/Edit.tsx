@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Box, Title } from "@rarui-react/components";
 
 import { useGetPessoasId, usePatchPessoasId } from "@/presentation/hooks/api";
-import { Form } from "@/presentation/pages/People/components";
+import { Form } from "@/presentation/pages/Peoples/components";
 import { Breadcrumb } from "@/presentation/components";
 
 import type { PatchPessoasIdRequest } from "@/domain/usecases";

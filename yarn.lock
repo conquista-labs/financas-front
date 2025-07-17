@@ -6033,6 +6033,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"serialize-query-params@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "serialize-query-params@npm:2.0.2"
+  checksum: fdef1e8eb45ce585b12535ab7e546a2583220a2deb969359ccef50519dc541dd6690c00c8de7a2465b9b0b0072a3308b55df77bd568284989df1e72869c9ee3f
+  languageName: node
+  linkType: hard
+
 "set-cookie-parser@npm:^2.6.0":
   version: 2.7.1
   resolution: "set-cookie-parser@npm:2.7.1"
@@ -6726,6 +6733,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-query-params@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "use-query-params@npm:2.2.1"
+  dependencies:
+    serialize-query-params: "npm:^2.0.2"
+  peerDependencies:
+    "@reach/router": ^1.2.1
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+    react-router-dom: ">=5"
+  peerDependenciesMeta:
+    "@reach/router":
+      optional: true
+    react-router-dom:
+      optional: true
+  checksum: 79d07b1adfd67d1e56f5168cea15679cacfb14473ee50d623a6a40e6175779895336c4a447871bc5291c921ec47dfa23bdd312ec76bbd6bbe5e9ea5238ed2d08
+  languageName: node
+  linkType: hard
+
 "util-deprecate@npm:^1.0.2":
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
@@ -6784,6 +6810,7 @@ __metadata:
     react-router-dom: "npm:^7.6.3"
     typescript: "npm:~5.8.3"
     typescript-eslint: "npm:^8.35.1"
+    use-query-params: "npm:^2.2.1"
     vite: "npm:^7.0.3"
     vite-plugin-svgr: "npm:^4.3.0"
     vitest: "npm:^3.2.4"

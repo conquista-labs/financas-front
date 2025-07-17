@@ -3,14 +3,28 @@ paths:
   /pessoas:
     get:
       operationId: PessoasController_findAll
-      parameters: []
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Número da página
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Limite de itens por página
+          schema:
+            default: 10
+            type: number
       responses:
         '200':
-          description: Lista de pessoas retornada com sucesso.
+          description: Lista de pessoas retornada com dasdadasucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponseDto'
+                $ref: '#/components/schemas/GetPessoasResponse'
       security:
         - access-token: []
       summary: Listar todas as pessoas
@@ -24,14 +38,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePessoaDto'
+              $ref: '#/components/schemas/CreatePessoaRequest'
       responses:
         '201':
           description: Pessoa criada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PessoaResponseDto'
+                $ref: '#/components/schemas/CreatePessoaResponse'
       security:
         - access-token: []
       summary: Criar nova pessoa
@@ -53,7 +67,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PessoaResponseDto'
+                $ref: '#/components/schemas/GetPessoaResponse'
         '404':
           description: Pessoa não encontrada.
       security:
@@ -75,14 +89,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePessoaDto'
+              $ref: '#/components/schemas/EditPessoaRequest'
       responses:
         '200':
           description: Pessoa atualizada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PessoaResponseDto'
+                $ref: '#/components/schemas/EditPessoaResponse'
         '404':
           description: Pessoa não encontrada.
       security:
@@ -105,7 +119,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PessoaResponseDto'
+                $ref: '#/components/schemas/DeletePessoaResponse'
         '404':
           description: Pessoa não encontrada.
       security:
@@ -122,7 +136,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterDto'
+              $ref: '#/components/schemas/RegisterRequest'
       responses:
         '201':
           description: Usuário registrado com sucesso
@@ -152,15 +166,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginDto'
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
           description: Retorna token de acesso JWT
           content:
             application/json:
               schema:
-                example:
-                  access_token: jwt.token.aqui
+                $ref: '#/components/schemas/LoginResponse'
         '401':
           description: Credenciais inválidas
           content:
@@ -188,18 +201,30 @@ components:
       type: http
       in: header
   schemas:
-    ApiResponseDto:
+    PaginationMeta:
       type: object
       properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          type: object
+        page:
+          type: number
+          example: 1
+          description: Página atual
+        perPage:
+          type: number
+          example: 10
+          description: Limite de itens por página
+        total:
+          type: number
+          example: 100
+          description: Total de itens encontrados
+        lastPage:
+          type: number
+          example: 10
       required:
-        - message
-        - data
-    PessoaResponseDto:
+        - page
+        - perPage
+        - total
+        - lastPage
+    Pessoa:
       type: object
       properties:
         id:
@@ -220,7 +245,30 @@ components:
         - nome
         - email
         - createdAt
-    CreatePessoaDto:
+    GetPessoasResponse:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pessoa'
+      required:
+        - meta
+        - data
+    GetPessoaResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Pessoa'
+      required:
+        - message
+        - data
+    CreatePessoaRequest:
       type: object
       properties:
         nome:
@@ -234,10 +282,52 @@ components:
           description: Email da pessoa
       required:
         - nome
-    UpdatePessoaDto:
+    CreatePessoaResponse:
       type: object
-      properties: {}
-    RegisterDto:
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Pessoa'
+      required:
+        - message
+        - data
+    EditPessoaRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome da pessoa
+        ativo:
+          type: boolean
+          description: Status da pessoa
+        email:
+          type: string
+          description: Email da pessoa
+    EditPessoaResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Pessoa'
+      required:
+        - message
+        - data
+    DeletePessoaResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Pessoa'
+      required:
+        - message
+        - data
+    RegisterRequest:
       type: object
       properties:
         email:
@@ -253,7 +343,7 @@ components:
         - email
         - password
         - nome
-    LoginDto:
+    LoginRequest:
       type: object
       properties:
         email:
@@ -265,3 +355,22 @@ components:
       required:
         - email
         - password
+    Auth:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: jwt.token
+      required:
+        - access_token
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Auth'
+      required:
+        - message
+        - data

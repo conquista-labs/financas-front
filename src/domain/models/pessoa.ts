@@ -10,17 +10,9 @@
  * Do not edit the class manually.
  */
 
-export interface CreatePessoaDto {
-  /**
-   * Nome da pessoa
-   */
+export interface Pessoa {
+  id: string;
   nome: string;
-  /**
-   * Status da pessoa
-   */
-  ativo?: boolean;
-  /**
-   * Email da pessoa
-   */
-  email?: string;
+  email: string;
+  createdAt: string;
 }

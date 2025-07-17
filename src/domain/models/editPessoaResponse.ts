@@ -9,8 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Pessoa } from "./pessoa";
 
-export interface ApiResponseDto {
+export interface EditPessoaResponse {
   message: string;
-  data: object;
+  data: Pessoa;
 }

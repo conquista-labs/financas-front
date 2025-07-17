@@ -15,9 +15,9 @@ import { urlRouters } from "@/presentation/router/router.definitions";
 import { usePostAuth } from "@/presentation/hooks/api";
 import { useAuthStore } from "@/presentation/store";
 import { Input } from "@/presentation/components";
-
+import { PostLoginRequest } from "@/domain/usecases";
 import { defaultValues, schema } from "./form.definitions";
-import type { LoginDto } from "@/domain/models";
+
 const Form: React.FC = () => {
   const { setAuth } = useAuthStore();
   const { mutate, isPending } = usePostAuth();
@@ -25,16 +25,16 @@ const Form: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const { handleSubmit, control } = useForm<LoginDto>({
+  const { handleSubmit, control } = useForm<PostLoginRequest>({
     resolver: yupResolver(schema),
     values: defaultValues,
     mode: "onChange",
   });
 
-  const handleLogin = (data: LoginDto) => {
+  const handleLogin = (data: PostLoginRequest) => {
     mutate(data, {
       onSuccess: (response) => {
-        setAuth(response);
+        setAuth(response.data);
         navigate(urlRouters.root);
       },
       onError: (error) => {

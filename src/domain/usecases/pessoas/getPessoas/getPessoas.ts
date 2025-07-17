@@ -1,12 +1,12 @@
-import type { PessoaResponseDto } from "@/domain/models";
+import type { GetPessoasResponse } from "@/domain/models";
 
 export interface GetPessoasUseCase {
   get: (params: GetPessoasParams) => Promise<GetPessoasModel>;
 }
 
-export type GetPessoasModel = PessoaResponseDto[];
+export type GetPessoasModel = GetPessoasResponse;
 
 export type GetPessoasParams = {
-  pagina?: number;
-  itensPorPagina?: number;
+  page?: number;
+  limit?: number;
 };

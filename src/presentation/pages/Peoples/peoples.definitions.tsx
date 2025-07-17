@@ -2,17 +2,19 @@ import type { NavigateFunction } from "react-router-dom";
 import { IconButton, Status, Box } from "@rarui-react/components";
 import { EditFilledIcon, TrashFilledIcon } from "@rarui/icons";
 import type { UseMutateFunction } from "@tanstack/react-query";
-import type { PessoaResponseDto } from "@/domain/models";
 import type { AxiosError } from "axios";
-import type { DeletePessoasIdParams } from "@/domain/usecases";
+import type {
+  DeletePessoasIdModel,
+  DeletePessoasIdParams,
+} from "@/domain/usecases";
 
-import { ColumnsDefinitions } from "@/presentation/components";
 import { urlRouters } from "@/presentation/router/router.definitions";
+import { ColumnsDefinitions } from "@/presentation/components";
 
 export const getColumns = (
   navigate: NavigateFunction,
   mutate: UseMutateFunction<
-    PessoaResponseDto,
+    DeletePessoasIdModel,
     AxiosError<unknown, any>,
     DeletePessoasIdParams,
     unknown

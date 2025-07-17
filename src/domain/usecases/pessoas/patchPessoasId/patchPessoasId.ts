@@ -1,4 +1,4 @@
-import type { CreatePessoaDto, PessoaResponseDto } from "@/domain/models";
+import type { EditPessoaRequest, EditPessoaResponse } from "@/domain/models";
 
 export interface PatchPessoasIdUseCase {
   patch: (
@@ -7,6 +7,6 @@ export interface PatchPessoasIdUseCase {
   ) => Promise<PatchPessoasIdModel>;
 }
 
-export type PatchPessoasIdModel = PessoaResponseDto;
-export type PatchPessoasIdRequest = CreatePessoaDto;
+export type PatchPessoasIdModel = EditPessoaResponse;
+export type PatchPessoasIdRequest = EditPessoaRequest;
 export type PatchPessoasIdParams = { id: string };

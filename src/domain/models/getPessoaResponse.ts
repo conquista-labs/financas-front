@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Pessoa } from "./pessoa";
 
-export interface RegisterDto {
-  email: string;
-  password: string;
-  nome: string;
+export interface GetPessoaResponse {
+  message: string;
+  data: Pessoa;
 }

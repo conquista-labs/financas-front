@@ -5,10 +5,13 @@ import { Box, Button } from "@rarui-react/components";
 import { urlRouters } from "@/presentation/router/router.definitions";
 import { useDeletePessoasId, useGetPessoas } from "@/presentation/hooks/api";
 import { Breadcrumb, Table } from "@/presentation/components";
-import { getColumns } from "./people.definitions";
+import { getColumns } from "./peoples.definitions";
+import { usePagination } from "@/presentation/hooks/core";
 
-const People: React.FC = () => {
-  const { data } = useGetPessoas({});
+const Peoples: React.FC = () => {
+  const { page, pageSize } = usePagination();
+
+  const { data, isLoading } = useGetPessoas({ page, limit: pageSize });
   const navigate = useNavigate();
   const { mutate } = useDeletePessoasId();
 
@@ -20,9 +23,14 @@ const People: React.FC = () => {
           Cadastrar
         </Button>
       </Box>
-      <Table columns={getColumns(navigate, mutate)} rows={data ?? []} />
+      <Table
+        columns={getColumns(navigate, mutate)}
+        rows={data?.data ?? []}
+        total={data?.meta.total ?? 0}
+        isLoading={isLoading}
+      />
     </Box>
   );
 };
 
-export default People;
+export default Peoples;

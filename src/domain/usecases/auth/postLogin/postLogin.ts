@@ -1,11 +1,9 @@
-import type { LoginDto } from "@/domain/models";
+import type { LoginRequest, LoginResponse } from "@/domain/models";
 
 export interface PostLoginUseCase {
   execute: (body: PostLoginRequest) => Promise<PostLoginModel>;
 }
 
-export type PostLoginRequest = LoginDto;
+export type PostLoginRequest = LoginRequest;
 
-export type PostLoginModel = {
-  access_token: string;
-};
+export type PostLoginModel = LoginResponse;

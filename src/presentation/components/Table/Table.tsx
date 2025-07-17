@@ -1,8 +1,20 @@
-import { Box, Text } from "@rarui-react/components";
-import type { TableProps } from "./table.types";
-import type { JSX } from "react";
+import { type JSX } from "react";
+import { Box, Text, Pagination, Select } from "@rarui-react/components";
 
-function Table<T>({ columns, rows }: TableProps<T>): JSX.Element {
+import { usePagination } from "@/presentation/hooks/core";
+import type { TableProps } from "./table.types";
+import { pageSizeOptions } from "./table.definitions";
+import { Loading } from "../Loading";
+
+function Table<T>({
+  columns,
+  rows,
+  total,
+  isLoading,
+}: TableProps<T>): JSX.Element {
+  const { page, totalPages, pageSize, onChangePage, onChangePageSize } =
+    usePagination(total);
+
   const allColumns = columns.getColumns();
 
   const renderCell = (column: (typeof allColumns)[number], row: T) => {
@@ -19,60 +31,88 @@ function Table<T>({ columns, rows }: TableProps<T>): JSX.Element {
   };
 
   return (
-    <Box
-      backgroundColor="$primary"
-      padding="$2xs"
-      borderWidth="$1"
-      borderStyle="solid"
-      borderColor="$subdued"
-      borderRadius="$xs"
-      pb="$none"
-    >
-      <Box as="table" width="100%">
-        <Box as="thead">
-          <Box
-            as="tr"
-            borderBottomWidth="$2"
-            borderStyle="solid"
-            borderColor="$divider"
-          >
-            {allColumns.map((column, index) => (
+    <>
+      <Box display="flex" flexDirection="column" gap="$xs">
+        <Box
+          backgroundColor="$primary"
+          padding="$2xs"
+          borderWidth="$1"
+          borderStyle="solid"
+          borderColor="$subdued"
+          borderRadius="$xs"
+          pb="$none"
+          minHeight={{ md: "550px" }}
+        >
+          <Box as="table" width="100%">
+            <Box as="thead">
               <Box
-                as="th"
-                key={`${column.label}-${index}`}
-                color="$primary"
-                fontWeight="$bold"
-                textAlign="left"
-                fontFamily="$body"
-                padding="$2xs"
-                {...column.options?.boxProps}
+                as="tr"
+                borderBottomWidth="$2"
+                borderStyle="solid"
+                borderColor="$divider"
               >
-                {column.label}
+                {allColumns.map((column, index) => (
+                  <Box
+                    as="th"
+                    key={`${column.label}-${index}`}
+                    color="$primary"
+                    fontWeight="$bold"
+                    textAlign="left"
+                    fontFamily="$body"
+                    padding="$2xs"
+                    {...column.options?.boxProps}
+                  >
+                    {column.label}
+                  </Box>
+                ))}
               </Box>
-            ))}
-          </Box>
-        </Box>
-        <Box as="tbody">
-          {rows?.map((row, rowIndex) => (
-            <Box
-              as="tr"
-              key={`row-${rowIndex}`}
-              borderBottomWidth="$1"
-              borderStyle="solid"
-              borderColor={
-                rows.length - 1 !== rowIndex ? "$divider" : "$transparent"
-              }
-            >
-              {allColumns.map((column, colIndex) => (
-                <Box as="td" key={`cell-${rowIndex}-${colIndex}`} padding="$xs">
-                  {renderCell(column, row)}
+            </Box>
+            <Box as="tbody">
+              {rows?.map((row, rowIndex) => (
+                <Box
+                  as="tr"
+                  key={`row-${rowIndex}`}
+                  borderBottomWidth="$1"
+                  borderStyle="solid"
+                  borderColor="$divider"
+                >
+                  {allColumns.map((column, colIndex) => (
+                    <Box
+                      as="td"
+                      key={`cell-${rowIndex}-${colIndex}`}
+                      padding="$xs"
+                    >
+                      {renderCell(column, row)}
+                    </Box>
+                  ))}
                 </Box>
               ))}
             </Box>
-          ))}
+          </Box>
+        </Box>
+        <Box display="flex" justifyContent="space-between">
+          <Box display="flex" alignItems="center" gap="$2xs">
+            <Text color="$brand" fontSize="$s" fontWeight="$bold">
+              Itens por página
+            </Text>
+            <Select
+              enabledFlip
+              value={pageSizeOptions.find(
+                (option) => Number(option.value) === pageSize,
+              )}
+              options={pageSizeOptions}
+              onChange={(option: any) => onChangePageSize(option?.[0].value)}
+            />
+          </Box>
+          <Pagination
+            activePage={page}
+            pageCount={totalPages}
+            onPageChange={(page) => onChangePage({ page, pageSize: 10 })}
+          />
         </Box>
       </Box>
-    </Box>
+      <Loading isLoading={isLoading} />
+    </>
   );
 }
 

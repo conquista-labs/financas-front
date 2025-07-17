@@ -23,4 +23,6 @@ export interface ColumnsDefinition<T> {
 export interface TableProps<T> {
   columns: ColumnsDefinition<T>;
   rows: T[];
+  total: number;
+  isLoading?: boolean;
 }

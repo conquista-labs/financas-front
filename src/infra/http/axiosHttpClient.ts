@@ -31,7 +31,7 @@ export class AxiosHttpClient implements HttpClient {
         const axiosResponse = error.response;
         return {
           statusCode: axiosResponse?.status ?? HttpStatusCode.serverError,
-          body: axiosResponse?.data?.data ?? null,
+          body: axiosResponse?.data.data ?? null,
           message: axiosResponse?.data?.message ?? "Unknown error",
         };
       }

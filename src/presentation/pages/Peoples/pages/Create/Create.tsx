@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Title } from "@rarui-react/components";
 
-import { Form } from "@/presentation/pages/People/components";
+import { Form } from "@/presentation/pages/Peoples/components";
 import { Breadcrumb } from "@/presentation/components";
 import { usePostPessoas } from "@/presentation/hooks/api";
 import type { PostPessoasRequest } from "@/domain/usecases";

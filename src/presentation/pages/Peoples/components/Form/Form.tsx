@@ -1,16 +1,20 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { Box, Button, Card } from "@rarui-react/components";
+import { useNavigate } from "react-router-dom";
 
 import { Input, Toggle } from "@/presentation/components";
 
 import { defaultForm, schema } from "./form.definitions";
 import type { FormProps } from "./form.types";
+import { urlRouters } from "@/presentation/router/router.definitions";
 
 const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
+  const navigate = useNavigate();
+
   const { handleSubmit, control } = useForm({
     resolver: yupResolver(schema),
-    values: defaultValues ?? defaultForm,
+    values: { ...defaultForm, ...defaultValues },
     mode: "onChange",
   });
 
@@ -49,7 +53,12 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
         </Card>
 
         <Box display="flex" justifyContent="space-between">
-          <Button type="button" appearance="danger" variant="outlined">
+          <Button
+            type="button"
+            appearance="danger"
+            variant="outlined"
+            onClick={() => navigate(urlRouters.people)}
+          >
             Cancelar
           </Button>
           <Button disabled={isPending}>Salvar</Button>

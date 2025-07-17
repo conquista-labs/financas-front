@@ -3,16 +3,12 @@ import type { AxiosError } from "axios";
 
 import { makePostLoginFactory } from "@/main/factories/usecases";
 
-import type { PostLoginRequest } from "@/domain/usecases";
+import type { PostLoginRequest, PostLoginModel } from "@/domain/usecases";
 import type { UsePostLoginOptions } from "./usePostAuth.types";
 
 export const usePostAuth = (
   options?: UsePostLoginOptions,
-): UseMutationResult<
-  { access_token: string },
-  AxiosError,
-  PostLoginRequest
-> => {
+): UseMutationResult<PostLoginModel, AxiosError, PostLoginRequest> => {
   const postLogin = makePostLoginFactory();
 
   return useMutation({
