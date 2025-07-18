@@ -33,4 +33,16 @@ export const crumbsMapper: Partial<
     label: "Editar",
     link: urlRouters.editCategories,
   },
+  meansOfPayment: {
+    label: "Meios de pagamento",
+    link: urlRouters.meansOfPayment,
+  },
+  createMeansOfPayment: {
+    label: "Criar",
+    link: urlRouters.createMeansOfPayment,
+  },
+  editMeansOfPayment: {
+    label: "Editar",
+    link: urlRouters.editMeansOfPayment,
+  },
 };

@@ -1,0 +1,1 @@
+export { useGetMeiosPagamento } from "./useGetMeiosPagamento";

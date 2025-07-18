@@ -2,8 +2,8 @@ import { urlRouters } from "@/presentation/router/router.definitions";
 import {
   FolderListFilledIcon,
   HomeFilledIcon,
-  ContentPasteOutlinedIcon,
   UsersFilledIcon,
+  CreditCardOutlinedIcon,
 } from "@rarui/icons";
 
 export const MENUS = [
@@ -27,8 +27,8 @@ export const MENUS = [
   },
   {
     id: 4,
-    title: "Cadastro",
-    link: "/cadastro",
-    icon: <ContentPasteOutlinedIcon size="medium" height={18} width={18} />,
+    title: "Meios de pagamento",
+    link: urlRouters.meansOfPayment,
+    icon: <CreditCardOutlinedIcon size="medium" height={18} width={18} />,
   },
 ];

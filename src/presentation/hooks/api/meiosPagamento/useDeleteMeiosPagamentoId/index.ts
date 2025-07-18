@@ -1,0 +1,1 @@
+export { useDeleteMeiosPagamentoId } from "./useDeleteMeiosPagamentoId";

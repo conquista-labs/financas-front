@@ -1,0 +1,1 @@
+export { usePatchMeiosPagamentoId } from "./usePatchMeiosPagamentoId";

@@ -19,12 +19,12 @@ paths:
             default: 10
             type: number
       responses:
-        '200':
+        "200":
           description: Lista de pessoas retornada com dasdadasucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetPessoasResponse'
+                $ref: "#/components/schemas/GetPessoasResponse"
       security:
         - access-token: []
       summary: Listar todas as pessoas
@@ -38,14 +38,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePessoaRequest'
+              $ref: "#/components/schemas/CreatePessoaRequest"
       responses:
-        '201':
+        "201":
           description: Pessoa criada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatePessoaResponse'
+                $ref: "#/components/schemas/CreatePessoaResponse"
       security:
         - access-token: []
       summary: Criar nova pessoa
@@ -62,13 +62,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Pessoa encontrada.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetPessoaResponse'
-        '404':
+                $ref: "#/components/schemas/GetPessoaResponse"
+        "404":
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -89,15 +89,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EditPessoaRequest'
+              $ref: "#/components/schemas/EditPessoaRequest"
       responses:
-        '200':
+        "200":
           description: Pessoa atualizada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EditPessoaResponse'
-        '404':
+                $ref: "#/components/schemas/EditPessoaResponse"
+        "404":
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -114,13 +114,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Pessoa removida com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeletePessoaResponse'
-        '404':
+                $ref: "#/components/schemas/DeletePessoaResponse"
+        "404":
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -136,16 +136,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
-        '201':
+        "201":
           description: Usuário registrado com sucesso
           content:
             application/json:
               schema:
                 example:
                   message: Usuário registrado com sucesso
-        '400':
+        "400":
           description: Email já cadastrado
           content:
             application/json:
@@ -166,15 +166,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: Retorna token de acesso JWT
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '401':
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
           description: Credenciais inválidas
           content:
             application/json:
@@ -205,12 +205,12 @@ paths:
             default: 10
             type: number
       responses:
-        '200':
-          description: Lista de categorias retornada com dasdadasucesso.
+        "200":
+          description: Lista de categorias retornada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCategoriasResponse'
+                $ref: "#/components/schemas/GetCategoriasResponse"
       summary: Listar todas as categorias
       tags:
         - Categorias
@@ -222,15 +222,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCategoriaRequest'
+              $ref: "#/components/schemas/CreateCategoriaRequest"
       responses:
-        '201':
+        "201":
           description: Categoria criada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateCategoriaResponse'
-      summary: Criar nova Categoria
+                $ref: "#/components/schemas/CreateCategoriaResponse"
+      summary: Criar nova categoria
       tags:
         - Categorias
   /categorias/{id}:
@@ -244,13 +244,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Categoria encontrada.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCategoriaResponse'
-        '404':
+                $ref: "#/components/schemas/GetCategoriaResponse"
+        "404":
           description: Categoria não encontrada.
       summary: Buscar categoria por ID
       tags:
@@ -269,15 +269,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EditCategoriaRequest'
+              $ref: "#/components/schemas/EditCategoriaRequest"
       responses:
-        '200':
+        "200":
           description: Categoria atualizada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EditCategoriaResponse'
-        '404':
+                $ref: "#/components/schemas/EditCategoriaResponse"
+        "404":
           description: Categoria não encontrada.
       summary: Atualizar categoria por ID
       tags:
@@ -292,21 +292,138 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Categoria removida com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteCategoriaResponse'
-        '404':
+                $ref: "#/components/schemas/DeleteCategoriaResponse"
+        "404":
           description: Categoria não encontrada.
       summary: Remover categoria por ID
       tags:
         - Categorias
+  /meios-pagamento:
+    get:
+      operationId: MeiosPagamentoController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Número da página
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Limite de itens por página
+          schema:
+            default: 10
+            type: number
+      responses:
+        "200":
+          description: Lista de meios de pagamento retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetMeiosPagamentosResponse"
+      summary: Listar todas os meios de pagamento
+      tags:
+        - MeiosPagamento
+    post:
+      operationId: MeiosPagamentoController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMeioPagamentoRequest"
+      responses:
+        "201":
+          description: Meio de pagemento criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateMeioPagamentoResponse"
+      summary: Criar novo meio de pagemento
+      tags:
+        - MeiosPagamento
+  /meios-pagamento/{id}:
+    get:
+      operationId: MeiosPagamentoController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do meio de pagemento
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Meio de pagemento encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetMeioPagamentoResponse"
+        "404":
+          description: Meio de pagemento não encontrado.
+      summary: Buscar meio de pagamento por ID
+      tags:
+        - MeiosPagamento
+    patch:
+      operationId: MeiosPagamentoController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do meio de pagemento
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditMeioPagamentoRequest"
+      responses:
+        "200":
+          description: Meio de pagemento atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EditMeioPagamentoResponse"
+        "404":
+          description: Meio de pagemento não encontrada.
+      summary: Atualizar meio de pagemento por ID
+      tags:
+        - MeiosPagamento
+    delete:
+      operationId: MeiosPagamentoController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do meio de pagemento
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Meio de pagemento removido com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteMeioPagamentoResponse"
+        "404":
+          description: Meio de pagemento não encontrada.
+      summary: Remover meio de pagemento por ID
+      tags:
+        - MeiosPagamento
 info:
   title: API de finanças M&J
   description: API de controle financeiro do Júnior e da Vivi
-  version: '1.0'
+  version: "1.0"
   contact: {}
 tags: []
 servers: []
@@ -356,7 +473,7 @@ components:
         createdAt:
           format: date-time
           type: string
-          example: '2025-07-14T12:34:56Z'
+          example: "2025-07-14T12:34:56Z"
       required:
         - id
         - nome
@@ -366,11 +483,11 @@ components:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/Pessoa'
+            $ref: "#/components/schemas/Pessoa"
       required:
         - meta
         - rows
@@ -381,7 +498,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/PessoaPaginatedData'
+          $ref: "#/components/schemas/PessoaPaginatedData"
       required:
         - message
         - data
@@ -392,7 +509,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
       required:
         - message
         - data
@@ -417,7 +534,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
       required:
         - message
         - data
@@ -440,7 +557,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
       required:
         - message
         - data
@@ -451,7 +568,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
       required:
         - message
         - data
@@ -463,7 +580,7 @@ components:
           example: vivi@email.com
         password:
           type: string
-          example: '123456'
+          example: "123456"
         nome:
           type: string
           example: Vivi
@@ -479,7 +596,7 @@ components:
           example: conquista.engcomp@gmail.com
         password:
           type: string
-          example: '123456'
+          example: "123456"
       required:
         - email
         - password
@@ -498,7 +615,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Auth'
+          $ref: "#/components/schemas/Auth"
       required:
         - message
         - data
@@ -522,11 +639,11 @@ components:
           example: utensils
         cor:
           type: string
-          example: '#FF5733'
+          example: "#FF5733"
         createdAt:
           format: date-time
           type: string
-          example: '2025-07-17T10:20:30.000Z'
+          example: "2025-07-17T10:20:30.000Z"
       required:
         - id
         - nome
@@ -538,11 +655,11 @@ components:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/Categoria'
+            $ref: "#/components/schemas/Categoria"
       required:
         - meta
         - rows
@@ -553,7 +670,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/CategoriaPaginatedData'
+          $ref: "#/components/schemas/CategoriaPaginatedData"
       required:
         - message
         - data
@@ -564,7 +681,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
       required:
         - message
         - data
@@ -596,7 +713,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
       required:
         - message
         - data
@@ -625,7 +742,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
       required:
         - message
         - data
@@ -636,7 +753,105 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
+      required:
+        - message
+        - data
+    MeioPagamento:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid-gerado
+        nome:
+          type: string
+          example: Cartão crédito xp
+        createdAt:
+          format: date-time
+          type: string
+          example: "2025-07-17T10:20:30.000Z"
+      required:
+        - id
+        - nome
+        - createdAt
+    MeioPagamentoPaginatedData:
+      type: object
+      properties:
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/MeioPagamento"
+      required:
+        - meta
+        - rows
+    GetMeiosPagamentosResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/MeioPagamentoPaginatedData"
+      required:
+        - message
+        - data
+    GetMeioPagamentoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/MeioPagamento"
+      required:
+        - message
+        - data
+    CreateMeioPagamentoRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome do meio de pagamento
+      required:
+        - nome
+    CreateMeioPagamentoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/MeioPagamento"
+      required:
+        - message
+        - data
+    EditMeioPagamentoRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome do meio de pagamento
+    EditMeioPagamentoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/MeioPagamento"
+      required:
+        - message
+        - data
+    DeleteMeioPagamentoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/MeioPagamento"
       required:
         - message
         - data

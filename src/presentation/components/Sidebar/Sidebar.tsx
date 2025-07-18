@@ -6,7 +6,7 @@ import {
   Text,
   Sidebar as RaruiSidebar,
 } from "@rarui-react/components";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MenuIcon } from "@rarui/icons";
 
 import { MENUS } from "../Template/template.definitions";
@@ -14,6 +14,8 @@ import type { MenuProps } from "./sidebar.types";
 
 const Sidebar: React.FC<MenuProps> = ({ handleMenu, open }) => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
   return (
     <RaruiSidebar
       position="left"
@@ -54,6 +56,10 @@ const Sidebar: React.FC<MenuProps> = ({ handleMenu, open }) => {
                 backgroundColor={{
                   xs: isMenuActive ? "$secondary" : "$primary",
                   hover: "$brand-hover",
+                }}
+                onClick={() => {
+                  navigate(menu.link);
+                  handleMenu();
                 }}
               >
                 {menu.icon}

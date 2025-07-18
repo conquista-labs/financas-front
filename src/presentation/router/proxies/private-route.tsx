@@ -12,6 +12,9 @@ import {
   Categories,
   CreateCategories,
   EditCategories,
+  MeansOfPayment,
+  CreateMeansOfPayment,
+  EditMeansOfPayment,
 } from "@/presentation/pages";
 
 const PrivateRoute: React.FC = () => (
@@ -73,7 +76,7 @@ const PrivateRoute: React.FC = () => (
             <CreateCategories />
           </Suspense>
         }
-      />{" "}
+      />
       <Route
         path={urlRouters.editCategories}
         element={
@@ -82,7 +85,32 @@ const PrivateRoute: React.FC = () => (
           </Suspense>
         }
       />
+      <Route
+        path={urlRouters.meansOfPayment}
+        element={
+          <Suspense>
+            <MeansOfPayment />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.createMeansOfPayment}
+        element={
+          <Suspense>
+            <CreateMeansOfPayment />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.editMeansOfPayment}
+        element={
+          <Suspense>
+            <EditMeansOfPayment />
+          </Suspense>
+        }
+      />
     </Route>
+
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

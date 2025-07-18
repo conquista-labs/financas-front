@@ -21,5 +21,8 @@ export const urlRouters = {
   categories: "/categories",
   createCategories: "/categories/create",
   editCategories: "/categories/edit/:id",
+  meansOfPayment: "/means-of-payment",
+  createMeansOfPayment: "/means-of-payment/create",
+  editMeansOfPayment: "/means-of-payment/edit/:id",
   error: "/error",
 };
