@@ -21,7 +21,7 @@ const Create: React.FC = () => {
       <Title as="h4" color="$brand">
         Criar pessoa
       </Title>
-      <Box width={{ lg: "1110px" }}>
+      <Box width={{ xs: "100%", lg: "1110px" }}>
         <Form
           isPending={isPending}
           onSubmit={(body: PostPessoasRequest) => mutate(body)}

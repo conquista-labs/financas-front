@@ -10,7 +10,7 @@ import type { PatchPessoasIdRequest } from "@/domain/usecases";
 
 const Edit: React.FC = () => {
   const { id } = useParams();
-  const { data: response } = useGetPessoasId({ id: `${id}` });
+  const { data: response, isLoading } = useGetPessoasId({ id: `${id}` });
   const { mutate, isPending } = usePatchPessoasId({ id: `${id}` });
 
   return (
@@ -25,10 +25,10 @@ const Edit: React.FC = () => {
       <Title as="h4" color="$brand">
         Editar pessoa
       </Title>
-      <Box width={{ lg: "1110px" }}>
+      <Box width={{ xs: "100%", lg: "1110px" }}>
         <Form
           defaultValues={response?.data}
-          isPending={isPending}
+          isPending={isPending || isLoading}
           onSubmit={(body: PatchPessoasIdRequest) => mutate(body)}
         />
       </Box>

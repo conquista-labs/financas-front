@@ -13,6 +13,24 @@
   --rarui-colors-border-brand: rgba(199, 199, 199, 1);
   --rarui-colors-border-brand-alt: rgba(42, 42, 42, 1);
 
+  /* --rarui-colors-surface-brand: rgba(129, 132, 197, 1);
+  --rarui-colors-surface-brand-hover: rgba(129, 132, 197, 0.1);
+  --rarui-colors-surface-brand-press: rgba(129, 132, 197, 0.2);
+  --rarui-colors-surface-brand-subdued: rgba(129, 132, 197, 0.1);
+  --rarui-colors-content-brand: rgba(129, 132, 197, 1);
+  --rarui-colors-content-brand-alt: rgba(190, 191, 222, 1);
+  --rarui-colors-border-brand: rgba(214, 214, 234, 1);
+  --rarui-colors-border-brand-alt: rgba(129, 132, 197, 1); */
+
+  --rarui-colors-surface-brand: rgba(95, 98, 168, 1);
+  --rarui-colors-surface-brand-hover: rgba(95, 98, 168, 0.1);
+  --rarui-colors-surface-brand-press: rgba(95, 98, 168, 0.2);
+  --rarui-colors-surface-brand-subdued: rgba(95, 98, 168, 0.1);
+  --rarui-colors-content-brand: rgba(95, 98, 168, 1);
+  --rarui-colors-content-brand-alt: rgba(177, 178, 207, 1);
+  --rarui-colors-border-brand: rgba(206, 207, 224, 1);
+  --rarui-colors-border-brand-alt: rgba(95, 98, 168, 1);
+
   --rarui-fontFamily-body:
     Comfortaa, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
     arial, sans-serif;

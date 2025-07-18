@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ handleMenu }) => {
           icons={{
             checked: (
               <Icon
-                color="$primary"
+                color="$brand"
                 source={<LightbulbFilledIcon size="small" />}
               />
             ),

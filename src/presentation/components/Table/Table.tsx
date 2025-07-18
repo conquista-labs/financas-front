@@ -42,6 +42,7 @@ function Table<T>({
           borderRadius="$xs"
           pb="$none"
           minHeight={{ md: "550px" }}
+          overflowX="auto"
         >
           <Box as="table" width="100%">
             <Box as="thead">
@@ -92,7 +93,13 @@ function Table<T>({
             </Box>
           </Box>
         </Box>
-        <Box display="flex" justifyContent="space-between">
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexDirection={{ xs: "column", md: "row" }}
+          gap="$2xs"
+        >
           <Box display="flex" alignItems="center" gap="$2xs">
             <Text color="$brand" fontSize="$s" fontWeight="$bold">
               Itens por página

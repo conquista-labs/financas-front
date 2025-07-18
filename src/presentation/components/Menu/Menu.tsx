@@ -15,7 +15,7 @@ const Menu: React.FC<MenuProps> = () => {
       width="74px"
       backgroundColor="$primary"
       gap="$2xs"
-      display="flex"
+      display={{ xs: "none", md: "flex" }}
       flexDirection="column"
       alignItems="center"
       overflow="auto"

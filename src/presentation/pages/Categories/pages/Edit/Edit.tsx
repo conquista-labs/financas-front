@@ -13,7 +13,7 @@ import type { PatchCategoriasIdRequest } from "@/domain/usecases";
 
 const Edit: React.FC = () => {
   const { id } = useParams();
-  const { data: response } = useGetCategoriasId({ id: `${id}` });
+  const { data: response, isLoading } = useGetCategoriasId({ id: `${id}` });
   const { mutate, isPending } = usePatchCategoriasId({ id: `${id}` });
 
   return (
@@ -28,10 +28,10 @@ const Edit: React.FC = () => {
       <Title as="h4" color="$brand">
         Editar categoria
       </Title>
-      <Box width={{ lg: "1110px" }}>
+      <Box width={{ xs: "100%", lg: "1110px" }}>
         <Form
           defaultValues={response?.data}
-          isPending={isPending}
+          isPending={isLoading || isPending}
           onSubmit={(body: PatchCategoriasIdRequest) => mutate(body)}
         />
       </Box>
