@@ -1,0 +1,1 @@
+export { useGetCategorias } from "./useGetCategorias";

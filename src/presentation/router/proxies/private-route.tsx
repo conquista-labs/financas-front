@@ -9,6 +9,9 @@ import {
   Peoples,
   CreatePeoples,
   EditPeoples,
+  Categories,
+  CreateCategories,
+  EditCategories,
 } from "@/presentation/pages";
 
 const PrivateRoute: React.FC = () => (
@@ -32,7 +35,7 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.people}
+        path={urlRouters.peoples}
         element={
           <Suspense>
             <Peoples />
@@ -40,7 +43,7 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.createPeople}
+        path={urlRouters.createPeoples}
         element={
           <Suspense>
             <CreatePeoples />
@@ -48,10 +51,34 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.editPeople}
+        path={urlRouters.editPeoples}
         element={
           <Suspense>
             <EditPeoples />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.categories}
+        element={
+          <Suspense>
+            <Categories />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.createCategories}
+        element={
+          <Suspense>
+            <CreateCategories />
+          </Suspense>
+        }
+      />{" "}
+      <Route
+        path={urlRouters.editCategories}
+        element={
+          <Suspense>
+            <EditCategories />
           </Suspense>
         }
       />

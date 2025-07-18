@@ -1,0 +1,1 @@
+export { useDeleteCategoriasId } from "./useDeleteCategoriasId";

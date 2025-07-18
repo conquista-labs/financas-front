@@ -15,8 +15,11 @@ export const navigateTo = (path: string) => {
 export const urlRouters = {
   root: "/",
   login: "/login",
-  people: "/people",
-  createPeople: "/people/create",
-  editPeople: "/people/edit/:id",
+  peoples: "/peoples",
+  createPeoples: "/peoples/create",
+  editPeoples: "/peoples/edit/:id",
+  categories: "/categories",
+  createCategories: "/categories/create",
+  editCategories: "/categories/edit/:id",
   error: "/error",
 };

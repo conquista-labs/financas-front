@@ -9,16 +9,28 @@ export const crumbsMapper: Partial<
     label: "Início",
     link: urlRouters.root,
   },
-  people: {
+  peoples: {
     label: "Pessoas",
-    link: urlRouters.people,
+    link: urlRouters.peoples,
   },
-  createPeople: {
+  createPeoples: {
     label: "Criar",
-    link: urlRouters.createPeople,
+    link: urlRouters.createPeoples,
   },
-  editPeople: {
+  editPeoples: {
     label: "Editar",
-    link: urlRouters.editPeople,
+    link: urlRouters.editPeoples,
+  },
+  categories: {
+    label: "Categorias",
+    link: urlRouters.categories,
+  },
+  createCategories: {
+    label: "Criar",
+    link: urlRouters.createCategories,
+  },
+  editCategories: {
+    label: "Editar",
+    link: urlRouters.editCategories,
   },
 };

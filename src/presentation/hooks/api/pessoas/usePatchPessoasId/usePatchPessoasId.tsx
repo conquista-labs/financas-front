@@ -35,8 +35,8 @@ export const usePatchPessoasId = (
       return patchPessoasId.patch(body, params);
     },
     onSuccess: () => {
-      navigate(urlRouters.people);
-      queryClient.invalidateQueries({ queryKey: ["get-Pessoas"] });
+      navigate(urlRouters.peoples);
+      queryClient.invalidateQueries({ queryKey: ["get-pessoas"] });
     },
     onError: (error) => {
       addToast({

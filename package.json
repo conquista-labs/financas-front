@@ -25,9 +25,9 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
-    "@rarui-react/components": "^1.44.3",
+    "@rarui-react/components": "^1.45.0-rc.1",
     "@rarui/icons": "^1.2.0",
-    "@rarui/styles": "^2.6.3",
+    "@rarui/styles": "^2.7.0-rc.1",
     "@tanstack/react-query": "^5.81.5",
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.10.0",

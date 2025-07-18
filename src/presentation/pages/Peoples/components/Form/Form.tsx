@@ -57,7 +57,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
             type="button"
             appearance="danger"
             variant="outlined"
-            onClick={() => navigate(urlRouters.people)}
+            onClick={() => navigate(urlRouters.peoples)}
           >
             Cancelar
           </Button>

@@ -12,7 +12,7 @@ export const useGetPessoasId = (
   const getPessoasId = makeGetPessoasIdFactory();
 
   return useQuery({
-    queryKey: ["get-Pessoa", params],
+    queryKey: ["get-pessoa", params],
     queryFn: async () => {
       try {
         return await getPessoasId.get(params);

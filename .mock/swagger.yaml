@@ -186,6 +186,123 @@ paths:
       summary: Login com email e senha
       tags:
         - Auth
+  /categorias:
+    get:
+      operationId: CategoriasController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Número da página
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Limite de itens por página
+          schema:
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: Lista de categorias retornada com dasdadasucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategoriasResponse'
+      summary: Listar todas as categorias
+      tags:
+        - Categorias
+    post:
+      operationId: CategoriasController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoriaRequest'
+      responses:
+        '201':
+          description: Categoria criada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCategoriaResponse'
+      summary: Criar nova Categoria
+      tags:
+        - Categorias
+  /categorias/{id}:
+    get:
+      operationId: CategoriasController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da categoria
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Categoria encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategoriaResponse'
+        '404':
+          description: Categoria não encontrada.
+      summary: Buscar categoria por ID
+      tags:
+        - Categorias
+    patch:
+      operationId: CategoriasController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da categoria
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditCategoriaRequest'
+      responses:
+        '200':
+          description: Categoria atualizada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EditCategoriaResponse'
+        '404':
+          description: Categoria não encontrada.
+      summary: Atualizar categoria por ID
+      tags:
+        - Categorias
+    delete:
+      operationId: CategoriasController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da categoria
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Categoria removida com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCategoriaResponse'
+        '404':
+          description: Categoria não encontrada.
+      summary: Remover categoria por ID
+      tags:
+        - Categorias
 info:
   title: API de finanças M&J
   description: API de controle financeiro do Júnior e da Vivi
@@ -382,6 +499,144 @@ components:
           example: Operação realizada com sucesso
         data:
           $ref: '#/components/schemas/Auth'
+      required:
+        - message
+        - data
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid-gerado
+        nome:
+          type: string
+          example: Alimentação
+        tipo:
+          type: string
+          enum:
+            - despesa
+            - receita
+          example: despesa
+        icone:
+          type: string
+          example: utensils
+        cor:
+          type: string
+          example: '#FF5733'
+        createdAt:
+          format: date-time
+          type: string
+          example: '2025-07-17T10:20:30.000Z'
+      required:
+        - id
+        - nome
+        - tipo
+        - icone
+        - cor
+        - createdAt
+    CategoriaPaginatedData:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Categoria'
+      required:
+        - meta
+        - rows
+    GetCategoriasResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/CategoriaPaginatedData'
+      required:
+        - message
+        - data
+    GetCategoriaResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Categoria'
+      required:
+        - message
+        - data
+    CreateCategoriaRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome da categoria
+        tipo:
+          type: string
+          enum:
+            - despesa
+            - receita
+          description: Tipo da categoria (despesa ou receita)
+        icone:
+          type: string
+          description: Ícone da categoria
+        cor:
+          type: string
+          description: Cor da categoria em hexadecimal
+      required:
+        - nome
+        - tipo
+    CreateCategoriaResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Categoria'
+      required:
+        - message
+        - data
+    EditCategoriaRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome da categoria
+        tipo:
+          type: string
+          enum:
+            - despesa
+            - receita
+          description: Tipo da categoria (despesa ou receita)
+        icone:
+          type: string
+          description: Ícone da categoria
+        cor:
+          type: string
+          description: Cor da categoria em hexadecimal
+    EditCategoriaResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Categoria'
+      required:
+        - message
+        - data
+    DeleteCategoriaResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/Categoria'
       required:
         - message
         - data

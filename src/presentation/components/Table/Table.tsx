@@ -60,6 +60,7 @@ function Table<T>({
                     textAlign="left"
                     fontFamily="$body"
                     padding="$2xs"
+                    verticalAlign="middle"
                     {...column.options?.boxProps}
                   >
                     {column.label}
@@ -81,6 +82,7 @@ function Table<T>({
                       as="td"
                       key={`cell-${rowIndex}-${colIndex}`}
                       padding="$xs"
+                      verticalAlign="middle"
                     >
                       {renderCell(column, row)}
                     </Box>

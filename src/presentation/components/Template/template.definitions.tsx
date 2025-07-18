@@ -1,6 +1,6 @@
 import { urlRouters } from "@/presentation/router/router.definitions";
 import {
-  MailOutlinedIcon,
+  FolderListFilledIcon,
   HomeFilledIcon,
   ContentPasteOutlinedIcon,
   UsersFilledIcon,
@@ -16,14 +16,14 @@ export const MENUS = [
   {
     id: 2,
     title: "Pessoas",
-    link: urlRouters.people,
+    link: urlRouters.peoples,
     icon: <UsersFilledIcon size="medium" height={18} width={18} />,
   },
   {
     id: 3,
-    title: "Comissão",
-    link: "/comissao",
-    icon: <MailOutlinedIcon size="medium" height={18} width={18} />,
+    title: "Categorias",
+    link: urlRouters.categories,
+    icon: <FolderListFilledIcon size="medium" height={18} width={18} />,
   },
   {
     id: 4,

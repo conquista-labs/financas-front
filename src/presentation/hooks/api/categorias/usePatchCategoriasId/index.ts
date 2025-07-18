@@ -1,0 +1,1 @@
+export { usePatchCategoriasId } from "./usePatchCategoriasId";

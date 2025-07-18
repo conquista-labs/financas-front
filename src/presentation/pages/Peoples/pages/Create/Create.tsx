@@ -17,7 +17,7 @@ const Create: React.FC = () => {
       gap="$2xs"
       alignItems="center"
     >
-      <Breadcrumb crumbs={["people", "createPeople"]} />
+      <Breadcrumb crumbs={["peoples", "createPeoples"]} />
       <Title as="h4" color="$brand">
         Criar pessoa
       </Title>

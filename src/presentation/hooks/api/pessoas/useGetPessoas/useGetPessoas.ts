@@ -12,7 +12,7 @@ export const useGetPessoas = (
   const getPessoas = makeGetPessoasFactory();
 
   return useQuery({
-    queryKey: ["get-Pessoas", params],
+    queryKey: ["get-pessoas", params],
     queryFn: async () => {
       try {
         return await getPessoas.get(params);

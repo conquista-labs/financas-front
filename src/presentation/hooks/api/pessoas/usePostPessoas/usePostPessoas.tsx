@@ -24,8 +24,8 @@ export const usePostPessoas = (
     mutationKey: ["post-pessoas"],
     mutationFn: (body: PostPessoasRequest) => postPessoas.post(body),
     onSuccess: () => {
-      navigate(urlRouters.people);
-      queryClient.invalidateQueries({ queryKey: ["get-Pessoas"] });
+      navigate(urlRouters.peoples);
+      queryClient.invalidateQueries({ queryKey: ["get-pessoas"] });
     },
     onError: (error) => {
       addToast({

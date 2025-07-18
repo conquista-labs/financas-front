@@ -10,16 +10,16 @@ import { getColumns } from "./peoples.definitions";
 
 const Peoples: React.FC = () => {
   const { page, pageSize } = usePagination();
-
   const { data, isLoading } = useGetPessoas({ page, limit: pageSize });
+
   const navigate = useNavigate();
-  const { mutate } = useDeletePessoasId();
+  const { mutate, isPending } = useDeletePessoasId();
 
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$s">
-      <Breadcrumb crumbs={["people"]} />
+      <Breadcrumb crumbs={["peoples"]} />
       <Box display="flex" justifyContent="right">
-        <Button as={Link} to={urlRouters.createPeople}>
+        <Button as={Link} to={urlRouters.createPeoples}>
           Cadastrar
         </Button>
       </Box>
@@ -27,7 +27,7 @@ const Peoples: React.FC = () => {
         columns={getColumns(navigate, mutate)}
         rows={data?.data.rows ?? []}
         total={data?.data.meta.total ?? 0}
-        isLoading={isLoading}
+        isLoading={isLoading || isPending}
       />
     </Box>
   );

@@ -1,7 +1,7 @@
-import { GetPessoaResponse } from "@/domain/models";
+import { Pessoa } from "@/domain/models";
 
 export interface FormProps {
-  defaultValues?: Partial<GetPessoaResponse>;
+  defaultValues?: Partial<Pessoa>;
   onSubmit: any;
   isPending: boolean;
 }

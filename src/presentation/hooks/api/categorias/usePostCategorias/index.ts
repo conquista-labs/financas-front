@@ -1,0 +1,1 @@
+export { usePostCategorias } from "./usePostCategorias";

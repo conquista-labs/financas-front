@@ -2,6 +2,8 @@ export { Breadcrumb } from "./Breadcrumb";
 export { Header } from "./Header";
 export { Menu } from "./Menu";
 export { Input } from "./Input";
+export { ColorPicker } from "./ColorPicker";
+export { Select } from "./Select";
 export { Toggle } from "./Toggle";
 export { Loading } from "./Loading";
 export { Logo } from "./Logo";

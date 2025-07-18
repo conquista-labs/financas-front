@@ -23,12 +23,15 @@ export const getColumns = (
   new ColumnsDefinitions<any>()
     .setColum("Status", "ativo", {
       formatter: (field) => (
-        <Status dot={false} appearance={field ? "success" : "danger"}>
-          {field ? "Ativo" : "Inativo"}
-        </Status>
+        <Box display="flex" justifyContent="center">
+          <Status dot={false} appearance={field ? "success" : "danger"}>
+            {field ? "Ativo" : "Inativo"}
+          </Status>
+        </Box>
       ),
       boxProps: {
         width: "100px",
+        textAlign: "center",
       },
     })
     .setColum("Nome", "nome")
@@ -40,7 +43,7 @@ export const getColumns = (
             variant="tonal"
             source={<EditFilledIcon />}
             onClick={() =>
-              navigate(urlRouters.editPeople.replace(":id", field))
+              navigate(urlRouters.editPeoples.replace(":id", field))
             }
           />
           <IconButton
@@ -53,5 +56,6 @@ export const getColumns = (
       ),
       boxProps: {
         width: "100px",
+        textAlign: "center",
       },
     });

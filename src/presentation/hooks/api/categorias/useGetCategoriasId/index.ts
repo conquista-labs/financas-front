@@ -1,0 +1,1 @@
+export { useGetCategoriasId } from "./useGetCategoriasId";
