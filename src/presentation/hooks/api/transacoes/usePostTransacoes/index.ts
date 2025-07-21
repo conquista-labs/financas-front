@@ -1,0 +1,1 @@
+export { usePostTransacoes } from "./usePostTransacoes";

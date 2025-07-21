@@ -6,6 +6,9 @@ import { Suspense, Template } from "@/presentation/components";
 import {
   Home,
   NotFound,
+  Transactions,
+  CreateTransactions,
+  EditTransactions,
   Peoples,
   CreatePeoples,
   EditPeoples,
@@ -34,6 +37,30 @@ const PrivateRoute: React.FC = () => (
         element={
           <Suspense>
             <Home />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.transactions}
+        element={
+          <Suspense>
+            <Transactions />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.createTransactions}
+        element={
+          <Suspense>
+            <CreateTransactions />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.editTransactions}
+        element={
+          <Suspense>
+            <EditTransactions />
           </Suspense>
         }
       />
@@ -110,7 +137,6 @@ const PrivateRoute: React.FC = () => (
         }
       />
     </Route>
-
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

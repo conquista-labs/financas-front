@@ -1,0 +1,1 @@
+export { useGetTransacoes } from "./useGetTransacoes";

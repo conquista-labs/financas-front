@@ -9,6 +9,10 @@ export const crumbsMapper: Partial<
     label: "Início",
     link: urlRouters.root,
   },
+  transactions: {
+    label: "Transações",
+    link: urlRouters.transactions,
+  },
   peoples: {
     label: "Pessoas",
     link: urlRouters.peoples,

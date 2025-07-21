@@ -1,0 +1,9 @@
+.categorie-badge {
+  font-family: var(--rarui-fontFamily-body);
+  padding: var(--rarui-spacing-3xs);
+  border-radius: var(--rarui-shape-border-radius-2xs);
+  font-weight: var(--rarui-fontWeight-medium);
+  line-height: var(--rarui-lineHeight-label-m);
+  width: 100%;
+  text-align: center;
+}

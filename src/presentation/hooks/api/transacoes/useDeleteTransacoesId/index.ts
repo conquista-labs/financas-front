@@ -1,0 +1,1 @@
+export { useDeleteTransacoesId } from "./useDeleteTransacoesId";

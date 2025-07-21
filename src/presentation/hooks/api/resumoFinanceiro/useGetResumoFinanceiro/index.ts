@@ -1,0 +1,1 @@
+export { useGetResumoFinanceiro } from "./useGetResumoFinanceiro";

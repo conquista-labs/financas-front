@@ -1,5 +1,7 @@
 export { Breadcrumb } from "./Breadcrumb";
 export { Header } from "./Header";
+export { DatePicker } from "./DatePicker";
+export { Textarea } from "./Textarea";
 export { Menu } from "./Menu";
 export { Input } from "./Input";
 export { ColorPicker } from "./ColorPicker";

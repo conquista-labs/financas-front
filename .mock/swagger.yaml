@@ -420,6 +420,160 @@ paths:
       summary: Remover meio de pagemento por ID
       tags:
         - MeiosPagamento
+  /enums:
+    get:
+      operationId: EnumsController_getEnums
+      parameters: []
+      responses:
+        "200":
+          description: Enums retornados com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnumsResponse"
+      summary: Lista todos os enums utilizados nos selects do sistema
+      tags:
+        - Enums
+  /transacoes:
+    get:
+      operationId: TransacoesController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Número da página
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Limite de itens por página
+          schema:
+            default: 10
+            type: number
+        - name: date
+          required: false
+          in: query
+          description: Data usada para filtrar o mês das transações
+          schema:
+            example: "2025-07-21T15:03:42.000Z"
+            type: string
+      responses:
+        "200":
+          description: Lista de transações retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTransacoesResponse"
+      summary: Listar todas as transações
+      tags:
+        - Transacoes
+    post:
+      operationId: TransacoesController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransacaoRequest"
+      responses:
+        "201":
+          description: Transação criada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateTransacaoResponse"
+      summary: Criar nova transação
+      tags:
+        - Transacoes
+  /transacoes/{id}:
+    get:
+      operationId: TransacoesController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da transação
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transação encontrada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTransacaoResponse"
+        "404":
+          description: Categoria não encontrada.
+      summary: Buscar transação por ID
+      tags:
+        - Transacoes
+    patch:
+      operationId: TransacoesController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da transação
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditTransacaoRequest"
+      responses:
+        "200":
+          description: Transação atualizada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EditTransacaoResponse"
+        "404":
+          description: Categoria não encontrada.
+      summary: Atualizar transação por ID
+      tags:
+        - Transacoes
+    delete:
+      operationId: TransacoesController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da transação
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transação removida com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteTransacaoResponse"
+        "404":
+          description: Transação não encontrada.
+      summary: Remover transação por ID
+      tags:
+        - Transacoes
+  /resumo-financeiro:
+    get:
+      operationId: ResumoFinanceiroController_findAll
+      parameters: []
+      responses:
+        "200":
+          description: Lista de pessoas retornada com dasdadasucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetResumoFinanceiroResponse"
+      security:
+        - access-token: []
+      summary: Listar resumo financeiro
+      tags:
+        - Resumo Financeiro
 info:
   title: API de finanças M&J
   description: API de controle financeiro do Júnior e da Vivi
@@ -852,6 +1006,460 @@ components:
           example: Operação realizada com sucesso
         data:
           $ref: "#/components/schemas/MeioPagamento"
+      required:
+        - message
+        - data
+    EnumOption:
+      type: object
+      properties:
+        value:
+          type: string
+          example: receita
+          description: Valor da opção (para envio ao backend)
+        label:
+          type: string
+          example: Receita
+          description: Texto amigável para exibição
+      required:
+        - value
+        - label
+    Enums:
+      type: object
+      properties:
+        tipoCategoria:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnumOption"
+        tipoTransacao:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnumOption"
+        tipoPatrimonio:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnumOption"
+        formaPagamento:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnumOption"
+      required:
+        - tipoCategoria
+        - tipoTransacao
+        - tipoPatrimonio
+        - formaPagamento
+    EnumsResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/Enums"
+      required:
+        - message
+        - data
+    TransacaoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid-gerado
+        descricao:
+          type: string
+          example: Salário de Julho
+        categoriaId:
+          type: string
+          format: uuid
+        pessoaId:
+          type: string
+          format: uuid
+        valor:
+          type: number
+          example: 3500.5
+        data:
+          type: string
+          example: "2025-07-21T12:00:00Z"
+        observacoes:
+          type: string
+          example: Pagamento referente ao mês de julho
+        meioPagamentoId:
+          type: string
+          format: uuid
+        formaPagamento:
+          type: string
+          enum:
+            - avista
+            - parcela1x
+            - parcela2x
+            - parcela3x
+            - parcela4x
+            - parcela5x
+            - parcela6x
+            - parcela7x
+            - parcela8x
+            - parcela9x
+            - parcela10x
+            - parcela11x
+            - parcela12x
+          example: parcela3x
+        createdAt:
+          format: date-time
+          type: string
+          example: "2025-07-17T10:20:30.000Z"
+        categoria:
+          $ref: "#/components/schemas/Categoria"
+        pessoa:
+          $ref: "#/components/schemas/Pessoa"
+        meioPagamento:
+          $ref: "#/components/schemas/MeioPagamento"
+      required:
+        - id
+        - descricao
+        - categoriaId
+        - pessoaId
+        - valor
+        - data
+        - createdAt
+        - categoria
+        - pessoa
+        - meioPagamento
+    TransacaoPaginatedData:
+      type: object
+      properties:
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransacaoResponse"
+      required:
+        - meta
+        - rows
+    GetTransacoesResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/TransacaoPaginatedData"
+      required:
+        - message
+        - data
+    Transacao:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid-gerado
+        descricao:
+          type: string
+          example: Salário de Julho
+        categoriaId:
+          type: string
+          format: uuid
+        pessoaId:
+          type: string
+          format: uuid
+        valor:
+          type: number
+          example: 3500.5
+        data:
+          type: string
+          example: "2025-07-21T12:00:00Z"
+        observacoes:
+          type: string
+          example: Pagamento referente ao mês de julho
+        meioPagamentoId:
+          type: string
+          format: uuid
+        formaPagamento:
+          type: string
+          enum:
+            - avista
+            - parcela1x
+            - parcela2x
+            - parcela3x
+            - parcela4x
+            - parcela5x
+            - parcela6x
+            - parcela7x
+            - parcela8x
+            - parcela9x
+            - parcela10x
+            - parcela11x
+            - parcela12x
+          example: parcela3x
+        createdAt:
+          format: date-time
+          type: string
+          example: "2025-07-17T10:20:30.000Z"
+      required:
+        - id
+        - descricao
+        - categoriaId
+        - pessoaId
+        - valor
+        - data
+        - createdAt
+    GetTransacaoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/Transacao"
+      required:
+        - message
+        - data
+    CreateTransacaoRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid-gerado
+        descricao:
+          type: string
+          example: Salário de Julho
+        categoriaId:
+          type: string
+          format: uuid
+        pessoaId:
+          type: string
+          format: uuid
+        valor:
+          type: number
+          example: 3500.5
+        data:
+          type: string
+          example: "2025-07-21T12:00:00Z"
+        formaPagamento:
+          type: string
+          enum:
+            - avista
+            - parcela1x
+            - parcela2x
+            - parcela3x
+            - parcela4x
+            - parcela5x
+            - parcela6x
+            - parcela7x
+            - parcela8x
+            - parcela9x
+            - parcela10x
+            - parcela11x
+            - parcela12x
+          example: parcela3x
+        observacoes:
+          type: string
+          example: Pagamento referente ao mês de julho
+        meioPagamentoId:
+          type: string
+          format: uuid
+      required:
+        - id
+        - descricao
+        - categoriaId
+        - pessoaId
+        - valor
+        - data
+    CreateTransacaoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/Transacao"
+      required:
+        - message
+        - data
+    EditTransacaoRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid-gerado
+        descricao:
+          type: string
+          example: Salário de Julho
+        categoriaId:
+          type: string
+          format: uuid
+        pessoaId:
+          type: string
+          format: uuid
+        valor:
+          type: number
+          example: 3500.5
+        data:
+          type: string
+          example: "2025-07-21T12:00:00Z"
+        formaPagamento:
+          type: string
+          enum:
+            - avista
+            - parcela1x
+            - parcela2x
+            - parcela3x
+            - parcela4x
+            - parcela5x
+            - parcela6x
+            - parcela7x
+            - parcela8x
+            - parcela9x
+            - parcela10x
+            - parcela11x
+            - parcela12x
+          example: parcela3x
+        observacoes:
+          type: string
+          example: Pagamento referente ao mês de julho
+        meioPagamentoId:
+          type: string
+          format: uuid
+    EditTransacaoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/Transacao"
+      required:
+        - message
+        - data
+    DeleteTransacaoResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/Transacao"
+      required:
+        - message
+        - data
+    ReceitaPorMes:
+      type: object
+      properties:
+        mes:
+          type: string
+          example: 2025-01
+        valor:
+          type: number
+          example: 3500
+      required:
+        - mes
+        - valor
+    DespesaPorMes:
+      type: object
+      properties:
+        mes:
+          type: string
+          example: 2025-01
+        valor:
+          type: number
+          example: 2500
+      required:
+        - mes
+        - valor
+    DespesaPorCategoria:
+      type: object
+      properties:
+        categoria:
+          type: string
+          example: Alimentação
+        valor:
+          type: number
+          example: 2300
+      required:
+        - categoria
+        - valor
+    DespesaPorCategoriaPorMesCategoria:
+      type: object
+      properties:
+        categoria:
+          type: string
+          example: Alimentação
+        valor:
+          type: number
+          example: 800
+      required:
+        - categoria
+        - valor
+    DespesaPorCategoriaPorMes:
+      type: object
+      properties:
+        mes:
+          type: string
+          example: 2025-01
+        categorias:
+          type: array
+          items:
+            $ref: "#/components/schemas/DespesaPorCategoriaPorMesCategoria"
+      required:
+        - mes
+        - categorias
+    GetResumoFinanceiro:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+          description: ID do resumo financeiro
+        totalReceitas:
+          type: number
+          example: 12450.75
+        totalDespesas:
+          type: number
+          example: 8930.1
+        saldo:
+          type: number
+          example: 3520.65
+        patrimonio:
+          type: number
+          example: 54000
+        receitasPorMes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReceitaPorMes"
+        despesasPorMes:
+          type: array
+          items:
+            $ref: "#/components/schemas/DespesaPorMes"
+        despesasPorCategoria:
+          type: array
+          items:
+            $ref: "#/components/schemas/DespesaPorCategoria"
+        despesasPorCategoriaPorMes:
+          type: array
+          items:
+            $ref: "#/components/schemas/DespesaPorCategoriaPorMes"
+        atualizadoEm:
+          type: string
+          example: "2025-07-21T16:35:00.000Z"
+          description: Data da última atualização
+      required:
+        - id
+        - totalReceitas
+        - totalDespesas
+        - saldo
+        - patrimonio
+        - receitasPorMes
+        - despesasPorMes
+        - despesasPorCategoria
+        - despesasPorCategoriaPorMes
+        - atualizadoEm
+    GetResumoFinanceiroResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: "#/components/schemas/GetResumoFinanceiro"
       required:
         - message
         - data
