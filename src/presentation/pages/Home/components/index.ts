@@ -1,0 +1,1 @@
+export { ResumoFinanceiroChart } from "./ResumoFinanceiroChart";

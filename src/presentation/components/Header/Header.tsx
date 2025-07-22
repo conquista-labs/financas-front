@@ -93,12 +93,7 @@ const Header: React.FC<HeaderProps> = ({ handleMenu }) => {
             borderWidth="$none"
             backgroundColor="$transparent"
           >
-            <Avatar
-              badge={{
-                appearance: "danger",
-                children: "2",
-              }}
-            >
+            <Avatar>
               <Icon source={<UserFilledIcon />} />
             </Avatar>
           </Box>
