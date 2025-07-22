@@ -112,7 +112,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 id="data"
                 label="Data"
                 name="data"
-                dateFormat="DD/MM/YYYY"
+                // dateFormat="DD/MM/YYYY"
                 control={control}
               />
               <Input
