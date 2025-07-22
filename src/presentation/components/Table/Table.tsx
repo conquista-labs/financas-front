@@ -61,6 +61,7 @@ function Table<T>({
                     textAlign="left"
                     fontFamily="$body"
                     padding="$3xs"
+                    paddingBottom="$2xs"
                     verticalAlign="middle"
                     fontSize="$body-s"
                     {...column.options?.boxProps}

@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { DateParam, useQueryParam } from "use-query-params";
-import { Box, Button, Datepicker, IconButton } from "@rarui-react/components";
-import { ArrowLeftIcon, ArrowRightIcon } from "@rarui/icons";
-import { addMonths, format, subMonths } from "date-fns";
+import {
+  DateParam,
+  StringParam,
+  useQueryParam,
+  useQueryParams,
+  withDefault,
+} from "use-query-params";
+import {
+  Box,
+  Button,
+  Datepicker,
+  Icon,
+  IconButton,
+} from "@rarui-react/components";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  FilterAltOutlinedIcon,
+} from "@rarui/icons";
+import { addMonths, format, startOfMonth, subMonths } from "date-fns";
 
 import { urlRouters } from "@/presentation/router/router.definitions";
 import {
@@ -13,17 +29,30 @@ import {
 import { Breadcrumb, Table } from "@/presentation/components";
 import { usePagination } from "@/presentation/hooks/core";
 import { getColumns } from "./transactions.definitions";
+import { Filters } from "./components";
 
 const Transactions: React.FC = () => {
-  const [date, setDate] = useQueryParam("date", DateParam);
+  const [openFilters, setOpenFilters] = useState(false);
+  const [date, setDate] = useQueryParam(
+    "date",
+    withDefault(DateParam, new Date()),
+  );
 
-  const todayDate = format(new Date(), "yyyy-MM-dd") as unknown as Date;
+  const [params] = useQueryParams({
+    categoriaId: withDefault(StringParam, ""),
+    pessoaId: withDefault(StringParam, ""),
+    meioPagamentoId: withDefault(StringParam, ""),
+    formaPagamento: withDefault(StringParam, ""),
+  });
+
+  const handleOpenFilters = () => setOpenFilters(!openFilters);
 
   const { page, pageSize, onChangePage } = usePagination();
   const { data, isLoading } = useGetTransacoes({
     page,
-    date: date ?? todayDate,
     limit: pageSize,
+    date: format(startOfMonth(date), "yyyy-MM-dd"),
+    ...params,
   });
 
   const location = useLocation();
@@ -45,7 +74,7 @@ const Transactions: React.FC = () => {
           <Box display="flex" gap="$2xs">
             <IconButton
               source={<ArrowLeftIcon size="medium" />}
-              onClick={() => setDate(subMonths(date ?? todayDate, 1))}
+              onClick={() => setDate(subMonths(date, 1))}
             />
             <Datepicker
               id="month"
@@ -54,21 +83,27 @@ const Transactions: React.FC = () => {
                 setDate(newDate as Date);
                 onChangePage({ page: 1, pageSize: 10 });
               }}
-              selected={date ?? todayDate}
+              selected={date}
               showMonthYearPicker
             />
             <IconButton
               source={<ArrowRightIcon size="medium" />}
-              onClick={() => setDate(addMonths(date ?? todayDate, 1))}
+              onClick={() => setDate(addMonths(date, 1))}
             />
           </Box>
         </Box>
-        <Button
-          as={Link}
-          to={`${urlRouters.createTransactions}${currentSearch}`}
-        >
-          Nova Transação
-        </Button>
+        <Box display="flex" gap="$2xs">
+          <Button variant="outlined" onClick={handleOpenFilters}>
+            Filtros
+            <Icon source={<FilterAltOutlinedIcon />} />
+          </Button>
+          <Button
+            as={Link}
+            to={`${urlRouters.createTransactions}${currentSearch}`}
+          >
+            Nova Transação
+          </Button>
+        </Box>
       </Box>
       <Table
         columns={getColumns(handleNavigate, mutate)}
@@ -76,6 +111,7 @@ const Transactions: React.FC = () => {
         total={data?.data.meta.total ?? 0}
         isLoading={isLoading || isPending}
       />
+      <Filters open={openFilters} onRemove={handleOpenFilters} />
     </Box>
   );
 };

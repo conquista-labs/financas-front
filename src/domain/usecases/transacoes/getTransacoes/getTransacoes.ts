@@ -9,5 +9,5 @@ export type GetTransacoesModel = GetTransacoesResponse;
 export type GetTransacoesParams = {
   page?: number;
   limit?: number;
-  date?: Date;
+  date?: string;
 };
