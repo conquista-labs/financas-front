@@ -24,7 +24,7 @@ function Table<T>({
     if (formatter) return formatter(value, row);
 
     return (
-      <Text color="$primary" fontSize="$s">
+      <Text color="$primary" fontSize="$xs">
         {String(value)}
       </Text>
     );
@@ -60,8 +60,9 @@ function Table<T>({
                     fontWeight="$bold"
                     textAlign="left"
                     fontFamily="$body"
-                    padding="$2xs"
+                    padding="$3xs"
                     verticalAlign="middle"
+                    fontSize="$body-xs"
                     {...column.options?.boxProps}
                   >
                     {column.label}
@@ -82,7 +83,7 @@ function Table<T>({
                     <Box
                       as="td"
                       key={`cell-${rowIndex}-${colIndex}`}
-                      padding="$xs"
+                      padding="$3xs"
                       verticalAlign="middle"
                     >
                       {renderCell(column, row)}

@@ -1,4 +1,5 @@
 .categorie-badge {
+  font-size: var(--rarui-fontSize-body-xs);
   font-family: var(--rarui-fontFamily-body);
   padding: var(--rarui-spacing-3xs);
   border-radius: var(--rarui-shape-border-radius-2xs);

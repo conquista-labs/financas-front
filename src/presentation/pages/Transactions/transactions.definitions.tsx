@@ -43,7 +43,7 @@ export const getColumns = (
           position="right"
           content={<Text color="$primary">{row.observacoes}</Text>}
         >
-          <Text color="$primary" fontSize="$s">
+          <Text color="$primary" fontSize="$xs">
             {field}
           </Text>
         </Tooltip>
