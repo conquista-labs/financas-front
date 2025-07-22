@@ -51,14 +51,14 @@ export const getColumns = (
     })
     .setColum("Pessoa", "pessoa", {
       formatter: (field: Pessoa) => (
-        <Text color="$primary" fontSize="$s">
+        <Text color="$primary" fontSize="$xs">
           {field.nome}
         </Text>
       ),
     })
     .setColum("Meio de Pagamento", "meioPagamento", {
       formatter: (field: MeioPagamento) => (
-        <Text color="$primary" fontSize="$s">
+        <Text color="$primary" fontSize="$xs">
           {field.nome}
         </Text>
       ),
