@@ -75,10 +75,10 @@ const Home: React.FC = () => {
           flexDirection="column"
           gap="$2xs"
         >
-          <Title as="h6" color="$secondary">
+          {/* <Title as="h6" color="$secondary">
             Despesas e receitas mensal
           </Title>
-          <Divider />
+          <Divider /> */}
           <ResumoFinanceiroChart
             receitas={data?.data.receitasPorMes ?? []}
             despesas={data?.data.despesasPorMes ?? []}
