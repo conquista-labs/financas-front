@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Card, Divider, Title, Text } from "@rarui-react/components";
+import { Box, Divider, Title, Text } from "@rarui-react/components";
 import { useGetResumoFinanceiro } from "@/presentation/hooks/api";
 
 import { useAuthStore } from "@/presentation/store";
@@ -71,7 +71,14 @@ const Home: React.FC = () => {
           borderStyle="solid"
           borderColor="$subdued"
           padding="$xs"
+          display="flex"
+          flexDirection="column"
+          gap="$2xs"
         >
+          <Title as="h6" color="$secondary">
+            Despesas e receitas mensal
+          </Title>
+          <Divider />
           <ResumoFinanceiroChart
             receitas={data?.data.receitasPorMes ?? []}
             despesas={data?.data.despesasPorMes ?? []}
@@ -90,7 +97,9 @@ const Home: React.FC = () => {
           flexDirection="column"
           gap="$2xs"
         >
-          <Title as="h6">Despesa anual por catégoria</Title>
+          <Title as="h6" color="$secondary">
+            Despesa anual por catégoria
+          </Title>
           <Divider />
           <DespesasPorCategoria
             despesas={data?.data.despesasPorCategoria ?? []}
