@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { DateParam, useQueryParam, withDefault } from "use-query-params";
 import { Box, Button, Datepicker } from "@rarui-react/components";
 
 import { urlRouters } from "@/presentation/router/router.definitions";
@@ -12,8 +13,11 @@ import { usePagination } from "@/presentation/hooks/core";
 import { getColumns } from "./transactions.definitions";
 
 const Transactions: React.FC = () => {
-  const [date, setDate] = useState<Date>(new Date("06/01/2025"));
-  console.log(date);
+  const [date, setDate] = useQueryParam(
+    "date",
+    withDefault(DateParam, new Date()),
+  );
+
   const { page, pageSize } = usePagination();
   const { data, isLoading } = useGetTransacoes({ page, date, limit: pageSize });
 
