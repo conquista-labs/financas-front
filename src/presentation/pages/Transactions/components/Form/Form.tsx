@@ -84,6 +84,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 placeholder="Selecione a categoria"
                 options={categories}
                 control={control}
+                maxHeight="300px"
               />
               <Select
                 label="Pessoa"
@@ -92,6 +93,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 placeholder="Selecione a pessoa"
                 options={peoples}
                 control={control}
+                maxHeight="300px"
               />
             </Box>
             <Box
@@ -107,6 +109,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 placeholder="Selecione o meio de pagamento"
                 options={meansOfPayment}
                 control={control}
+                maxHeight="300px"
               />
               <Select
                 label="Forma de pagamento"
@@ -115,6 +118,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 placeholder="Selecione a forma de pagamento"
                 options={EnumsData?.data?.formaPagamento ?? []}
                 control={control}
+                maxHeight="300px"
               />
             </Box>
             <Box
@@ -154,7 +158,6 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
             />
           </Box>
         </Card>
-
         <Box
           display="flex"
           flexDirection={{ xs: "column", md: "row" }}

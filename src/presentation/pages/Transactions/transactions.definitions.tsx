@@ -39,14 +39,26 @@ export const getColumns = (
     .setColum("Data", "data")
     .setColum("Descrição", "descricao", {
       formatter: (field, row) => (
-        <Tooltip
-          position="right"
-          content={<Text color="$primary">{row.observacoes}</Text>}
-        >
-          <Text color="$primary" fontSize="$xs">
-            {field}
-          </Text>
-        </Tooltip>
+        <>
+          {row.observacoes ? (
+            <Tooltip
+              position="right"
+              content={
+                <Text color="$primary" fontSize="$xs">
+                  {row.observacoes}
+                </Text>
+              }
+            >
+              <Text color="$primary" fontSize="$xs">
+                {field}
+              </Text>
+            </Tooltip>
+          ) : (
+            <Text color="$primary" fontSize="$xs">
+              {field}
+            </Text>
+          )}
+        </>
       ),
     })
     .setColum("Pessoa", "pessoa", {
