@@ -1,4 +1,3 @@
-import type { NavigateFunction } from "react-router-dom";
 import { IconButton, Text, Box, Tooltip } from "@rarui-react/components";
 import { EditFilledIcon, TrashFilledIcon } from "@rarui/icons";
 import type { UseMutateFunction } from "@tanstack/react-query";
@@ -14,7 +13,7 @@ import { Categoria, MeioPagamento, Pessoa } from "@/domain/models";
 import "./transactions.css";
 
 export const getColumns = (
-  navigate: NavigateFunction,
+  navigate: (path: string) => void,
   mutate: UseMutateFunction<
     DeleteTransacoesIdModel,
     AxiosError<unknown, any>,

@@ -4,7 +4,7 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@rarui-react/components/dist/Toast";
 
 import { urlRouters } from "@/presentation/router/router.definitions";
@@ -24,6 +24,9 @@ export const usePostTransacoes = (
 > => {
   const navigate = useNavigate();
   const { addToast } = useToast();
+
+  const location = useLocation();
+  const currentSearch = location.search;
   const postTransacoes = makePostTransacoesFactory();
   const queryClient = useQueryClient();
 
@@ -31,7 +34,7 @@ export const usePostTransacoes = (
     mutationKey: ["post-transacoes"],
     mutationFn: (body: PostTransacoesRequest) => postTransacoes.post(body),
     onSuccess: () => {
-      navigate(urlRouters.transactions);
+      navigate(`${urlRouters.transactions}${currentSearch}`);
       queryClient.invalidateQueries({ queryKey: ["get-transacoes"] });
     },
     onError: (error) => {

@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { Box, Button, Card } from "@rarui-react/components";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { urlRouters } from "@/presentation/router/router.definitions";
 import { useIsMobile } from "@/presentation/hooks/core";
@@ -25,6 +25,8 @@ import { useMemo } from "react";
 
 const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentSearch = location.search;
   const { isMobile } = useIsMobile();
   const { data: EnumsData } = useGetEnums();
   const { data: categoriesData } = useGetCategorias({ page: 1, limit: 50 });
@@ -168,7 +170,9 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
             type="button"
             appearance="danger"
             variant="outlined"
-            onClick={() => navigate(urlRouters.transactions)}
+            onClick={() =>
+              navigate(`${urlRouters.transactions}${currentSearch}`)
+            }
             full={isMobile}
           >
             Cancelar

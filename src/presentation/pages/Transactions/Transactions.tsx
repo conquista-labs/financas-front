@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DateParam, useQueryParam, withDefault } from "use-query-params";
 import { Box, Button, Datepicker } from "@rarui-react/components";
 
@@ -18,30 +18,44 @@ const Transactions: React.FC = () => {
     withDefault(DateParam, new Date()),
   );
 
-  const { page, pageSize } = usePagination();
+  const { page, pageSize, onChangePage } = usePagination();
   const { data, isLoading } = useGetTransacoes({ page, date, limit: pageSize });
 
+  const location = useLocation();
+  const currentSearch = location.search;
+
   const navigate = useNavigate();
+
+  const handleNavigate = (path: string) => {
+    navigate(`${path}${currentSearch}`);
+  };
+
   const { mutate, isPending } = useDeleteTransacoesId();
 
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$s">
       <Breadcrumb crumbs={["transactions"]} />
       <Box display="flex" justifyContent="right">
-        <Button as={Link} to={urlRouters.createTransactions}>
+        <Button
+          as={Link}
+          to={`${urlRouters.createTransactions}${currentSearch}`}
+        >
           Nova Transação
         </Button>
       </Box>
       <Box>
         <Datepicker
           dateFormat="MM/yyyy"
-          onChange={(newDate) => setDate(newDate as Date)}
+          onChange={(newDate) => {
+            setDate(newDate as Date);
+            onChangePage({ page: 1, pageSize: 10 });
+          }}
           selected={date}
           showMonthYearPicker
         />
       </Box>
       <Table
-        columns={getColumns(navigate, mutate)}
+        columns={getColumns(handleNavigate, mutate)}
         rows={data?.data.rows ?? []}
         total={data?.data.meta.total ?? 0}
         isLoading={isLoading || isPending}
