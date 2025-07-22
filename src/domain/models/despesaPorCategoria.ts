@@ -13,4 +13,5 @@
 export interface DespesaPorCategoria {
   categoria: string;
   valor: number;
+  cor: string;
 }

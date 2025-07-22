@@ -39,7 +39,7 @@ const Input: React.FC<InputProps> = ({
         />
       )}
       {error?.message && (
-        <Text fontSize="$xs" color="$error">
+        <Text fontSize="$s" color="$error">
           {error?.message}
         </Text>
       )}

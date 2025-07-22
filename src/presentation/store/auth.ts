@@ -1,9 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-interface Auth {
-  access_token: string;
-}
+import { Auth } from "@/domain/models";
 
 const initialState = {
   auth: {} as Auth,

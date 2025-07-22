@@ -44,7 +44,11 @@ export const getColumns = (
         const isExpense = field === "despesa";
         return (
           <Box display="flex" justifyContent="center">
-            <Status dot={false} appearance={isExpense ? "danger" : "success"}>
+            <Status
+              size="small"
+              dot={false}
+              appearance={isExpense ? "danger" : "success"}
+            >
               {isExpense ? "Despesa" : "Receita"}
             </Status>
           </Box>

@@ -43,17 +43,17 @@ export const getColumns = (
             <Tooltip
               position="right"
               content={
-                <Text color="$primary" fontSize="$xs">
+                <Text color="$primary" fontSize="$s">
                   {row.observacoes}
                 </Text>
               }
             >
-              <Text color="$primary" fontSize="$xs">
+              <Text color="$primary" fontSize="$s">
                 {field}
               </Text>
             </Tooltip>
           ) : (
-            <Text color="$primary" fontSize="$xs">
+            <Text color="$primary" fontSize="$s">
               {field}
             </Text>
           )}
@@ -62,14 +62,14 @@ export const getColumns = (
     })
     .setColum("Pessoa", "pessoa", {
       formatter: (field: Pessoa) => (
-        <Text color="$primary" fontSize="$xs">
+        <Text color="$primary" fontSize="$s">
           {field.nome}
         </Text>
       ),
     })
     .setColum("Meio de Pagamento", "meioPagamento", {
       formatter: (field: MeioPagamento) => (
-        <Text color="$primary" fontSize="$xs">
+        <Text color="$primary" fontSize="$s">
           {field.nome}
         </Text>
       ),

@@ -3,3 +3,11 @@ export const formatMonth = (mes: string) => {
   const [year, month] = mes.split("-");
   return `${month}/${year.slice(2)}`;
 };
+
+export const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
+};

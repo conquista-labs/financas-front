@@ -29,7 +29,7 @@ const Textarea: React.FC<DatepickerProps> = ({
       <Label htmlFor={id}>{label}</Label>
       <RaruiTextarea {...field} {...props} />
       {error?.message && (
-        <Text fontSize="$xs" color="$error">
+        <Text fontSize="$s" color="$error">
           {error?.message}
         </Text>
       )}

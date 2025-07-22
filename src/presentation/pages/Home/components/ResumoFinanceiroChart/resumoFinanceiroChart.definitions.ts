@@ -13,18 +13,17 @@ export const options: ChartOptions<"bar"> = {
       position: "top",
       labels: {
         font: {
-          family: "Comfortaa",
-          weight: "bold",
+          family: "Outfit",
         },
         color: "rgba(97, 103, 107, 1)",
       },
     },
     tooltip: {
       titleFont: {
-        family: "Comfortaa",
+        family: "Outfit",
       },
       bodyFont: {
-        family: "Comfortaa",
+        family: "Outfit",
       },
       callbacks: {
         label: (context) => {
@@ -42,8 +41,7 @@ export const options: ChartOptions<"bar"> = {
     x: {
       ticks: {
         font: {
-          family: "Comfortaa",
-          weight: "bold",
+          family: "Outfit",
         },
         maxRotation: 0,
         minRotation: 0,
@@ -52,8 +50,7 @@ export const options: ChartOptions<"bar"> = {
     y: {
       ticks: {
         font: {
-          family: "Comfortaa",
-          weight: "bold",
+          family: "Outfit",
         },
         callback: function (tickValue: string | number) {
           const value =

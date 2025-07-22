@@ -1,1465 +1,2178 @@
-openapi: 3.0.0
-paths:
-  /pessoas:
-    get:
-      operationId: PessoasController_findAll
-      parameters:
-        - name: page
-          required: false
-          in: query
-          description: Número da página
-          schema:
-            default: 1
-            type: number
-        - name: limit
-          required: false
-          in: query
-          description: Limite de itens por página
-          schema:
-            default: 10
-            type: number
-      responses:
-        "200":
-          description: Lista de pessoas retornada com dasdadasucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetPessoasResponse"
-      security:
-        - access-token: []
-      summary: Listar todas as pessoas
-      tags:
-        - Pessoas
-    post:
-      operationId: PessoasController_create
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreatePessoaRequest"
-      responses:
-        "201":
-          description: Pessoa criada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CreatePessoaResponse"
-      security:
-        - access-token: []
-      summary: Criar nova pessoa
-      tags:
-        - Pessoas
-  /pessoas/{id}:
-    get:
-      operationId: PessoasController_findOne
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da pessoa
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Pessoa encontrada.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetPessoaResponse"
-        "404":
-          description: Pessoa não encontrada.
-      security:
-        - access-token: []
-      summary: Buscar pessoa por ID
-      tags:
-        - Pessoas
-    patch:
-      operationId: PessoasController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da pessoa
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/EditPessoaRequest"
-      responses:
-        "200":
-          description: Pessoa atualizada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EditPessoaResponse"
-        "404":
-          description: Pessoa não encontrada.
-      security:
-        - access-token: []
-      summary: Atualizar pessoa por ID
-      tags:
-        - Pessoas
-    delete:
-      operationId: PessoasController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da pessoa
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Pessoa removida com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeletePessoaResponse"
-        "404":
-          description: Pessoa não encontrada.
-      security:
-        - access-token: []
-      summary: Remover pessoa por ID
-      tags:
-        - Pessoas
-  /auth/register:
-    post:
-      operationId: AuthController_register
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RegisterRequest"
-      responses:
-        "201":
-          description: Usuário registrado com sucesso
-          content:
-            application/json:
-              schema:
-                example:
-                  message: Usuário registrado com sucesso
-        "400":
-          description: Email já cadastrado
-          content:
-            application/json:
-              schema:
-                example:
-                  statusCode: 401
-                  message: Email já cadastrado
-                  error: Unauthorized
-      summary: Registrar novo usuário
-      tags:
-        - Auth
-  /auth/login:
-    post:
-      operationId: AuthController_login
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
-      responses:
-        "200":
-          description: Retorna token de acesso JWT
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginResponse"
-        "401":
-          description: Credenciais inválidas
-          content:
-            application/json:
-              schema:
-                example:
-                  statusCode: 401
-                  message: Credenciais inválidas
-                  error: Unauthorized
-      summary: Login com email e senha
-      tags:
-        - Auth
-  /categorias:
-    get:
-      operationId: CategoriasController_findAll
-      parameters:
-        - name: page
-          required: false
-          in: query
-          description: Número da página
-          schema:
-            default: 1
-            type: number
-        - name: limit
-          required: false
-          in: query
-          description: Limite de itens por página
-          schema:
-            default: 10
-            type: number
-      responses:
-        "200":
-          description: Lista de categorias retornada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetCategoriasResponse"
-      summary: Listar todas as categorias
-      tags:
-        - Categorias
-    post:
-      operationId: CategoriasController_create
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateCategoriaRequest"
-      responses:
-        "201":
-          description: Categoria criada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CreateCategoriaResponse"
-      summary: Criar nova categoria
-      tags:
-        - Categorias
-  /categorias/{id}:
-    get:
-      operationId: CategoriasController_findOne
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da categoria
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Categoria encontrada.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetCategoriaResponse"
-        "404":
-          description: Categoria não encontrada.
-      summary: Buscar categoria por ID
-      tags:
-        - Categorias
-    patch:
-      operationId: CategoriasController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da categoria
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/EditCategoriaRequest"
-      responses:
-        "200":
-          description: Categoria atualizada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EditCategoriaResponse"
-        "404":
-          description: Categoria não encontrada.
-      summary: Atualizar categoria por ID
-      tags:
-        - Categorias
-    delete:
-      operationId: CategoriasController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da categoria
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Categoria removida com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeleteCategoriaResponse"
-        "404":
-          description: Categoria não encontrada.
-      summary: Remover categoria por ID
-      tags:
-        - Categorias
-  /meios-pagamento:
-    get:
-      operationId: MeiosPagamentoController_findAll
-      parameters:
-        - name: page
-          required: false
-          in: query
-          description: Número da página
-          schema:
-            default: 1
-            type: number
-        - name: limit
-          required: false
-          in: query
-          description: Limite de itens por página
-          schema:
-            default: 10
-            type: number
-      responses:
-        "200":
-          description: Lista de meios de pagamento retornada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetMeiosPagamentosResponse"
-      summary: Listar todas os meios de pagamento
-      tags:
-        - MeiosPagamento
-    post:
-      operationId: MeiosPagamentoController_create
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateMeioPagamentoRequest"
-      responses:
-        "201":
-          description: Meio de pagemento criado com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CreateMeioPagamentoResponse"
-      summary: Criar novo meio de pagemento
-      tags:
-        - MeiosPagamento
-  /meios-pagamento/{id}:
-    get:
-      operationId: MeiosPagamentoController_findOne
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID do meio de pagemento
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Meio de pagemento encontrado.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetMeioPagamentoResponse"
-        "404":
-          description: Meio de pagemento não encontrado.
-      summary: Buscar meio de pagamento por ID
-      tags:
-        - MeiosPagamento
-    patch:
-      operationId: MeiosPagamentoController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID do meio de pagemento
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/EditMeioPagamentoRequest"
-      responses:
-        "200":
-          description: Meio de pagemento atualizado com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EditMeioPagamentoResponse"
-        "404":
-          description: Meio de pagemento não encontrada.
-      summary: Atualizar meio de pagemento por ID
-      tags:
-        - MeiosPagamento
-    delete:
-      operationId: MeiosPagamentoController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID do meio de pagemento
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Meio de pagemento removido com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeleteMeioPagamentoResponse"
-        "404":
-          description: Meio de pagemento não encontrada.
-      summary: Remover meio de pagemento por ID
-      tags:
-        - MeiosPagamento
-  /enums:
-    get:
-      operationId: EnumsController_getEnums
-      parameters: []
-      responses:
-        "200":
-          description: Enums retornados com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EnumsResponse"
-      summary: Lista todos os enums utilizados nos selects do sistema
-      tags:
-        - Enums
-  /transacoes:
-    get:
-      operationId: TransacoesController_findAll
-      parameters:
-        - name: page
-          required: false
-          in: query
-          description: Número da página
-          schema:
-            default: 1
-            type: number
-        - name: limit
-          required: false
-          in: query
-          description: Limite de itens por página
-          schema:
-            default: 10
-            type: number
-        - name: date
-          required: false
-          in: query
-          description: Data usada para filtrar o mês das transações
-          schema:
-            example: "2025-07-21T15:03:42.000Z"
-            type: string
-      responses:
-        "200":
-          description: Lista de transações retornada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetTransacoesResponse"
-      summary: Listar todas as transações
-      tags:
-        - Transacoes
-    post:
-      operationId: TransacoesController_create
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateTransacaoRequest"
-      responses:
-        "201":
-          description: Transação criada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CreateTransacaoResponse"
-      summary: Criar nova transação
-      tags:
-        - Transacoes
-  /transacoes/{id}:
-    get:
-      operationId: TransacoesController_findOne
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da transação
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Transação encontrada.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetTransacaoResponse"
-        "404":
-          description: Categoria não encontrada.
-      summary: Buscar transação por ID
-      tags:
-        - Transacoes
-    patch:
-      operationId: TransacoesController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da transação
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/EditTransacaoRequest"
-      responses:
-        "200":
-          description: Transação atualizada com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EditTransacaoResponse"
-        "404":
-          description: Categoria não encontrada.
-      summary: Atualizar transação por ID
-      tags:
-        - Transacoes
-    delete:
-      operationId: TransacoesController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID da transação
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Transação removida com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeleteTransacaoResponse"
-        "404":
-          description: Transação não encontrada.
-      summary: Remover transação por ID
-      tags:
-        - Transacoes
-  /resumo-financeiro:
-    get:
-      operationId: ResumoFinanceiroController_findAll
-      parameters: []
-      responses:
-        "200":
-          description: Lista de pessoas retornada com dasdadasucesso.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetResumoFinanceiroResponse"
-      security:
-        - access-token: []
-      summary: Listar resumo financeiro
-      tags:
-        - Resumo Financeiro
-info:
-  title: API de finanças M&J
-  description: API de controle financeiro do Júnior e da Vivi
-  version: "1.0"
-  contact: {}
-tags: []
-servers: []
-components:
-  securitySchemes:
-    access-token:
-      scheme: bearer
-      bearerFormat: JWT
-      type: http
-      in: header
-  schemas:
-    PaginationMeta:
-      type: object
-      properties:
-        page:
-          type: number
-          example: 1
-          description: Página atual
-        perPage:
-          type: number
-          example: 10
-          description: Limite de itens por página
-        total:
-          type: number
-          example: 100
-          description: Total de itens encontrados
-        lastPage:
-          type: number
-          example: 10
-      required:
-        - page
-        - perPage
-        - total
-        - lastPage
-    Pessoa:
-      type: object
-      properties:
-        id:
-          type: string
-          example: uuid-gerado
-        nome:
-          type: string
-          example: Vivi
-        email:
-          type: string
-          example: vivi@email.com
-        createdAt:
-          format: date-time
-          type: string
-          example: "2025-07-14T12:34:56Z"
-      required:
-        - id
-        - nome
-        - email
-        - createdAt
-    PessoaPaginatedData:
-      type: object
-      properties:
-        meta:
-          $ref: "#/components/schemas/PaginationMeta"
-        rows:
-          type: array
-          items:
-            $ref: "#/components/schemas/Pessoa"
-      required:
-        - meta
-        - rows
-    GetPessoasResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/PessoaPaginatedData"
-      required:
-        - message
-        - data
-    GetPessoaResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Pessoa"
-      required:
-        - message
-        - data
-    CreatePessoaRequest:
-      type: object
-      properties:
-        nome:
-          type: string
-          description: Nome da pessoa
-        ativo:
-          type: boolean
-          description: Status da pessoa
-        email:
-          type: string
-          description: Email da pessoa
-      required:
-        - nome
-    CreatePessoaResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Pessoa"
-      required:
-        - message
-        - data
-    EditPessoaRequest:
-      type: object
-      properties:
-        nome:
-          type: string
-          description: Nome da pessoa
-        ativo:
-          type: boolean
-          description: Status da pessoa
-        email:
-          type: string
-          description: Email da pessoa
-    EditPessoaResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Pessoa"
-      required:
-        - message
-        - data
-    DeletePessoaResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Pessoa"
-      required:
-        - message
-        - data
-    RegisterRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          example: vivi@email.com
-        password:
-          type: string
-          example: "123456"
-        nome:
-          type: string
-          example: Vivi
-      required:
-        - email
-        - password
-        - nome
-    LoginRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          example: conquista.engcomp@gmail.com
-        password:
-          type: string
-          example: "123456"
-      required:
-        - email
-        - password
-    Auth:
-      type: object
-      properties:
-        access_token:
-          type: string
-          example: jwt.token
-      required:
-        - access_token
-    LoginResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Auth"
-      required:
-        - message
-        - data
-    Categoria:
-      type: object
-      properties:
-        id:
-          type: string
-          example: uuid-gerado
-        nome:
-          type: string
-          example: Alimentação
-        tipo:
-          type: string
-          enum:
-            - despesa
-            - receita
-          example: despesa
-        icone:
-          type: string
-          example: utensils
-        cor:
-          type: string
-          example: "#FF5733"
-        createdAt:
-          format: date-time
-          type: string
-          example: "2025-07-17T10:20:30.000Z"
-      required:
-        - id
-        - nome
-        - tipo
-        - icone
-        - cor
-        - createdAt
-    CategoriaPaginatedData:
-      type: object
-      properties:
-        meta:
-          $ref: "#/components/schemas/PaginationMeta"
-        rows:
-          type: array
-          items:
-            $ref: "#/components/schemas/Categoria"
-      required:
-        - meta
-        - rows
-    GetCategoriasResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/CategoriaPaginatedData"
-      required:
-        - message
-        - data
-    GetCategoriaResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Categoria"
-      required:
-        - message
-        - data
-    CreateCategoriaRequest:
-      type: object
-      properties:
-        nome:
-          type: string
-          description: Nome da categoria
-        tipo:
-          type: string
-          enum:
-            - despesa
-            - receita
-          description: Tipo da categoria (despesa ou receita)
-        icone:
-          type: string
-          description: Ícone da categoria
-        cor:
-          type: string
-          description: Cor da categoria em hexadecimal
-      required:
-        - nome
-        - tipo
-    CreateCategoriaResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Categoria"
-      required:
-        - message
-        - data
-    EditCategoriaRequest:
-      type: object
-      properties:
-        nome:
-          type: string
-          description: Nome da categoria
-        tipo:
-          type: string
-          enum:
-            - despesa
-            - receita
-          description: Tipo da categoria (despesa ou receita)
-        icone:
-          type: string
-          description: Ícone da categoria
-        cor:
-          type: string
-          description: Cor da categoria em hexadecimal
-    EditCategoriaResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Categoria"
-      required:
-        - message
-        - data
-    DeleteCategoriaResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Categoria"
-      required:
-        - message
-        - data
-    MeioPagamento:
-      type: object
-      properties:
-        id:
-          type: string
-          example: uuid-gerado
-        nome:
-          type: string
-          example: Cartão crédito xp
-        createdAt:
-          format: date-time
-          type: string
-          example: "2025-07-17T10:20:30.000Z"
-      required:
-        - id
-        - nome
-        - createdAt
-    MeioPagamentoPaginatedData:
-      type: object
-      properties:
-        meta:
-          $ref: "#/components/schemas/PaginationMeta"
-        rows:
-          type: array
-          items:
-            $ref: "#/components/schemas/MeioPagamento"
-      required:
-        - meta
-        - rows
-    GetMeiosPagamentosResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/MeioPagamentoPaginatedData"
-      required:
-        - message
-        - data
-    GetMeioPagamentoResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/MeioPagamento"
-      required:
-        - message
-        - data
-    CreateMeioPagamentoRequest:
-      type: object
-      properties:
-        nome:
-          type: string
-          description: Nome do meio de pagamento
-      required:
-        - nome
-    CreateMeioPagamentoResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/MeioPagamento"
-      required:
-        - message
-        - data
-    EditMeioPagamentoRequest:
-      type: object
-      properties:
-        nome:
-          type: string
-          description: Nome do meio de pagamento
-    EditMeioPagamentoResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/MeioPagamento"
-      required:
-        - message
-        - data
-    DeleteMeioPagamentoResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/MeioPagamento"
-      required:
-        - message
-        - data
-    EnumOption:
-      type: object
-      properties:
-        value:
-          type: string
-          example: receita
-          description: Valor da opção (para envio ao backend)
-        label:
-          type: string
-          example: Receita
-          description: Texto amigável para exibição
-      required:
-        - value
-        - label
-    Enums:
-      type: object
-      properties:
-        tipoCategoria:
-          type: array
-          items:
-            $ref: "#/components/schemas/EnumOption"
-        tipoTransacao:
-          type: array
-          items:
-            $ref: "#/components/schemas/EnumOption"
-        tipoPatrimonio:
-          type: array
-          items:
-            $ref: "#/components/schemas/EnumOption"
-        formaPagamento:
-          type: array
-          items:
-            $ref: "#/components/schemas/EnumOption"
-      required:
-        - tipoCategoria
-        - tipoTransacao
-        - tipoPatrimonio
-        - formaPagamento
-    EnumsResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Enums"
-      required:
-        - message
-        - data
-    TransacaoResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          example: uuid-gerado
-        descricao:
-          type: string
-          example: Salário de Julho
-        categoriaId:
-          type: string
-          format: uuid
-        pessoaId:
-          type: string
-          format: uuid
-        valor:
-          type: number
-          example: 3500.5
-        data:
-          type: string
-          example: "2025-07-21T12:00:00Z"
-        observacoes:
-          type: string
-          example: Pagamento referente ao mês de julho
-        meioPagamentoId:
-          type: string
-          format: uuid
-        formaPagamento:
-          type: string
-          enum:
-            - avista
-            - parcela1x
-            - parcela2x
-            - parcela3x
-            - parcela4x
-            - parcela5x
-            - parcela6x
-            - parcela7x
-            - parcela8x
-            - parcela9x
-            - parcela10x
-            - parcela11x
-            - parcela12x
-          example: parcela3x
-        createdAt:
-          format: date-time
-          type: string
-          example: "2025-07-17T10:20:30.000Z"
-        categoria:
-          $ref: "#/components/schemas/Categoria"
-        pessoa:
-          $ref: "#/components/schemas/Pessoa"
-        meioPagamento:
-          $ref: "#/components/schemas/MeioPagamento"
-      required:
-        - id
-        - descricao
-        - categoriaId
-        - pessoaId
-        - valor
-        - data
-        - createdAt
-        - categoria
-        - pessoa
-        - meioPagamento
-    TransacaoPaginatedData:
-      type: object
-      properties:
-        meta:
-          $ref: "#/components/schemas/PaginationMeta"
-        rows:
-          type: array
-          items:
-            $ref: "#/components/schemas/TransacaoResponse"
-      required:
-        - meta
-        - rows
-    GetTransacoesResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/TransacaoPaginatedData"
-      required:
-        - message
-        - data
-    Transacao:
-      type: object
-      properties:
-        id:
-          type: string
-          example: uuid-gerado
-        descricao:
-          type: string
-          example: Salário de Julho
-        categoriaId:
-          type: string
-          format: uuid
-        pessoaId:
-          type: string
-          format: uuid
-        valor:
-          type: number
-          example: 3500.5
-        data:
-          type: string
-          example: "2025-07-21T12:00:00Z"
-        observacoes:
-          type: string
-          example: Pagamento referente ao mês de julho
-        meioPagamentoId:
-          type: string
-          format: uuid
-        formaPagamento:
-          type: string
-          enum:
-            - avista
-            - parcela1x
-            - parcela2x
-            - parcela3x
-            - parcela4x
-            - parcela5x
-            - parcela6x
-            - parcela7x
-            - parcela8x
-            - parcela9x
-            - parcela10x
-            - parcela11x
-            - parcela12x
-          example: parcela3x
-        createdAt:
-          format: date-time
-          type: string
-          example: "2025-07-17T10:20:30.000Z"
-      required:
-        - id
-        - descricao
-        - categoriaId
-        - pessoaId
-        - valor
-        - data
-        - createdAt
-    GetTransacaoResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Transacao"
-      required:
-        - message
-        - data
-    CreateTransacaoRequest:
-      type: object
-      properties:
-        id:
-          type: string
-          example: uuid-gerado
-        descricao:
-          type: string
-          example: Salário de Julho
-        categoriaId:
-          type: string
-          format: uuid
-        pessoaId:
-          type: string
-          format: uuid
-        valor:
-          type: number
-          example: 3500.5
-        data:
-          type: string
-          example: "2025-07-21T12:00:00Z"
-        formaPagamento:
-          type: string
-          enum:
-            - avista
-            - parcela1x
-            - parcela2x
-            - parcela3x
-            - parcela4x
-            - parcela5x
-            - parcela6x
-            - parcela7x
-            - parcela8x
-            - parcela9x
-            - parcela10x
-            - parcela11x
-            - parcela12x
-          example: parcela3x
-        observacoes:
-          type: string
-          example: Pagamento referente ao mês de julho
-        meioPagamentoId:
-          type: string
-          format: uuid
-      required:
-        - id
-        - descricao
-        - categoriaId
-        - pessoaId
-        - valor
-        - data
-    CreateTransacaoResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Transacao"
-      required:
-        - message
-        - data
-    EditTransacaoRequest:
-      type: object
-      properties:
-        id:
-          type: string
-          example: uuid-gerado
-        descricao:
-          type: string
-          example: Salário de Julho
-        categoriaId:
-          type: string
-          format: uuid
-        pessoaId:
-          type: string
-          format: uuid
-        valor:
-          type: number
-          example: 3500.5
-        data:
-          type: string
-          example: "2025-07-21T12:00:00Z"
-        formaPagamento:
-          type: string
-          enum:
-            - avista
-            - parcela1x
-            - parcela2x
-            - parcela3x
-            - parcela4x
-            - parcela5x
-            - parcela6x
-            - parcela7x
-            - parcela8x
-            - parcela9x
-            - parcela10x
-            - parcela11x
-            - parcela12x
-          example: parcela3x
-        observacoes:
-          type: string
-          example: Pagamento referente ao mês de julho
-        meioPagamentoId:
-          type: string
-          format: uuid
-    EditTransacaoResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Transacao"
-      required:
-        - message
-        - data
-    DeleteTransacaoResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/Transacao"
-      required:
-        - message
-        - data
-    ReceitaPorMes:
-      type: object
-      properties:
-        mes:
-          type: string
-          example: 2025-01
-        valor:
-          type: number
-          example: 3500
-      required:
-        - mes
-        - valor
-    DespesaPorMes:
-      type: object
-      properties:
-        mes:
-          type: string
-          example: 2025-01
-        valor:
-          type: number
-          example: 2500
-      required:
-        - mes
-        - valor
-    DespesaPorCategoria:
-      type: object
-      properties:
-        categoria:
-          type: string
-          example: Alimentação
-        valor:
-          type: number
-          example: 2300
-      required:
-        - categoria
-        - valor
-    DespesaPorCategoriaPorMesCategoria:
-      type: object
-      properties:
-        categoria:
-          type: string
-          example: Alimentação
-        valor:
-          type: number
-          example: 800
-      required:
-        - categoria
-        - valor
-    DespesaPorCategoriaPorMes:
-      type: object
-      properties:
-        mes:
-          type: string
-          example: 2025-01
-        categorias:
-          type: array
-          items:
-            $ref: "#/components/schemas/DespesaPorCategoriaPorMesCategoria"
-      required:
-        - mes
-        - categorias
-    GetResumoFinanceiro:
-      type: object
-      properties:
-        id:
-          type: number
-          example: 1
-          description: ID do resumo financeiro
-        totalReceitas:
-          type: number
-          example: 12450.75
-        totalDespesas:
-          type: number
-          example: 8930.1
-        saldo:
-          type: number
-          example: 3520.65
-        patrimonio:
-          type: number
-          example: 54000
-        receitasPorMes:
-          type: array
-          items:
-            $ref: "#/components/schemas/ReceitaPorMes"
-        despesasPorMes:
-          type: array
-          items:
-            $ref: "#/components/schemas/DespesaPorMes"
-        despesasPorCategoria:
-          type: array
-          items:
-            $ref: "#/components/schemas/DespesaPorCategoria"
-        despesasPorCategoriaPorMes:
-          type: array
-          items:
-            $ref: "#/components/schemas/DespesaPorCategoriaPorMes"
-        atualizadoEm:
-          type: string
-          example: "2025-07-21T16:35:00.000Z"
-          description: Data da última atualização
-      required:
-        - id
-        - totalReceitas
-        - totalDespesas
-        - saldo
-        - patrimonio
-        - receitasPorMes
-        - despesasPorMes
-        - despesasPorCategoria
-        - despesasPorCategoriaPorMes
-        - atualizadoEm
-    GetResumoFinanceiroResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Operação realizada com sucesso
-        data:
-          $ref: "#/components/schemas/GetResumoFinanceiro"
-      required:
-        - message
-        - data
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/pessoas": {
+      "get": {
+        "operationId": "PessoasController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número da página",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de itens por página",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de pessoas retornada com dasdadasucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPessoasResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Listar todas as pessoas",
+        "tags": [
+          "Pessoas"
+        ]
+      },
+      "post": {
+        "operationId": "PessoasController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePessoaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pessoa criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePessoaResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Criar nova pessoa",
+        "tags": [
+          "Pessoas"
+        ]
+      }
+    },
+    "/pessoas/{id}": {
+      "get": {
+        "operationId": "PessoasController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da pessoa",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pessoa encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPessoaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pessoa não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Buscar pessoa por ID",
+        "tags": [
+          "Pessoas"
+        ]
+      },
+      "patch": {
+        "operationId": "PessoasController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da pessoa",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditPessoaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pessoa atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditPessoaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pessoa não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Atualizar pessoa por ID",
+        "tags": [
+          "Pessoas"
+        ]
+      },
+      "delete": {
+        "operationId": "PessoasController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da pessoa",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pessoa removida com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePessoaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pessoa não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Remover pessoa por ID",
+        "tags": [
+          "Pessoas"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário registrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Usuário registrado com sucesso"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email já cadastrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Email já cadastrado",
+                    "error": "Unauthorized"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registrar novo usuário",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retorna token de acesso JWT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Credenciais inválidas",
+                    "error": "Unauthorized"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Login com email e senha",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/categorias": {
+      "get": {
+        "operationId": "CategoriasController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número da página",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de itens por página",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de categorias retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCategoriasResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Listar todas as categorias",
+        "tags": [
+          "Categorias"
+        ]
+      },
+      "post": {
+        "operationId": "CategoriasController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoriaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Categoria criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCategoriaResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Criar nova categoria",
+        "tags": [
+          "Categorias"
+        ]
+      }
+    },
+    "/categorias/{id}": {
+      "get": {
+        "operationId": "CategoriasController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da categoria",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoria encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCategoriaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoria não encontrada."
+          }
+        },
+        "summary": "Buscar categoria por ID",
+        "tags": [
+          "Categorias"
+        ]
+      },
+      "patch": {
+        "operationId": "CategoriasController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da categoria",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditCategoriaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Categoria atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditCategoriaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoria não encontrada."
+          }
+        },
+        "summary": "Atualizar categoria por ID",
+        "tags": [
+          "Categorias"
+        ]
+      },
+      "delete": {
+        "operationId": "CategoriasController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da categoria",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoria removida com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteCategoriaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoria não encontrada."
+          }
+        },
+        "summary": "Remover categoria por ID",
+        "tags": [
+          "Categorias"
+        ]
+      }
+    },
+    "/meios-pagamento": {
+      "get": {
+        "operationId": "MeiosPagamentoController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número da página",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de itens por página",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de meios de pagamento retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMeiosPagamentosResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Listar todas os meios de pagamento",
+        "tags": [
+          "MeiosPagamento"
+        ]
+      },
+      "post": {
+        "operationId": "MeiosPagamentoController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMeioPagamentoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Meio de pagemento criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMeioPagamentoResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Criar novo meio de pagemento",
+        "tags": [
+          "MeiosPagamento"
+        ]
+      }
+    },
+    "/meios-pagamento/{id}": {
+      "get": {
+        "operationId": "MeiosPagamentoController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do meio de pagemento",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meio de pagemento encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMeioPagamentoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meio de pagemento não encontrado."
+          }
+        },
+        "summary": "Buscar meio de pagamento por ID",
+        "tags": [
+          "MeiosPagamento"
+        ]
+      },
+      "patch": {
+        "operationId": "MeiosPagamentoController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do meio de pagemento",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditMeioPagamentoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Meio de pagemento atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditMeioPagamentoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meio de pagemento não encontrada."
+          }
+        },
+        "summary": "Atualizar meio de pagemento por ID",
+        "tags": [
+          "MeiosPagamento"
+        ]
+      },
+      "delete": {
+        "operationId": "MeiosPagamentoController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do meio de pagemento",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meio de pagemento removido com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteMeioPagamentoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meio de pagemento não encontrada."
+          }
+        },
+        "summary": "Remover meio de pagemento por ID",
+        "tags": [
+          "MeiosPagamento"
+        ]
+      }
+    },
+    "/enums": {
+      "get": {
+        "operationId": "EnumsController_getEnums",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Enums retornados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnumsResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista todos os enums utilizados nos selects do sistema",
+        "tags": [
+          "Enums"
+        ]
+      }
+    },
+    "/transacoes": {
+      "get": {
+        "operationId": "TransacoesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número da página",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de itens por página",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "description": "Data usada para filtrar o mês das transações",
+            "schema": {
+              "example": "2025-07-21T15:03:42.000Z",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de transações retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTransacoesResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Listar todas as transações",
+        "tags": [
+          "Transacoes"
+        ]
+      },
+      "post": {
+        "operationId": "TransacoesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTransacaoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transação criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTransacaoResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Criar nova transação",
+        "tags": [
+          "Transacoes"
+        ]
+      }
+    },
+    "/transacoes/{id}": {
+      "get": {
+        "operationId": "TransacoesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da transação",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transação encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTransacaoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoria não encontrada."
+          }
+        },
+        "summary": "Buscar transação por ID",
+        "tags": [
+          "Transacoes"
+        ]
+      },
+      "patch": {
+        "operationId": "TransacoesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da transação",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditTransacaoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transação atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditTransacaoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoria não encontrada."
+          }
+        },
+        "summary": "Atualizar transação por ID",
+        "tags": [
+          "Transacoes"
+        ]
+      },
+      "delete": {
+        "operationId": "TransacoesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da transação",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transação removida com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTransacaoResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transação não encontrada."
+          }
+        },
+        "summary": "Remover transação por ID",
+        "tags": [
+          "Transacoes"
+        ]
+      }
+    },
+    "/resumo-financeiro": {
+      "get": {
+        "operationId": "ResumoFinanceiroController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de pessoas retornada com dasdadasucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResumoFinanceiroResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Listar resumo financeiro",
+        "tags": [
+          "Resumo Financeiro"
+        ]
+      },
+      "post": {
+        "operationId": "ResumoFinanceiroController_calculateResume",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Calcular resumo financeiro",
+        "tags": [
+          "Resumo Financeiro"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API de finanças M&J",
+    "description": "API de controle financeiro do Júnior e da Vivi",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "example": 1,
+            "description": "Página atual"
+          },
+          "perPage": {
+            "type": "number",
+            "example": 10,
+            "description": "Limite de itens por página"
+          },
+          "total": {
+            "type": "number",
+            "example": 100,
+            "description": "Total de itens encontrados"
+          },
+          "lastPage": {
+            "type": "number",
+            "example": 10
+          }
+        },
+        "required": [
+          "page",
+          "perPage",
+          "total",
+          "lastPage"
+        ]
+      },
+      "Pessoa": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Vivi"
+          },
+          "email": {
+            "type": "string",
+            "example": "vivi@email.com"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-07-14T12:34:56Z"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "email",
+          "createdAt"
+        ]
+      },
+      "PessoaPaginatedData": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pessoa"
+            }
+          }
+        },
+        "required": [
+          "meta",
+          "rows"
+        ]
+      },
+      "GetPessoasResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PessoaPaginatedData"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "GetPessoaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Pessoa"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CreatePessoaRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome da pessoa"
+          },
+          "ativo": {
+            "type": "boolean",
+            "description": "Status da pessoa"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email da pessoa"
+          }
+        },
+        "required": [
+          "nome"
+        ]
+      },
+      "CreatePessoaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Pessoa"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EditPessoaRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome da pessoa"
+          },
+          "ativo": {
+            "type": "boolean",
+            "description": "Status da pessoa"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email da pessoa"
+          }
+        }
+      },
+      "EditPessoaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Pessoa"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "DeletePessoaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Pessoa"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "vivi@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Vivi"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "nome"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "conquista.engcomp@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "Auth": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "example": "jwt.token"
+          },
+          "email": {
+            "type": "string",
+            "example": "vivi@email.com"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Vivi"
+          }
+        },
+        "required": [
+          "access_token",
+          "email",
+          "nome"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Auth"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "Categoria": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Alimentação"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "despesa",
+              "receita"
+            ],
+            "example": "despesa"
+          },
+          "icone": {
+            "type": "string",
+            "example": "utensils"
+          },
+          "cor": {
+            "type": "string",
+            "example": "#FF5733"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-07-17T10:20:30.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "tipo",
+          "icone",
+          "cor",
+          "createdAt"
+        ]
+      },
+      "CategoriaPaginatedData": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Categoria"
+            }
+          }
+        },
+        "required": [
+          "meta",
+          "rows"
+        ]
+      },
+      "GetCategoriasResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CategoriaPaginatedData"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "GetCategoriaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Categoria"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CreateCategoriaRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome da categoria"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "despesa",
+              "receita"
+            ],
+            "description": "Tipo da categoria (despesa ou receita)"
+          },
+          "icone": {
+            "type": "string",
+            "description": "Ícone da categoria"
+          },
+          "cor": {
+            "type": "string",
+            "description": "Cor da categoria em hexadecimal"
+          }
+        },
+        "required": [
+          "nome",
+          "tipo"
+        ]
+      },
+      "CreateCategoriaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Categoria"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EditCategoriaRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome da categoria"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "despesa",
+              "receita"
+            ],
+            "description": "Tipo da categoria (despesa ou receita)"
+          },
+          "icone": {
+            "type": "string",
+            "description": "Ícone da categoria"
+          },
+          "cor": {
+            "type": "string",
+            "description": "Cor da categoria em hexadecimal"
+          }
+        }
+      },
+      "EditCategoriaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Categoria"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "DeleteCategoriaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Categoria"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "MeioPagamento": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Cartão crédito xp"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-07-17T10:20:30.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "createdAt"
+        ]
+      },
+      "MeioPagamentoPaginatedData": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeioPagamento"
+            }
+          }
+        },
+        "required": [
+          "meta",
+          "rows"
+        ]
+      },
+      "GetMeiosPagamentosResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MeioPagamentoPaginatedData"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "GetMeioPagamentoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MeioPagamento"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CreateMeioPagamentoRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome do meio de pagamento"
+          }
+        },
+        "required": [
+          "nome"
+        ]
+      },
+      "CreateMeioPagamentoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MeioPagamento"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EditMeioPagamentoRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome do meio de pagamento"
+          }
+        }
+      },
+      "EditMeioPagamentoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MeioPagamento"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "DeleteMeioPagamentoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MeioPagamento"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EnumOption": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "example": "receita",
+            "description": "Valor da opção (para envio ao backend)"
+          },
+          "label": {
+            "type": "string",
+            "example": "Receita",
+            "description": "Texto amigável para exibição"
+          }
+        },
+        "required": [
+          "value",
+          "label"
+        ]
+      },
+      "Enums": {
+        "type": "object",
+        "properties": {
+          "tipoCategoria": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnumOption"
+            }
+          },
+          "tipoTransacao": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnumOption"
+            }
+          },
+          "tipoPatrimonio": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnumOption"
+            }
+          },
+          "formaPagamento": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnumOption"
+            }
+          }
+        },
+        "required": [
+          "tipoCategoria",
+          "tipoTransacao",
+          "tipoPatrimonio",
+          "formaPagamento"
+        ]
+      },
+      "EnumsResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Enums"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "TransacaoResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Salário de Julho"
+          },
+          "categoriaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "valor": {
+            "type": "number",
+            "example": 3500.5
+          },
+          "data": {
+            "type": "string",
+            "example": "2025-07-21T12:00:00Z"
+          },
+          "observacoes": {
+            "type": "string",
+            "example": "Pagamento referente ao mês de julho"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "formaPagamento": {
+            "type": "string",
+            "enum": [
+              "avista",
+              "parcela1x",
+              "parcela2x",
+              "parcela3x",
+              "parcela4x",
+              "parcela5x",
+              "parcela6x",
+              "parcela7x",
+              "parcela8x",
+              "parcela9x",
+              "parcela10x",
+              "parcela11x",
+              "parcela12x"
+            ],
+            "example": "parcela3x"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-07-17T10:20:30.000Z"
+          },
+          "categoria": {
+            "$ref": "#/components/schemas/Categoria"
+          },
+          "pessoa": {
+            "$ref": "#/components/schemas/Pessoa"
+          },
+          "meioPagamento": {
+            "$ref": "#/components/schemas/MeioPagamento"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "categoriaId",
+          "pessoaId",
+          "valor",
+          "data",
+          "createdAt",
+          "categoria",
+          "pessoa",
+          "meioPagamento"
+        ]
+      },
+      "TransacaoPaginatedData": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransacaoResponse"
+            }
+          }
+        },
+        "required": [
+          "meta",
+          "rows"
+        ]
+      },
+      "GetTransacoesResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TransacaoPaginatedData"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "Transacao": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Salário de Julho"
+          },
+          "categoriaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "valor": {
+            "type": "number",
+            "example": 3500.5
+          },
+          "data": {
+            "type": "string",
+            "example": "2025-07-21T12:00:00Z"
+          },
+          "observacoes": {
+            "type": "string",
+            "example": "Pagamento referente ao mês de julho"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "formaPagamento": {
+            "type": "string",
+            "enum": [
+              "avista",
+              "parcela1x",
+              "parcela2x",
+              "parcela3x",
+              "parcela4x",
+              "parcela5x",
+              "parcela6x",
+              "parcela7x",
+              "parcela8x",
+              "parcela9x",
+              "parcela10x",
+              "parcela11x",
+              "parcela12x"
+            ],
+            "example": "parcela3x"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-07-17T10:20:30.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "categoriaId",
+          "pessoaId",
+          "valor",
+          "data",
+          "createdAt"
+        ]
+      },
+      "GetTransacaoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Transacao"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CreateTransacaoRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Salário de Julho"
+          },
+          "categoriaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "valor": {
+            "type": "number",
+            "example": 3500.5
+          },
+          "data": {
+            "type": "string",
+            "example": "2025-07-21T12:00:00Z"
+          },
+          "formaPagamento": {
+            "type": "string",
+            "enum": [
+              "avista",
+              "parcela1x",
+              "parcela2x",
+              "parcela3x",
+              "parcela4x",
+              "parcela5x",
+              "parcela6x",
+              "parcela7x",
+              "parcela8x",
+              "parcela9x",
+              "parcela10x",
+              "parcela11x",
+              "parcela12x"
+            ],
+            "example": "parcela3x"
+          },
+          "observacoes": {
+            "type": "string",
+            "example": "Pagamento referente ao mês de julho"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "categoriaId",
+          "pessoaId",
+          "valor",
+          "data"
+        ]
+      },
+      "CreateTransacaoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Transacao"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EditTransacaoRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Salário de Julho"
+          },
+          "categoriaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "valor": {
+            "type": "number",
+            "example": 3500.5
+          },
+          "data": {
+            "type": "string",
+            "example": "2025-07-21T12:00:00Z"
+          },
+          "formaPagamento": {
+            "type": "string",
+            "enum": [
+              "avista",
+              "parcela1x",
+              "parcela2x",
+              "parcela3x",
+              "parcela4x",
+              "parcela5x",
+              "parcela6x",
+              "parcela7x",
+              "parcela8x",
+              "parcela9x",
+              "parcela10x",
+              "parcela11x",
+              "parcela12x"
+            ],
+            "example": "parcela3x"
+          },
+          "observacoes": {
+            "type": "string",
+            "example": "Pagamento referente ao mês de julho"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "EditTransacaoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Transacao"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "DeleteTransacaoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Transacao"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "ReceitaPorMes": {
+        "type": "object",
+        "properties": {
+          "mes": {
+            "type": "string",
+            "example": "2025-01"
+          },
+          "valor": {
+            "type": "number",
+            "example": 3500
+          }
+        },
+        "required": [
+          "mes",
+          "valor"
+        ]
+      },
+      "DespesaPorMes": {
+        "type": "object",
+        "properties": {
+          "mes": {
+            "type": "string",
+            "example": "2025-01"
+          },
+          "valor": {
+            "type": "number",
+            "example": 2500
+          }
+        },
+        "required": [
+          "mes",
+          "valor"
+        ]
+      },
+      "DespesaPorCategoria": {
+        "type": "object",
+        "properties": {
+          "categoria": {
+            "type": "string",
+            "example": "Alimentação"
+          },
+          "valor": {
+            "type": "number",
+            "example": 2300
+          },
+          "cor": {
+            "type": "string",
+            "example": "#FFF"
+          }
+        },
+        "required": [
+          "categoria",
+          "valor",
+          "cor"
+        ]
+      },
+      "DespesaPorCategoriaPorMesCategoria": {
+        "type": "object",
+        "properties": {
+          "categoria": {
+            "type": "string",
+            "example": "Alimentação"
+          },
+          "valor": {
+            "type": "number",
+            "example": 800
+          }
+        },
+        "required": [
+          "categoria",
+          "valor"
+        ]
+      },
+      "DespesaPorCategoriaPorMes": {
+        "type": "object",
+        "properties": {
+          "mes": {
+            "type": "string",
+            "example": "2025-01"
+          },
+          "categorias": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DespesaPorCategoriaPorMesCategoria"
+            }
+          }
+        },
+        "required": [
+          "mes",
+          "categorias"
+        ]
+      },
+      "GetResumoFinanceiro": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID do resumo financeiro"
+          },
+          "totalReceitasAno": {
+            "type": "number",
+            "example": 12450.75
+          },
+          "totalDespesasAno": {
+            "type": "number",
+            "example": 8930.1
+          },
+          "saldoAno": {
+            "type": "number",
+            "example": 3520.65
+          },
+          "patrimonio": {
+            "type": "number",
+            "example": 54000
+          },
+          "receitasPorMes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReceitaPorMes"
+            }
+          },
+          "despesasPorMes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DespesaPorMes"
+            }
+          },
+          "despesasPorCategoria": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DespesaPorCategoria"
+            }
+          },
+          "despesasPorCategoriaPorMes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DespesaPorCategoriaPorMes"
+            }
+          },
+          "atualizadoEm": {
+            "type": "string",
+            "example": "2025-07-21T16:35:00.000Z",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "totalReceitasAno",
+          "totalDespesasAno",
+          "saldoAno",
+          "patrimonio",
+          "receitasPorMes",
+          "despesasPorMes",
+          "despesasPorCategoria",
+          "despesasPorCategoriaPorMes",
+          "atualizadoEm"
+        ]
+      },
+      "GetResumoFinanceiroResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/GetResumoFinanceiro"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      }
+    }
+  }
+}

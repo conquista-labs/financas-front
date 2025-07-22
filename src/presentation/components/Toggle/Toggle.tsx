@@ -17,7 +17,7 @@ const Toggle: React.FC<ToggleProps> = ({ id, name, control, ...props }) => {
     <Box display="flex" flexDirection="column" gap="$3xs">
       <RaruiToggle id={id} {...props} checked={field.value} {...field} />
       {error?.message && (
-        <Text fontSize="$xs" color="$error">
+        <Text fontSize="$s" color="$error">
           {error?.message}
         </Text>
       )}

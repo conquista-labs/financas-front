@@ -19,9 +19,9 @@ export interface GetResumoFinanceiro {
    * ID do resumo financeiro
    */
   id: number;
-  totalReceitas: number;
-  totalDespesas: number;
-  saldo: number;
+  totalReceitasAno: number;
+  totalDespesasAno: number;
+  saldoAno: number;
   patrimonio: number;
   receitasPorMes: Array<ReceitaPorMes>;
   despesasPorMes: Array<DespesaPorMes>;

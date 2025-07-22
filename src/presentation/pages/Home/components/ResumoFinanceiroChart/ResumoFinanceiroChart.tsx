@@ -26,7 +26,6 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
         label: "Receitas",
         data: receitas.map((item) => Number(item.valor)),
         backgroundColor: "#96C283",
-        borderColor: "#2E7D32",
         borderRadius: 2,
         barThickness: 25,
       },

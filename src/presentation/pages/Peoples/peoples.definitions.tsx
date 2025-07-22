@@ -24,7 +24,11 @@ export const getColumns = (
     .setColum("Status", "ativo", {
       formatter: (field) => (
         <Box display="flex" justifyContent="center">
-          <Status dot={false} appearance={field ? "success" : "danger"}>
+          <Status
+            size="small"
+            dot={false}
+            appearance={field ? "success" : "danger"}
+          >
             {field ? "Ativo" : "Inativo"}
           </Status>
         </Box>

@@ -1,24 +1,101 @@
 import React from "react";
-import { Box, Card, Title } from "@rarui-react/components";
+import { Box, Card, Divider, Title, Text } from "@rarui-react/components";
 import { useGetResumoFinanceiro } from "@/presentation/hooks/api";
 
-import { ResumoFinanceiroChart } from "./components";
+import { useAuthStore } from "@/presentation/store";
+import { DespesasPorCategoria, ResumoFinanceiroChart } from "./components";
+import { formatCurrency } from "./home.definitions";
 
 const Home: React.FC = () => {
+  const { auth } = useAuthStore();
   const { data } = useGetResumoFinanceiro();
-
-  const receitas = data?.data.receitasPorMes ?? [];
-  const despesas = data?.data.despesasPorMes ?? [];
 
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$2xs">
-      <Title as="h4" color="$primary" fontWeight="$bold">
-        Bem vinda, Vivi
+      <Title as="h4" color="$secondary" fontWeight="$bold">
+        Olá, {auth.nome}
       </Title>
-      <Box width="650px" height="500px">
-        <Card>
-          <ResumoFinanceiroChart receitas={receitas} despesas={despesas} />
-        </Card>
+
+      <Box
+        display="grid"
+        gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
+        gap="$s"
+      >
+        <Box
+          flex="1"
+          backgroundColor="$primary"
+          borderRadius="$xs"
+          borderWidth="$1"
+          borderStyle="solid"
+          borderColor="$subdued"
+          padding="$s"
+          display="flex"
+          flexDirection="column"
+          gap="$3xs"
+          boxSizing="border-box"
+        >
+          <Text color="$secondary">Total de receitas do ano</Text>
+          <Title as="h6" color="$success">
+            {formatCurrency(data?.data.totalReceitasAno ?? 0)}
+          </Title>
+        </Box>
+        <Box
+          flex="1"
+          backgroundColor="$primary"
+          borderRadius="$xs"
+          borderWidth="$1"
+          borderStyle="solid"
+          borderColor="$subdued"
+          padding="$s"
+          display="flex"
+          flexDirection="column"
+          gap="$3xs"
+        >
+          <Text color="$secondary">Total de despesas do ano</Text>
+          <Title as="h6" color="$error">
+            {formatCurrency(data?.data.totalDespesasAno ?? 0)}
+          </Title>
+        </Box>
+      </Box>
+      <Box
+        display="grid"
+        gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
+        gap="$s"
+        gridTemplateRows="500px"
+      >
+        <Box
+          flex="1"
+          backgroundColor="$primary"
+          borderRadius="$xs"
+          borderWidth="$1"
+          borderStyle="solid"
+          borderColor="$subdued"
+          padding="$xs"
+        >
+          <ResumoFinanceiroChart
+            receitas={data?.data.receitasPorMes ?? []}
+            despesas={data?.data.despesasPorMes ?? []}
+          />
+        </Box>
+
+        <Box
+          flex="1"
+          backgroundColor="$primary"
+          borderRadius="$xs"
+          borderWidth="$1"
+          borderStyle="solid"
+          borderColor="$subdued"
+          padding="$xs"
+          display="flex"
+          flexDirection="column"
+          gap="$2xs"
+        >
+          <Title as="h6">Despesa anual por catégoria</Title>
+          <Divider />
+          <DespesasPorCategoria
+            despesas={data?.data.despesasPorCategoria ?? []}
+          />
+        </Box>
       </Box>
     </Box>
   );

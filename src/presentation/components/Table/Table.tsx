@@ -24,7 +24,7 @@ function Table<T>({
     if (formatter) return formatter(value, row);
 
     return (
-      <Text color="$primary" fontSize="$xs">
+      <Text color="$primary" fontSize="$s">
         {String(value)}
       </Text>
     );
@@ -62,7 +62,7 @@ function Table<T>({
                     fontFamily="$body"
                     padding="$3xs"
                     verticalAlign="middle"
-                    fontSize="$body-xs"
+                    fontSize="$body-s"
                     {...column.options?.boxProps}
                   >
                     {column.label}

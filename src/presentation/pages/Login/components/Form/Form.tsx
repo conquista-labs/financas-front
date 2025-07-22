@@ -34,7 +34,7 @@ const Form: React.FC = () => {
   const handleLogin = (data: PostLoginRequest) => {
     mutate(data, {
       onSuccess: (response) => {
-        setAuth({ access_token: response.data.access_token });
+        setAuth(response.data);
         navigate(urlRouters.root);
       },
       onError: (error) => {
@@ -93,7 +93,7 @@ const Form: React.FC = () => {
         />
       </Button>
 
-      <Text fontSize="$xs" textAlign="center" color="$secondary">
+      <Text fontSize="$s" textAlign="center" color="$secondary">
         Versão: 1.0.0
       </Text>
       <Loading isLoading={isPending} />

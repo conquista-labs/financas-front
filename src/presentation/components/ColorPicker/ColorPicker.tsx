@@ -26,7 +26,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, name, control }) => {
         onChange={(cor) => field.onChange(cor.hex)}
       />
       {error?.message && (
-        <Text fontSize="$xs" color="$error">
+        <Text fontSize="$s" color="$error">
           {error?.message}
         </Text>
       )}

@@ -38,7 +38,7 @@ const Menu: React.FC<MenuProps> = () => {
             padding="none"
             content={
               <Box padding="$2xs">
-                <Text fontSize="$xs" fontWeight="$semiBold" color="$primary">
+                <Text fontSize="$s" fontWeight="$semiBold" color="$primary">
                   {menu.title}
                 </Text>
               </Box>
