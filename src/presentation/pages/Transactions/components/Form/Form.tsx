@@ -71,7 +71,12 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
             gap="$s"
             alignItems="flex-end"
           >
-            <Box width="100%" display="flex" gap="$2xs">
+            <Box
+              width="100%"
+              display="flex"
+              flexDirection={{ xs: "column", lg: "row" }}
+              gap={{ xs: "$s", lg: "$2xs" }}
+            >
               <Select
                 label="Categoria"
                 id="categoriaId"
@@ -89,7 +94,12 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 control={control}
               />
             </Box>
-            <Box width="100%" display="flex" gap="$2xs">
+            <Box
+              width="100%"
+              display="flex"
+              flexDirection={{ xs: "column", lg: "row" }}
+              gap={{ xs: "$s", lg: "$2xs" }}
+            >
               <Select
                 label="Meio de pagamento"
                 id="meioPagamentoId"
@@ -107,12 +117,16 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 control={control}
               />
             </Box>
-            <Box width="100%" display="flex" gap="$2xs">
+            <Box
+              width="100%"
+              display="flex"
+              flexDirection={{ xs: "column", lg: "row" }}
+              gap={{ xs: "$s", lg: "$2xs" }}
+            >
               <DatePicker
                 id="data"
                 label="Data"
                 name="data"
-                // dateFormat="DD/MM/YYYY"
                 control={control}
               />
               <Input
@@ -123,15 +137,13 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 control={control}
               />
             </Box>
-            <Box width="100%" display="flex" gap="$2xs">
-              <Input
-                label="Valor"
-                name="valor"
-                id="valor"
-                placeholder="Digite o valor"
-                control={control}
-              />
-            </Box>
+            <Input
+              label="Valor"
+              name="valor"
+              id="valor"
+              placeholder="Digite o valor"
+              control={control}
+            />
             <Textarea
               label="Observações"
               name="observacoes"
