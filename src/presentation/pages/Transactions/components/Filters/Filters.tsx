@@ -9,7 +9,7 @@ import {
 } from "@rarui-react/components";
 
 import { useIsMobile } from "@/presentation/hooks/core";
-import { Select } from "@/presentation/components";
+import { Input, Select } from "@/presentation/components";
 
 import { buildOptions, defaultForm, schema } from "./filters.definitions";
 import {
@@ -29,6 +29,7 @@ const Filters: React.FC<FiltersProps> = ({ open, onRemove }) => {
     pessoaId: withDefault(StringParam, ""),
     meioPagamentoId: withDefault(StringParam, ""),
     formaPagamento: withDefault(StringParam, ""),
+    search: withDefault(StringParam, ""),
   });
 
   const { isMobile } = useIsMobile();
@@ -105,6 +106,7 @@ const Filters: React.FC<FiltersProps> = ({ open, onRemove }) => {
           flexDirection="column"
           gap="$s"
         >
+          <Input label="Buscar" id="search" name="search" control={control} />
           <Select
             label="Categoria"
             id="categoriaId"

@@ -25,8 +25,8 @@ export const getColumns = (
     .setColum("Categoria", "categoria", {
       formatter: (field: Categoria) => (
         <Box display="flex" justifyContent="center">
-          <div className="categorie-badge" style={{ background: field.cor }}>
-            {field.nome}
+          <div className="categorie-badge" style={{ background: field?.cor }}>
+            {field?.nome}
           </div>
         </Box>
       ),
@@ -63,14 +63,14 @@ export const getColumns = (
     .setColum("Pessoa", "pessoa", {
       formatter: (field: Pessoa) => (
         <Text color="$primary" fontSize="$s">
-          {field.nome}
+          {field?.nome}
         </Text>
       ),
     })
     .setColum("Meio de Pagamento", "meioPagamento", {
       formatter: (field: MeioPagamento) => (
         <Text color="$primary" fontSize="$s">
-          {field.nome}
+          {field?.nome}
         </Text>
       ),
     })

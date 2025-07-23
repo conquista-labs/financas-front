@@ -3,7 +3,7 @@ import {
   useQueryClient,
   type UseMutationResult,
 } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { AxiosError } from "axios";
 
 import { useToast } from "@rarui-react/components/dist/Toast";
@@ -24,6 +24,8 @@ export const useDeleteTransacoesId = (
   DeleteTransacoesIdParams
 > => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentSearch = location.search;
   const { addToast } = useToast();
   const deleteTransacoesId = makeDeleteTransacoesIdFactory();
   const queryClient = useQueryClient();
@@ -34,7 +36,7 @@ export const useDeleteTransacoesId = (
       return deleteTransacoesId.delete(params);
     },
     onSuccess: () => {
-      navigate(urlRouters.transactions);
+      navigate(`${urlRouters.transactions}${currentSearch}`);
       queryClient.invalidateQueries({ queryKey: ["get-transacoes"] });
     },
     onError: (error) => {

@@ -1,6 +1,6 @@
+import "react-datepicker/dist/react-datepicker.css";
 import "./presentation/assets/styles/reset.css";
 import "./presentation/assets/styles/theme.css";
-import "react-datepicker/dist/react-datepicker.css";
 
 import { ThemeProvider, Toast } from "@rarui-react/components";
 import { QueryClientProvider } from "@tanstack/react-query";

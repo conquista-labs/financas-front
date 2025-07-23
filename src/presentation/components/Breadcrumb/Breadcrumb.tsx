@@ -22,7 +22,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ crumbs = [] }) => {
           to={urlRouters.root}
           active={crumbs.length === 0}
         >
-          <Icon color="$primary" source={<HomeFilledIcon />} />
+          <Icon source={<HomeFilledIcon />} />
           Início
         </RaruiBreadcrumb.Item>
 

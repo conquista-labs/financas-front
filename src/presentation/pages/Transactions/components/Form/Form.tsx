@@ -130,6 +130,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
               gap={{ xs: "$s", lg: "$2xs" }}
             >
               <DatePicker
+                dateFormat="dd/MM/yyyy"
                 id="data"
                 label="Data"
                 name="data"

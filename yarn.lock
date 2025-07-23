@@ -1131,19 +1131,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarui-react/components@npm:^1.45.0-rc.1":
-  version: 1.45.0-rc.1
-  resolution: "@rarui-react/components@npm:1.45.0-rc.1"
+"@rarui-react/components@npm:^1.45.0-rc.2":
+  version: 1.45.0-rc.2
+  resolution: "@rarui-react/components@npm:1.45.0-rc.2"
   dependencies:
     "@floating-ui/react": "npm:^0.26.13"
     "@rarui/icons": "npm:^1.2.0"
     "@rarui/typings": "npm:^2.2.0"
     react-datepicker: "npm:^6.9.0"
   peerDependencies:
-    "@rarui/styles": ^2.7.0-rc.1
+    "@rarui/styles": ^2.7.0-rc.2
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
-  checksum: 220d3c857286ff792b5d02f066ee63452843f0449db0cdc477cca3fe0ae39e41c22cb9278f716bf52465abf774c3d51617254fef05511833d4a67472edee76c3
+  checksum: 9b4607325edb9cd98a4bc4087a31409110b3bfcfb955703abbb000b4ae83967d4093758c30bfa8ca829cc211c1426ad5ddf78cf7a2344cd706949eaa5029a68e
   languageName: node
   linkType: hard
 
@@ -1156,15 +1156,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarui/styles@npm:^2.7.0-rc.1":
-  version: 2.7.0-rc.1
-  resolution: "@rarui/styles@npm:2.7.0-rc.1"
+"@rarui/styles@npm:^2.7.0-rc.2":
+  version: 2.7.0-rc.2
+  resolution: "@rarui/styles@npm:2.7.0-rc.2"
   dependencies:
     "@vanilla-extract/css": "npm:^1.15.3"
     "@vanilla-extract/recipes": "npm:^0.5.3"
     rainbow-sprinkles: "npm:^0.17.2"
     rollup-plugin-postcss: "npm:^4.0.2"
-  checksum: 280379dccfd43a6cb01490c454df7bdead2122cc9928fd96a4721366a6e70878fd3055ddbb9e9168c03534fc7f5c029ffa8cadcd39ca53b07090feb0ce6336c1
+  checksum: 123303771a2a591fbd180113367ef12e57b82a8730d0bf0e5e100d5af42e047afca8d6cd54c4199db0d94b064b1c0ee59042f780c252dca68279ce6ac22b5afd
   languageName: node
   linkType: hard
 
@@ -6811,9 +6811,9 @@ __metadata:
     "@faker-js/faker": "npm:^9.9.0"
     "@hookform/resolvers": "npm:^5.1.1"
     "@ngneat/falso": "npm:^8.0.1"
-    "@rarui-react/components": "npm:^1.45.0-rc.1"
+    "@rarui-react/components": "npm:^1.45.0-rc.2"
     "@rarui/icons": "npm:^1.2.0"
-    "@rarui/styles": "npm:^2.7.0-rc.1"
+    "@rarui/styles": "npm:^2.7.0-rc.2"
     "@tanstack/react-query": "npm:^5.81.5"
     "@tanstack/react-query-devtools": "npm:^5.81.5"
     "@tanstack/react-table": "npm:^8.21.3"
