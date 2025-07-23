@@ -1,9 +1,17 @@
 import React from "react";
-import { Box, Divider, Title, Text } from "@rarui-react/components";
+import {
+  Box,
+  // Divider,
+  Title,
+  Text,
+} from "@rarui-react/components";
 import { useGetResumoFinanceiro } from "@/presentation/hooks/api";
 
 import { useAuthStore } from "@/presentation/store";
-import { DespesasPorCategoria, ResumoFinanceiroChart } from "./components";
+import {
+  //  DespesasPorCategoria,
+  ResumoFinanceiroChart,
+} from "./components";
 import { formatCurrency } from "./home.definitions";
 
 const Home: React.FC = () => {
@@ -85,7 +93,7 @@ const Home: React.FC = () => {
           />
         </Box>
 
-        <Box
+        {/* <Box
           flex="1"
           backgroundColor="$primary"
           borderRadius="$xs"
@@ -104,7 +112,7 @@ const Home: React.FC = () => {
           <DespesasPorCategoria
             despesas={data?.data.despesasPorCategoria ?? []}
           />
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );

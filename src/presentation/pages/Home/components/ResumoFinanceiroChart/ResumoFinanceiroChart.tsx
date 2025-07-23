@@ -17,24 +17,30 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
   receitas,
   despesas,
 }) => {
-  const labels = despesas.map((item) => formatMonth(item.mes));
+  const filterDespesas = despesas.filter((despesa) =>
+    despesa.mes.includes("2025"),
+  );
+  const filterReceitas = receitas.filter((receita) =>
+    receita.mes.includes("2025"),
+  );
+  const labels = filterDespesas.map((item) => formatMonth(item.mes));
 
   const chartData = {
     labels,
     datasets: [
       {
         label: "Receitas",
-        data: receitas.map((item) => Number(item.valor)),
+        data: filterReceitas.map((item) => Number(item.valor)),
         backgroundColor: "#96C283",
         borderRadius: 2,
-        barThickness: 25,
+        barThickness: 20,
       },
       {
         label: "Despesas",
-        data: despesas.map((item) => Number(item.valor)),
+        data: filterDespesas.map((item) => Number(item.valor)),
         backgroundColor: "#DB4D4C",
         borderRadius: 2,
-        barThickness: 25,
+        barThickness: 20,
       },
     ],
   };
