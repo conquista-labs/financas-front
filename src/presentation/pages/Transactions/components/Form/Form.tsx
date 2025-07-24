@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { Box, Button, Card } from "@rarui-react/components";
+import { Box, Button, Card, Text } from "@rarui-react/components";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { urlRouters } from "@/presentation/router/router.definitions";
@@ -8,12 +8,18 @@ import { useIsMobile } from "@/presentation/hooks/core";
 import {
   DatePicker,
   Input,
+  InputCurrency,
   Loading,
   Select,
   Textarea,
 } from "@/presentation/components";
 
-import { buildOptions, defaultForm, schema } from "./form.definitions";
+import {
+  buildOptions,
+  defaultForm,
+  parseCurrencyToNumber,
+  schema,
+} from "./form.definitions";
 import type { FormProps } from "./form.types";
 import {
   useGetCategorias,
@@ -36,7 +42,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
     limit: 50,
   });
 
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, reset } = useForm({
     resolver: yupResolver(schema),
     values: { ...defaultForm, ...defaultValues },
     mode: "onChange",
@@ -61,7 +67,14 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
     <Box display="flex" flexDirection="column" gap="$md" width="100%">
       <Box
         as="form"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit((data) => {
+          onSubmit(
+            { ...data, valor: parseCurrencyToNumber(data.valor) },
+            {
+              onSuccess: () => reset(defaultForm),
+            },
+          );
+        })}
         display="flex"
         flexDirection="column"
         gap="$s"
@@ -144,12 +157,14 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 control={control}
               />
             </Box>
-            <Input
+
+            <InputCurrency
               label="Valor"
               name="valor"
               id="valor"
               placeholder="Digite o valor"
               control={control}
+              leadingStart={<Text>R$</Text>}
             />
             <Textarea
               label="Observações"

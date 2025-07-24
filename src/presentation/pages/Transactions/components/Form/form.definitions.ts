@@ -1,4 +1,4 @@
-import { number, object, string } from "yup";
+import { object, string } from "yup";
 
 export const schema = object({
   categoriaId: string().required("Categoria é obrigatória"),
@@ -7,7 +7,7 @@ export const schema = object({
   formaPagamento: string().optional(),
   data: string().required("Data é obrigatória"),
   descricao: string().required("Descrição é obrigatória"),
-  valor: number().required("Valor é obrigatório"),
+  valor: string().required("Valor é obrigatório"),
   observacoes: string().optional(),
 }).required();
 
@@ -18,9 +18,15 @@ export const defaultForm = {
   formaPagamento: "",
   data: new Date().toISOString(),
   descricao: "",
-  valor: 0,
+  valor: "",
   observacoes: "",
 };
 
 export const buildOptions = (data: { id: string; nome: string }[]) =>
   data.map((line) => ({ label: line.nome, value: line.id }));
+
+export const parseCurrencyToNumber = (value: string): number => {
+  if (!value) return 0;
+  // Remove R$, espaços e pontos, troca vírgula por ponto
+  return parseFloat(value.replace(/\./g, "").replace(",", "."));
+};

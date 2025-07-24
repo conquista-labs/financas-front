@@ -4,7 +4,6 @@ import { Box, Title } from "@rarui-react/components";
 import { Form } from "@/presentation/pages/Transactions/components";
 import { Breadcrumb } from "@/presentation/components";
 import { usePostTransacoes } from "@/presentation/hooks/api";
-import type { PostTransacoesRequest } from "@/domain/usecases";
 
 const Create: React.FC = () => {
   const { mutate, isPending } = usePostTransacoes();
@@ -17,15 +16,12 @@ const Create: React.FC = () => {
       gap="$2xs"
       alignItems="center"
     >
-      <Breadcrumb crumbs={["transactions", "createPeoples"]} />
+      <Breadcrumb crumbs={["transactions", "createTransactions"]} />
       <Title as="h4" color="$brand">
         Criar transação
       </Title>
       <Box width={{ xs: "100%", lg: "1110px" }}>
-        <Form
-          isPending={isPending}
-          onSubmit={(body: PostTransacoesRequest) => mutate(body)}
-        />
+        <Form isPending={isPending} onSubmit={mutate} />
       </Box>
     </Box>
   );

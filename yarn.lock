@@ -1175,6 +1175,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-input/core@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@react-input/core@npm:2.0.2"
+  peerDependencies:
+    "@types/react": ">=16.8"
+    react: ">=16.8 || ^19.0.0-rc"
+    react-dom: ">=16.8 || ^19.0.0-rc"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: a9f5334044ec7a0bf628af2d74fd8a0a94dd95261c57ec056025e69d830543781abfa50cd0c5e4887a3bc21bb589f274a54dcb3fc05d03993dccd720f3a505c2
+  languageName: node
+  linkType: hard
+
+"@react-input/mask@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@react-input/mask@npm:2.0.4"
+  dependencies:
+    "@react-input/core": "npm:^2.0.2"
+  peerDependencies:
+    "@types/react": ">=16.8"
+    react: ">=16.8 || ^19.0.0-rc"
+    react-dom: ">=16.8 || ^19.0.0-rc"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 2d2a5453c3b54e0b42715dd44ac84e60ffdafa120ed890bdfa6d4fa9e853e2047d8ba173bed512b5bac23541c645dffd7860dbd1d6cb8b2e168c4e346570d59b
+  languageName: node
+  linkType: hard
+
 "@rolldown/pluginutils@npm:1.0.0-beta.19":
   version: 1.0.0-beta.19
   resolution: "@rolldown/pluginutils@npm:1.0.0-beta.19"
@@ -6814,6 +6844,7 @@ __metadata:
     "@rarui-react/components": "npm:^1.45.0-rc.2"
     "@rarui/icons": "npm:^1.2.0"
     "@rarui/styles": "npm:^2.7.0-rc.2"
+    "@react-input/mask": "npm:^2.0.4"
     "@tanstack/react-query": "npm:^5.81.5"
     "@tanstack/react-query-devtools": "npm:^5.81.5"
     "@tanstack/react-table": "npm:^8.21.3"

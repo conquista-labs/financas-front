@@ -4,6 +4,7 @@ export { DatePicker } from "./DatePicker";
 export { Textarea } from "./Textarea";
 export { Menu } from "./Menu";
 export { Input } from "./Input";
+export { InputCurrency } from "./InputCurrency";
 export { ColorPicker } from "./ColorPicker";
 export { Select } from "./Select";
 export { Toggle } from "./Toggle";

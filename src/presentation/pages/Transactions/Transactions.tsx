@@ -9,12 +9,9 @@ import {
 import {
   Box,
   Button,
-  Card,
   Datepicker,
   Icon,
   IconButton,
-  Title,
-  Text,
 } from "@rarui-react/components";
 import {
   ArrowLeftIcon,
@@ -31,7 +28,7 @@ import {
 import { Breadcrumb, Table } from "@/presentation/components";
 import { useIsMobile, usePagination } from "@/presentation/hooks/core";
 import { getColumns } from "./transactions.definitions";
-import { Filters } from "./components";
+import { Filters, TableFooter } from "./components";
 
 const Transactions: React.FC = () => {
   const { isMobile } = useIsMobile();
@@ -144,22 +141,14 @@ const Transactions: React.FC = () => {
           </Button>
         </Box>
       </Box>
-      <Box display="flex" justifyContent="flex-start">
-        <Card padding="none">
-          <Box padding="$2xs" display="flex" gap="$4xs" alignItems="center">
-            <Text color="$secondary">Total:</Text>
-            <Title as="h6" color="$brand">
-              {data?.data?.resume?.total ?? "R$ 0.00"}
-            </Title>
-          </Box>
-        </Card>
-      </Box>
       <Table
         columns={getColumns(handleNavigate, mutate)}
         rows={data?.data.rows ?? []}
         total={data?.data.meta.total ?? 0}
         isLoading={isLoading || isPending}
-      />
+      >
+        <TableFooter total={data?.data.resume.total ?? "R$ 0.00"} />
+      </Table>
       <Filters open={openFilters} onRemove={handleOpenFilters} />
     </Box>
   );

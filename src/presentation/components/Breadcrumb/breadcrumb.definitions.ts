@@ -13,6 +13,14 @@ export const crumbsMapper: Partial<
     label: "Transações",
     link: urlRouters.transactions,
   },
+  createTransactions: {
+    label: "Criar",
+    link: urlRouters.createTransactions,
+  },
+  editTransactions: {
+    label: "Editar",
+    link: urlRouters.editTransactions,
+  },
   peoples: {
     label: "Pessoas",
     link: urlRouters.peoples,

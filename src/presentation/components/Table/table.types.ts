@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import type { BoxProps } from "@rarui-react/components";
 
 export interface Column<T> {
@@ -25,4 +26,5 @@ export interface TableProps<T> {
   rows: T[];
   total: number;
   isLoading?: boolean;
+  children?: ReactNode;
 }

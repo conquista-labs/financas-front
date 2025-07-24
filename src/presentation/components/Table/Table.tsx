@@ -1,16 +1,23 @@
-import { type JSX } from "react";
-import { Box, Text, Pagination, Select } from "@rarui-react/components";
+import { useMemo, type JSX } from "react";
+import {
+  Box,
+  Text,
+  Pagination,
+  Select,
+  Skeleton,
+} from "@rarui-react/components";
 
 import { usePagination } from "@/presentation/hooks/core";
 import type { TableProps } from "./table.types";
 import { pageSizeOptions } from "./table.definitions";
-import { Loading } from "../Loading";
+import "./table.css";
 
 function Table<T>({
   columns,
-  rows,
+  rows: lines,
   total,
   isLoading,
+  children,
 }: TableProps<T>): JSX.Element {
   const { page, totalPages, pageSize, onChangePage, onChangePageSize } =
     usePagination(total);
@@ -30,28 +37,34 @@ function Table<T>({
     );
   };
 
+  const rows = useMemo(
+    () =>
+      (isLoading
+        ? Array.from({ length: 10 })
+        : [
+            ...lines,
+            ...Array.from({ length: 10 - lines.length }).map(() => ({})),
+          ]) as T[],
+    [lines, isLoading],
+  );
+
   return (
     <>
       <Box display="flex" flexDirection="column" gap="$xs">
-        <Box
-          backgroundColor="$primary"
-          padding="$2xs"
-          borderWidth="$1"
-          borderStyle="solid"
-          borderColor="$subdued"
-          borderRadius="$xs"
-          pb="$none"
-          minHeight={{ md: "550px" }}
-          overflowX="auto"
-        >
-          <Box as="table" width="100%">
-            <Box as="thead">
-              <Box
-                as="tr"
-                borderBottomWidth="$2"
-                borderStyle="solid"
-                borderColor="$divider"
-              >
+        <div className="table-container">
+          <Box as="table" width="100%" height="300px">
+            <Box
+              as="thead"
+              position="sticky"
+              top="0"
+              borderBottomWidth="$2"
+              borderStyle="solid"
+              borderColor="$divider"
+              backgroundColor="$disabled"
+              boxShadow="$bottom-1"
+              zIndex="$100"
+            >
+              <Box as="tr">
                 {allColumns.map((column, index) => (
                   <Box
                     as="th"
@@ -60,8 +73,7 @@ function Table<T>({
                     fontWeight="$bold"
                     textAlign="left"
                     fontFamily="$body"
-                    padding="$3xs"
-                    paddingBottom="$2xs"
+                    padding="$2xs"
                     verticalAlign="middle"
                     fontSize="$body-s"
                     {...column.options?.boxProps}
@@ -81,20 +93,26 @@ function Table<T>({
                   borderColor="$divider"
                 >
                   {allColumns.map((column, colIndex) => (
-                    <Box
-                      as="td"
-                      key={`cell-${rowIndex}-${colIndex}`}
-                      padding="$3xs"
-                      verticalAlign="middle"
-                    >
-                      {renderCell(column, row)}
-                    </Box>
+                    <>
+                      <Box
+                        as="td"
+                        key={`cell-${rowIndex}-${colIndex}`}
+                        padding="$3xs"
+                        verticalAlign="middle"
+                      >
+                        {!isLoading && renderCell(column, row)}
+                        {isLoading && (
+                          <Skeleton height="29.7px" borderRadius="4px" />
+                        )}
+                      </Box>
+                    </>
                   ))}
                 </Box>
               ))}
             </Box>
+            {children}
           </Box>
-        </Box>
+        </div>
         <Box
           display="flex"
           justifyContent="space-between"
@@ -118,11 +136,10 @@ function Table<T>({
           <Pagination
             activePage={page}
             pageCount={totalPages}
-            onPageChange={(page) => onChangePage({ page, pageSize: 10 })}
+            onPageChange={(page) => onChangePage({ page, pageSize: pageSize })}
           />
         </Box>
       </Box>
-      <Loading isLoading={isLoading} />
     </>
   );
 }

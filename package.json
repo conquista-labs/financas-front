@@ -28,6 +28,7 @@
     "@rarui-react/components": "^1.45.0-rc.2",
     "@rarui/icons": "^1.2.0",
     "@rarui/styles": "^2.7.0-rc.2",
+    "@react-input/mask": "^2.0.4",
     "@tanstack/react-query": "^5.81.5",
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.10.0",

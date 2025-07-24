@@ -14,7 +14,5 @@ export const defaultForm = {
   formaPagamento: "",
 };
 
-export const buildOptions = (data: { id: string; nome: string }[]) => [
-  { value: "", label: "" },
-  ...data.map((line) => ({ label: line.nome, value: line.id })),
-];
+export const buildOptions = (data: { id: string; nome: string }[]) =>
+  data.map((line) => ({ label: line.nome, value: line.id }));

@@ -50,7 +50,7 @@ const Filters: React.FC<FiltersProps> = ({ open, onRemove }) => {
     { enabled: open },
   );
 
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, reset } = useForm({
     resolver: yupResolver(schema),
     values: { ...defaultForm, ...param },
     mode: "onChange",
@@ -77,6 +77,7 @@ const Filters: React.FC<FiltersProps> = ({ open, onRemove }) => {
   };
 
   const onReset = () => {
+    reset(defaultForm);
     setParam({}, "push");
   };
 
@@ -143,10 +144,7 @@ const Filters: React.FC<FiltersProps> = ({ open, onRemove }) => {
             id="formaPagamento"
             name="formaPagamento"
             placeholder="Selecione a forma de pagamento"
-            options={[
-              { value: "", label: "" },
-              ...(EnumsData?.data?.formaPagamento ?? []),
-            ]}
+            options={EnumsData?.data?.formaPagamento ?? []}
             control={control}
             maxHeight="300px"
             portalId="sidebar-filters-transactions"
