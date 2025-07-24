@@ -452,10 +452,24 @@ paths:
           schema:
             default: 10
             type: number
-        - name: date
+        - name: search
           required: false
           in: query
-          description: Data usada para filtrar o mês das transações
+          description: Texto usado para filtrar as transações
+          schema:
+            example: IPTU
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: Data inicial usada para filtrar o mês das transações
+          schema:
+            example: '2025-07-21T15:03:42.000Z'
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: Data final usada para filtrar o mês das transações
           schema:
             example: '2025-07-21T15:03:42.000Z'
             type: string
@@ -1166,6 +1180,14 @@ components:
         - categoria
         - pessoa
         - meioPagamento
+    TransacoesResume:
+      type: object
+      properties:
+        total:
+          type: number
+          example: R$ 10
+      required:
+        - total
     TransacaoPaginatedData:
       type: object
       properties:
@@ -1175,9 +1197,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TransacaoResponse'
+        resume:
+          $ref: '#/components/schemas/TransacoesResume'
       required:
         - meta
         - rows
+        - resume
     GetTransacoesResponse:
       type: object
       properties:

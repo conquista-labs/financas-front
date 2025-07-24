@@ -9,9 +9,12 @@ import {
 import {
   Box,
   Button,
+  Card,
   Datepicker,
   Icon,
   IconButton,
+  Title,
+  Text,
 } from "@rarui-react/components";
 import {
   ArrowLeftIcon,
@@ -140,6 +143,16 @@ const Transactions: React.FC = () => {
             Nova Transação
           </Button>
         </Box>
+      </Box>
+      <Box display="flex" justifyContent="flex-start">
+        <Card padding="none">
+          <Box padding="$2xs" display="flex" gap="$4xs" alignItems="center">
+            <Text color="$secondary">Total:</Text>
+            <Title as="h6" color="$brand">
+              {data?.data.resume.total}
+            </Title>
+          </Box>
+        </Card>
       </Box>
       <Table
         columns={getColumns(handleNavigate, mutate)}

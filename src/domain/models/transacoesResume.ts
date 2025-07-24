@@ -9,12 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PaginationMeta } from "./paginationMeta";
-import { TransacaoResponse } from "./transacaoResponse";
-import { TransacoesResume } from "./transacoesResume";
 
-export interface TransacaoPaginatedData {
-  meta: PaginationMeta;
-  rows: Array<TransacaoResponse>;
-  resume: TransacoesResume;
+export interface TransacoesResume {
+  total: number;
 }

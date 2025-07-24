@@ -50,3 +50,4 @@ export * from "./registerRequest";
 export * from "./transacao";
 export * from "./transacaoPaginatedData";
 export * from "./transacaoResponse";
+export * from "./transacoesResume";
