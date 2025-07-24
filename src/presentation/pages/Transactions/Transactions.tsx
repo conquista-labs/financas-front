@@ -149,7 +149,7 @@ const Transactions: React.FC = () => {
           <Box padding="$2xs" display="flex" gap="$4xs" alignItems="center">
             <Text color="$secondary">Total:</Text>
             <Title as="h6" color="$brand">
-              {data?.data.resume.total}
+              {data?.data?.resume?.total ?? "R$ 0.00"}
             </Title>
           </Box>
         </Card>
