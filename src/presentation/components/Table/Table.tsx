@@ -10,6 +10,7 @@ import {
 import { usePagination } from "@/presentation/hooks/core";
 import type { TableProps } from "./table.types";
 import { pageSizeOptions } from "./table.definitions";
+import { Loading } from "../Loading";
 import "./table.css";
 
 function Table<T>({
@@ -139,6 +140,7 @@ function Table<T>({
             onPageChange={(page) => onChangePage({ page, pageSize: pageSize })}
           />
         </Box>
+        <Loading isLoading={isLoading} />
       </Box>
     </>
   );
