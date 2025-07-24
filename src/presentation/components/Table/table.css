@@ -12,6 +12,7 @@
 
 .table-container::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
   background-color: var(--rarui-colors-surface-secondary);
 }
 
@@ -19,8 +20,4 @@
   cursor: pointer;
   border-radius: var(--rarui-shape-border-radius-pill);
   background-color: var(--rarui-colors-content-disabled);
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  background-color: var(--rarui-colors-content-brand);
 }
