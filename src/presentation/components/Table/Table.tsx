@@ -39,13 +39,7 @@ function Table<T>({
   };
 
   const rows = useMemo(
-    () =>
-      (isLoading
-        ? Array.from({ length: 10 })
-        : [
-            ...lines,
-            ...Array.from({ length: 10 - lines.length }).map(() => ({})),
-          ]) as T[],
+    () => (isLoading ? Array.from({ length: 10 }) : lines),
     [lines, isLoading],
   );
 
