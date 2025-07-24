@@ -8,7 +8,7 @@ import { useIsMobile } from "@/presentation/hooks/core";
 import {
   DatePicker,
   Input,
-  InputCurrency,
+  // InputCurrency,
   Loading,
   Select,
   Textarea,
@@ -157,8 +157,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 control={control}
               />
             </Box>
-
-            <InputCurrency
+            <Input
               label="Valor"
               name="valor"
               id="valor"

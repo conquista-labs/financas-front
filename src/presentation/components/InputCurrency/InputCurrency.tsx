@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react"; // useEffect
 import { useController } from "react-hook-form";
 import { Box, Text, Label, Input as RaruiInput } from "@rarui-react/components";
 import { useMask } from "@react-input/mask";
 import { type InputProps } from "./inputCurrency.types";
-import { formatCurrency } from "./inputCurrency.definitions";
+// import { formatCurrency } from "./inputCurrency.definitions";
 
 const InputCurrency: React.FC<InputProps> = ({
   label,
@@ -13,7 +13,11 @@ const InputCurrency: React.FC<InputProps> = ({
   ...props
 }) => {
   const {
-    field: { value, onChange, onBlur },
+    field: {
+      value,
+      // onChange,
+      onBlur,
+    },
     fieldState: { error },
   } = useController({
     name,
@@ -27,19 +31,24 @@ const InputCurrency: React.FC<InputProps> = ({
     showMask: false,
   });
 
-  // Quando o valor do formulário muda, atualiza o input
-  useEffect(() => {
-    if (inputRef.current && value !== undefined && value !== null) {
-      inputRef.current.value = formatCurrency(value);
-      if (value) {
-        onChange(inputRef.current.value);
-      }
-    }
-  }, [value]);
+  // useEffect(() => {
+  //   if (value) {
+  //     onChange(inputRef.current.value);
+  //   }
+  // }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
-  };
+  // Quando o valor do formulário muda, atualiza o input
+  // useEffect(() => {
+  //   if (inputRef.current && value !== undefined && value !== null) {
+  //     inputRef.current.value = formatCurrency(value);
+  //   }
+  // }, [value]);
+
+  const handleChange = () =>
+    // e: React.ChangeEvent<HTMLInputElement>
+    {
+      // onChange(e.target.value);
+    };
 
   return (
     <Box display="flex" flexDirection="column" gap="$3xs" width="100%">

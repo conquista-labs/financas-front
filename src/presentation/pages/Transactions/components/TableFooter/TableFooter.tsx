@@ -45,6 +45,7 @@ const TableFooter: React.FC<TableFooterProps> = ({ total }) => {
           fontFamily="$body"
           fontWeight="$bold"
           color="$brand"
+          textAlign="center"
         >
           {total}
         </Box>

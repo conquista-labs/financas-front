@@ -20,6 +20,7 @@ export const getColumns = (
     DeleteTransacoesIdParams,
     unknown
   >,
+  refetch: () => void,
 ) =>
   new ColumnsDefinitions<any>()
     .setColum("Categoria", "categoria", {
@@ -75,7 +76,14 @@ export const getColumns = (
       ),
     })
     .setColum("Forma Pagamento", "formaPagamento")
-    .setColum("Valor", "valor")
+    .setColum("Valor", "valor", {
+      formatter: (field) => (
+        <Text color="$primary" fontSize="$s" textAlign="center">
+          {field}
+        </Text>
+      ),
+      boxProps: { textAlign: "center" },
+    })
     .setColum("Ações", "id", {
       formatter: (field) => (
         <Box display="flex" gap="$3xs">
@@ -90,7 +98,7 @@ export const getColumns = (
             appearance="danger"
             variant="tonal"
             source={<TrashFilledIcon />}
-            onClick={() => mutate({ id: field })}
+            onClick={() => mutate({ id: field }, { onSuccess: refetch })}
           />
         </Box>
       ),

@@ -1,4 +1,3 @@
-import type { NavigateFunction } from "react-router-dom";
 import { IconButton, Status, Box } from "@rarui-react/components";
 import { EditFilledIcon, TrashFilledIcon } from "@rarui/icons";
 import type { UseMutateFunction } from "@tanstack/react-query";
@@ -12,13 +11,14 @@ import { urlRouters } from "@/presentation/router/router.definitions";
 import { ColumnsDefinitions } from "@/presentation/components";
 
 export const getColumns = (
-  navigate: NavigateFunction,
+  navigate: (path: string) => void,
   mutate: UseMutateFunction<
     DeletePessoasIdModel,
     AxiosError<unknown, any>,
     DeletePessoasIdParams,
     unknown
   >,
+  refetch: () => void,
 ) =>
   new ColumnsDefinitions<any>()
     .setColum("Status", "ativo", {
@@ -54,7 +54,7 @@ export const getColumns = (
             appearance="danger"
             variant="tonal"
             source={<TrashFilledIcon />}
-            onClick={() => mutate({ id: field })}
+            onClick={() => mutate({ id: field }, { onSuccess: refetch })}
           />
         </Box>
       ),

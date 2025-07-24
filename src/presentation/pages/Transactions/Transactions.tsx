@@ -47,7 +47,7 @@ const Transactions: React.FC = () => {
   const handleOpenFilters = () => setOpenFilters(!openFilters);
 
   const { page, pageSize, onChangePage } = usePagination();
-  const { data, isLoading } = useGetTransacoes({
+  const { data, isLoading, refetch } = useGetTransacoes({
     page,
     limit: pageSize,
     ...queryParams,
@@ -71,7 +71,7 @@ const Transactions: React.FC = () => {
       startDate: newStartDate,
       endDate: newEndDate,
     });
-    onChangePage({ page: 1, pageSize: 10 });
+    onChangePage({ page: 1, pageSize: pageSize });
   };
 
   const { mutate, isPending } = useDeleteTransacoesId();
@@ -110,8 +110,8 @@ const Transactions: React.FC = () => {
               startDate={queryParams.startDate}
               endDate={queryParams.endDate as Date}
               onChange={(dates) => handleChange(dates as [Date, Date])}
-              selectsRange
               selected={queryParams.startDate}
+              selectsRange
             />
             <IconButton
               source={<ArrowRightIcon size="medium" />}
@@ -142,7 +142,7 @@ const Transactions: React.FC = () => {
         </Box>
       </Box>
       <Table
-        columns={getColumns(handleNavigate, mutate)}
+        columns={getColumns(handleNavigate, mutate, refetch)}
         rows={data?.data.rows ?? []}
         total={data?.data.meta.total ?? 0}
         isLoading={isLoading || isPending}
