@@ -1,4 +1,5 @@
-import { Box } from "@rarui-react/components";
+import { Box, Button, Icon } from "@rarui-react/components";
+import { DocumentOutlinedIcon } from "@rarui/icons";
 
 import { TableFooterProps } from "./tableFooter.types";
 
@@ -49,7 +50,12 @@ const TableFooter: React.FC<TableFooterProps> = ({ total }) => {
         >
           {total}
         </Box>
-        <Box as="td" padding="$2xs" verticalAlign="middle"></Box>
+        <Box as="td" padding="$2xs" verticalAlign="middle">
+          <Button variant="outlined" size="small">
+            <Icon source={<DocumentOutlinedIcon />} />
+            Exportar
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

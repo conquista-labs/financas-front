@@ -24,6 +24,7 @@ import { urlRouters } from "@/presentation/router/router.definitions";
 import {
   useDeleteTransacoesId,
   useGetTransacoes,
+  // usePostResumoFinanceiro,
 } from "@/presentation/hooks/api";
 import { Breadcrumb, Table } from "@/presentation/components";
 import { useIsMobile, usePagination } from "@/presentation/hooks/core";
@@ -56,6 +57,8 @@ const Transactions: React.FC = () => {
       ? format(queryParams.endDate, "yyyy-MM-dd")
       : "",
   });
+
+  // const { mutate } = usePostResumoFinanceiro();
 
   const location = useLocation();
   const currentSearch = location.search;

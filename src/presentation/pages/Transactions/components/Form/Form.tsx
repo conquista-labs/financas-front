@@ -17,7 +17,7 @@ import {
 import {
   buildOptions,
   defaultForm,
-  parseCurrencyToNumber,
+  // parseCurrencyToNumber,
   schema,
 } from "./form.definitions";
 import type { FormProps } from "./form.types";
@@ -68,12 +68,9 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
       <Box
         as="form"
         onSubmit={handleSubmit((data) => {
-          onSubmit(
-            { ...data, valor: parseCurrencyToNumber(data.valor) },
-            {
-              onSuccess: () => reset(defaultForm),
-            },
-          );
+          onSubmit(data, {
+            onSuccess: () => reset(defaultForm),
+          });
         })}
         display="flex"
         flexDirection="column"

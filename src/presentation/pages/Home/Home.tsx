@@ -4,7 +4,10 @@ import {
   // Divider,
   Title,
   Text,
+  Button,
+  Icon,
 } from "@rarui-react/components";
+import { RefreshIcon } from "@rarui/icons";
 import { useGetResumoFinanceiro } from "@/presentation/hooks/api";
 
 import { useAuthStore } from "@/presentation/store";
@@ -20,9 +23,15 @@ const Home: React.FC = () => {
 
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$2xs">
-      <Title as="h4" color="$secondary" fontWeight="$bold">
-        Olá, {auth.nome}
-      </Title>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Title as="h4" color="$secondary" fontWeight="$bold">
+          Olá, {auth.nome}
+        </Title>
+        <Button size="medium" variant="text">
+          <Icon source={<RefreshIcon size="medium" />} />
+          Atualizar
+        </Button>
+      </Box>
 
       <Box
         display="grid"

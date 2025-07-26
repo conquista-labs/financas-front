@@ -156,7 +156,7 @@ paths:
                   error: Unauthorized
       summary: Registrar novo usuário
       tags:
-        - Auth
+        - Autenticação
   /auth/login:
     post:
       operationId: AuthController_login
@@ -185,7 +185,7 @@ paths:
                   error: Unauthorized
       summary: Login com email e senha
       tags:
-        - Auth
+        - Autenticação
   /categorias:
     get:
       operationId: CategoriasController_findAll
@@ -211,6 +211,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetCategoriasResponse'
+      security:
+        - access-token: []
       summary: Listar todas as categorias
       tags:
         - Categorias
@@ -230,6 +232,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateCategoriaResponse'
+      security:
+        - access-token: []
       summary: Criar nova categoria
       tags:
         - Categorias
@@ -252,6 +256,8 @@ paths:
                 $ref: '#/components/schemas/GetCategoriaResponse'
         '404':
           description: Categoria não encontrada.
+      security:
+        - access-token: []
       summary: Buscar categoria por ID
       tags:
         - Categorias
@@ -279,6 +285,8 @@ paths:
                 $ref: '#/components/schemas/EditCategoriaResponse'
         '404':
           description: Categoria não encontrada.
+      security:
+        - access-token: []
       summary: Atualizar categoria por ID
       tags:
         - Categorias
@@ -300,6 +308,8 @@ paths:
                 $ref: '#/components/schemas/DeleteCategoriaResponse'
         '404':
           description: Categoria não encontrada.
+      security:
+        - access-token: []
       summary: Remover categoria por ID
       tags:
         - Categorias
@@ -328,9 +338,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetMeiosPagamentosResponse'
+      security:
+        - access-token: []
       summary: Listar todas os meios de pagamento
       tags:
-        - MeiosPagamento
+        - Meios de pagamento
     post:
       operationId: MeiosPagamentoController_create
       parameters: []
@@ -347,9 +359,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateMeioPagamentoResponse'
+      security:
+        - access-token: []
       summary: Criar novo meio de pagemento
       tags:
-        - MeiosPagamento
+        - Meios de pagamento
   /meios-pagamento/{id}:
     get:
       operationId: MeiosPagamentoController_findOne
@@ -369,9 +383,11 @@ paths:
                 $ref: '#/components/schemas/GetMeioPagamentoResponse'
         '404':
           description: Meio de pagemento não encontrado.
+      security:
+        - access-token: []
       summary: Buscar meio de pagamento por ID
       tags:
-        - MeiosPagamento
+        - Meios de pagamento
     patch:
       operationId: MeiosPagamentoController_update
       parameters:
@@ -396,9 +412,11 @@ paths:
                 $ref: '#/components/schemas/EditMeioPagamentoResponse'
         '404':
           description: Meio de pagemento não encontrada.
+      security:
+        - access-token: []
       summary: Atualizar meio de pagemento por ID
       tags:
-        - MeiosPagamento
+        - Meios de pagamento
     delete:
       operationId: MeiosPagamentoController_remove
       parameters:
@@ -417,9 +435,11 @@ paths:
                 $ref: '#/components/schemas/DeleteMeioPagamentoResponse'
         '404':
           description: Meio de pagemento não encontrada.
+      security:
+        - access-token: []
       summary: Remover meio de pagemento por ID
       tags:
-        - MeiosPagamento
+        - Meios de pagamento
   /enums:
     get:
       operationId: EnumsController_getEnums
@@ -504,9 +524,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetTransacoesResponse'
+      security:
+        - access-token: []
       summary: Listar todas as transações
       tags:
-        - Transacoes
+        - Transações
     post:
       operationId: TransacoesController_create
       parameters: []
@@ -523,9 +545,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateTransacaoResponse'
+      security:
+        - access-token: []
       summary: Criar nova transação
       tags:
-        - Transacoes
+        - Transações
   /transacoes/{id}:
     get:
       operationId: TransacoesController_findOne
@@ -545,9 +569,11 @@ paths:
                 $ref: '#/components/schemas/GetTransacaoResponse'
         '404':
           description: Categoria não encontrada.
+      security:
+        - access-token: []
       summary: Buscar transação por ID
       tags:
-        - Transacoes
+        - Transações
     patch:
       operationId: TransacoesController_update
       parameters:
@@ -572,9 +598,11 @@ paths:
                 $ref: '#/components/schemas/EditTransacaoResponse'
         '404':
           description: Categoria não encontrada.
+      security:
+        - access-token: []
       summary: Atualizar transação por ID
       tags:
-        - Transacoes
+        - Transações
     delete:
       operationId: TransacoesController_remove
       parameters:
@@ -593,16 +621,18 @@ paths:
                 $ref: '#/components/schemas/DeleteTransacaoResponse'
         '404':
           description: Transação não encontrada.
+      security:
+        - access-token: []
       summary: Remover transação por ID
       tags:
-        - Transacoes
+        - Transações
   /resumo-financeiro:
     get:
       operationId: ResumoFinanceiroController_findAll
       parameters: []
       responses:
         '200':
-          description: Lista de pessoas retornada com dasdadasucesso.
+          description: Resumo financeiro retornado com sucesso.
           content:
             application/json:
               schema:
@@ -616,13 +646,71 @@ paths:
       operationId: ResumoFinanceiroController_calculateResume
       parameters: []
       responses:
-        '201':
-          description: ''
+        '200':
+          description: Calcular do resumo financeiro realizado com sucesso.
       security:
         - access-token: []
       summary: Calcular resumo financeiro
       tags:
         - Resumo Financeiro
+  /relatorios/transacoes:
+    get:
+      operationId: RelatoriosController_gerarRelatorioTransacoes
+      parameters:
+        - name: search
+          required: false
+          in: query
+          description: Texto usado para filtrar as transações
+          schema:
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: Data inicial usada para filtrar o mês das transações
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: Data final usada para filtrar o mês das transações
+          schema:
+            type: string
+        - name: categoriaId
+          required: false
+          in: query
+          description: ID da categoria usada para filtrar as transações
+          schema:
+            type: string
+        - name: pessoaId
+          required: false
+          in: query
+          description: ID da pessoa usada para filtrar as transações
+          schema:
+            type: string
+        - name: meioPagamentoId
+          required: false
+          in: query
+          description: ID do meio de pagamento usado para filtrar as transações
+          schema:
+            type: string
+        - name: formaPagamento
+          required: false
+          in: query
+          description: Forma de pagamento usada para filtrar as transações
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Relatório gerado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRelatoriosResponse'
+      security:
+        - access-token: []
+      summary: Gerar relatório finaceiro
+      tags:
+        - Relatórios
 info:
   title: API de finanças M&J
   description: API de controle financeiro do Júnior e da Vivi
@@ -1532,6 +1620,97 @@ components:
           example: Operação realizada com sucesso
         data:
           $ref: '#/components/schemas/GetResumoFinanceiro'
+      required:
+        - message
+        - data
+    RelatoriosResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid-gerado
+        descricao:
+          type: string
+          example: Salário de Julho
+        categoriaId:
+          type: string
+          format: uuid
+        pessoaId:
+          type: string
+          format: uuid
+        valor:
+          type: number
+          example: 3500.5
+        data:
+          type: string
+          example: '2025-07-21T12:00:00Z'
+        observacoes:
+          type: string
+          example: Pagamento referente ao mês de julho
+        meioPagamentoId:
+          type: string
+          format: uuid
+        formaPagamento:
+          type: string
+          enum:
+            - avista
+            - parcela1x
+            - parcela2x
+            - parcela3x
+            - parcela4x
+            - parcela5x
+            - parcela6x
+            - parcela7x
+            - parcela8x
+            - parcela9x
+            - parcela10x
+            - parcela11x
+            - parcela12x
+          example: parcela3x
+        createdAt:
+          format: date-time
+          type: string
+          example: '2025-07-17T10:20:30.000Z'
+        categoria:
+          $ref: '#/components/schemas/Categoria'
+        pessoa:
+          $ref: '#/components/schemas/Pessoa'
+        meioPagamento:
+          $ref: '#/components/schemas/MeioPagamento'
+      required:
+        - id
+        - descricao
+        - categoriaId
+        - pessoaId
+        - valor
+        - data
+        - createdAt
+        - categoria
+        - pessoa
+        - meioPagamento
+    RelatoriosPaginatedData:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatoriosResponse'
+        resume:
+          $ref: '#/components/schemas/TransacoesResume'
+      required:
+        - meta
+        - rows
+        - resume
+    GetRelatoriosResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          $ref: '#/components/schemas/RelatoriosPaginatedData'
       required:
         - message
         - data
