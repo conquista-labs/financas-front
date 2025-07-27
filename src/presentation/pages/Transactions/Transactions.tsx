@@ -24,7 +24,7 @@ import { urlRouters } from "@/presentation/router/router.definitions";
 import {
   useDeleteTransacoesId,
   useGetTransacoes,
-  // usePostResumoFinanceiro,
+  usePostResumoFinanceiro,
 } from "@/presentation/hooks/api";
 import { Breadcrumb, Table } from "@/presentation/components";
 import { useIsMobile, usePagination } from "@/presentation/hooks/core";
@@ -58,8 +58,6 @@ const Transactions: React.FC = () => {
       : "",
   });
 
-  // const { mutate } = usePostResumoFinanceiro();
-
   const location = useLocation();
   const currentSearch = location.search;
 
@@ -77,7 +75,8 @@ const Transactions: React.FC = () => {
     onChangePage({ page: 1, pageSize: pageSize });
   };
 
-  const { mutate, isPending } = useDeleteTransacoesId();
+  const { mutate: mutateDelete, isPending } = useDeleteTransacoesId();
+  const { mutate: mutateResumeFinacial } = usePostResumoFinanceiro();
 
   const navigateMonth = (direction: "prev" | "next") => {
     const multiplier = direction === "prev" ? -1 : 1;
@@ -91,6 +90,8 @@ const Transactions: React.FC = () => {
 
     onChangePage({ page: 1, pageSize: 10 }); // garante reset de paginação
   };
+
+  const handleResume = () => {};
 
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$s">
@@ -145,12 +146,15 @@ const Transactions: React.FC = () => {
         </Box>
       </Box>
       <Table
-        columns={getColumns(handleNavigate, mutate, refetch)}
+        columns={getColumns(handleNavigate, mutateDelete, refetch)}
         rows={data?.data.rows ?? []}
         total={data?.data.meta.total ?? 0}
         isLoading={isLoading || isPending}
       >
-        <TableFooter total={data?.data.resume.total ?? "R$ 0.00"} />
+        <TableFooter
+          total={data?.data.resume.total ?? "R$ 0.00"}
+          handleResume={handleResume}
+        />
       </Table>
       <Filters open={openFilters} onRemove={handleOpenFilters} />
     </Box>

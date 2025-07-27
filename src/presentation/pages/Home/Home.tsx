@@ -8,7 +8,10 @@ import {
   Icon,
 } from "@rarui-react/components";
 import { RefreshIcon } from "@rarui/icons";
-import { useGetResumoFinanceiro } from "@/presentation/hooks/api";
+import {
+  useGetResumoFinanceiro,
+  usePostResumoFinanceiro,
+} from "@/presentation/hooks/api";
 
 import { useAuthStore } from "@/presentation/store";
 import {
@@ -16,10 +19,12 @@ import {
   ResumoFinanceiroChart,
 } from "./components";
 import { formatCurrency } from "./home.definitions";
+import { Loading } from "@/presentation/components";
 
 const Home: React.FC = () => {
   const { auth } = useAuthStore();
-  const { data } = useGetResumoFinanceiro();
+  const { data, isLoading, refetch } = useGetResumoFinanceiro();
+  const { mutate, isPending } = usePostResumoFinanceiro();
 
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$2xs">
@@ -27,7 +32,11 @@ const Home: React.FC = () => {
         <Title as="h4" color="$secondary" fontWeight="$bold">
           Olá, {auth.nome}
         </Title>
-        <Button size="medium" variant="text">
+        <Button
+          size="medium"
+          variant="text"
+          onClick={() => mutate(undefined, { onSuccess: () => refetch() })}
+        >
           <Icon source={<RefreshIcon size="medium" />} />
           Atualizar
         </Button>
@@ -123,6 +132,7 @@ const Home: React.FC = () => {
           />
         </Box> */}
       </Box>
+      <Loading isLoading={isLoading || isPending} />
     </Box>
   );
 };

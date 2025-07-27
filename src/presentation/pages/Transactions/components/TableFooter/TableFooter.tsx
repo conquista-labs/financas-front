@@ -3,7 +3,7 @@ import { DocumentOutlinedIcon } from "@rarui/icons";
 
 import { TableFooterProps } from "./tableFooter.types";
 
-const TableFooter: React.FC<TableFooterProps> = ({ total }) => {
+const TableFooter: React.FC<TableFooterProps> = ({ total, handleResume }) => {
   return (
     <Box
       as="tfoot"
@@ -51,7 +51,7 @@ const TableFooter: React.FC<TableFooterProps> = ({ total }) => {
           {total}
         </Box>
         <Box as="td" padding="$2xs" verticalAlign="middle">
-          <Button variant="outlined" size="small">
+          <Button variant="outlined" size="small" onClick={handleResume}>
             <Icon source={<DocumentOutlinedIcon />} />
             Exportar
           </Button>
