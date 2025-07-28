@@ -19,12 +19,12 @@ paths:
             default: 10
             type: number
       responses:
-        '200':
+        "200":
           description: Lista de pessoas retornada com dasdadasucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetPessoasResponse'
+                $ref: "#/components/schemas/GetPessoasResponse"
       security:
         - access-token: []
       summary: Listar todas as pessoas
@@ -38,14 +38,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePessoaRequest'
+              $ref: "#/components/schemas/CreatePessoaRequest"
       responses:
-        '201':
+        "201":
           description: Pessoa criada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatePessoaResponse'
+                $ref: "#/components/schemas/CreatePessoaResponse"
       security:
         - access-token: []
       summary: Criar nova pessoa
@@ -62,13 +62,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Pessoa encontrada.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetPessoaResponse'
-        '404':
+                $ref: "#/components/schemas/GetPessoaResponse"
+        "404":
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -89,15 +89,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EditPessoaRequest'
+              $ref: "#/components/schemas/EditPessoaRequest"
       responses:
-        '200':
+        "200":
           description: Pessoa atualizada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EditPessoaResponse'
-        '404':
+                $ref: "#/components/schemas/EditPessoaResponse"
+        "404":
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -114,13 +114,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Pessoa removida com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeletePessoaResponse'
-        '404':
+                $ref: "#/components/schemas/DeletePessoaResponse"
+        "404":
           description: Pessoa não encontrada.
       security:
         - access-token: []
@@ -136,16 +136,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
-        '201':
+        "201":
           description: Usuário registrado com sucesso
           content:
             application/json:
               schema:
                 example:
                   message: Usuário registrado com sucesso
-        '400':
+        "400":
           description: Email já cadastrado
           content:
             application/json:
@@ -166,15 +166,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: Retorna token de acesso JWT
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '401':
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
           description: Credenciais inválidas
           content:
             application/json:
@@ -205,12 +205,12 @@ paths:
             default: 10
             type: number
       responses:
-        '200':
+        "200":
           description: Lista de categorias retornada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCategoriasResponse'
+                $ref: "#/components/schemas/GetCategoriasResponse"
       security:
         - access-token: []
       summary: Listar todas as categorias
@@ -224,14 +224,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCategoriaRequest'
+              $ref: "#/components/schemas/CreateCategoriaRequest"
       responses:
-        '201':
+        "201":
           description: Categoria criada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateCategoriaResponse'
+                $ref: "#/components/schemas/CreateCategoriaResponse"
       security:
         - access-token: []
       summary: Criar nova categoria
@@ -248,13 +248,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Categoria encontrada.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCategoriaResponse'
-        '404':
+                $ref: "#/components/schemas/GetCategoriaResponse"
+        "404":
           description: Categoria não encontrada.
       security:
         - access-token: []
@@ -275,15 +275,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EditCategoriaRequest'
+              $ref: "#/components/schemas/EditCategoriaRequest"
       responses:
-        '200':
+        "200":
           description: Categoria atualizada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EditCategoriaResponse'
-        '404':
+                $ref: "#/components/schemas/EditCategoriaResponse"
+        "404":
           description: Categoria não encontrada.
       security:
         - access-token: []
@@ -300,13 +300,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Categoria removida com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteCategoriaResponse'
-        '404':
+                $ref: "#/components/schemas/DeleteCategoriaResponse"
+        "404":
           description: Categoria não encontrada.
       security:
         - access-token: []
@@ -332,12 +332,12 @@ paths:
             default: 10
             type: number
       responses:
-        '200':
+        "200":
           description: Lista de meios de pagamento retornada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetMeiosPagamentosResponse'
+                $ref: "#/components/schemas/GetMeiosPagamentosResponse"
       security:
         - access-token: []
       summary: Listar todas os meios de pagamento
@@ -351,14 +351,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateMeioPagamentoRequest'
+              $ref: "#/components/schemas/CreateMeioPagamentoRequest"
       responses:
-        '201':
+        "201":
           description: Meio de pagemento criado com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateMeioPagamentoResponse'
+                $ref: "#/components/schemas/CreateMeioPagamentoResponse"
       security:
         - access-token: []
       summary: Criar novo meio de pagemento
@@ -375,13 +375,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Meio de pagemento encontrado.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetMeioPagamentoResponse'
-        '404':
+                $ref: "#/components/schemas/GetMeioPagamentoResponse"
+        "404":
           description: Meio de pagemento não encontrado.
       security:
         - access-token: []
@@ -402,15 +402,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EditMeioPagamentoRequest'
+              $ref: "#/components/schemas/EditMeioPagamentoRequest"
       responses:
-        '200':
+        "200":
           description: Meio de pagemento atualizado com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EditMeioPagamentoResponse'
-        '404':
+                $ref: "#/components/schemas/EditMeioPagamentoResponse"
+        "404":
           description: Meio de pagemento não encontrada.
       security:
         - access-token: []
@@ -427,13 +427,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Meio de pagemento removido com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteMeioPagamentoResponse'
-        '404':
+                $ref: "#/components/schemas/DeleteMeioPagamentoResponse"
+        "404":
           description: Meio de pagemento não encontrada.
       security:
         - access-token: []
@@ -445,12 +445,12 @@ paths:
       operationId: EnumsController_getEnums
       parameters: []
       responses:
-        '200':
+        "200":
           description: Enums retornados com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EnumsResponse'
+                $ref: "#/components/schemas/EnumsResponse"
       summary: Lista todos os enums utilizados nos selects do sistema
       tags:
         - Enums
@@ -484,14 +484,14 @@ paths:
           in: query
           description: Data inicial usada para filtrar o mês das transações
           schema:
-            example: '2025-07-21T15:03:42.000Z'
+            example: "2025-07-21T15:03:42.000Z"
             type: string
         - name: endDate
           required: false
           in: query
           description: Data final usada para filtrar o mês das transações
           schema:
-            example: '2025-07-21T15:03:42.000Z'
+            example: "2025-07-21T15:03:42.000Z"
             type: string
         - name: categoriaId
           required: false
@@ -524,12 +524,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Lista de transações retornada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetTransacoesResponse'
+                $ref: "#/components/schemas/GetTransacoesResponse"
       security:
         - access-token: []
       summary: Listar todas as transações
@@ -543,14 +543,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTransacaoRequest'
+              $ref: "#/components/schemas/CreateTransacaoRequest"
       responses:
-        '201':
+        "201":
           description: Transação criada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateTransacaoResponse'
+                $ref: "#/components/schemas/CreateTransacaoResponse"
       security:
         - access-token: []
       summary: Criar nova transação
@@ -567,13 +567,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Transação encontrada.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetTransacaoResponse'
-        '404':
+                $ref: "#/components/schemas/GetTransacaoResponse"
+        "404":
           description: Categoria não encontrada.
       security:
         - access-token: []
@@ -594,15 +594,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EditTransacaoRequest'
+              $ref: "#/components/schemas/EditTransacaoRequest"
       responses:
-        '200':
+        "200":
           description: Transação atualizada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EditTransacaoResponse'
-        '404':
+                $ref: "#/components/schemas/EditTransacaoResponse"
+        "404":
           description: Categoria não encontrada.
       security:
         - access-token: []
@@ -619,13 +619,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Transação removida com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeleteTransacaoResponse'
-        '404':
+                $ref: "#/components/schemas/DeleteTransacaoResponse"
+        "404":
           description: Transação não encontrada.
       security:
         - access-token: []
@@ -635,24 +635,37 @@ paths:
   /resumo-financeiro:
     get:
       operationId: ResumoFinanceiroController_findAll
-      parameters: []
+      parameters:
+        - name: ano
+          required: true
+          in: query
+          description: Ano usado para filtrar o resumo
+          schema:
+            example: "2025"
+            type: string
       responses:
-        '200':
+        "200":
           description: Resumo financeiro retornado com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetResumoFinanceiroResponse'
+                $ref: "#/components/schemas/GetResumoFinanceiroResponse"
       security:
         - access-token: []
       summary: Listar resumo financeiro
       tags:
         - Resumo Financeiro
+  /resumo-financeiro/{ano}:
     post:
       operationId: ResumoFinanceiroController_calculateResume
-      parameters: []
+      parameters:
+        - name: ano
+          required: true
+          in: path
+          schema:
+            type: string
       responses:
-        '200':
+        "200":
           description: Calcular do resumo financeiro realizado com sucesso.
       security:
         - access-token: []
@@ -706,12 +719,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Relatório gerado com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetRelatorioTransacoesResponse'
+                $ref: "#/components/schemas/GetRelatorioTransacoesResponse"
       security:
         - access-token: []
       summary: Gerar relatório finaceiro
@@ -720,7 +733,7 @@ paths:
 info:
   title: API de finanças M&J
   description: API de controle financeiro do Júnior e da Vivi
-  version: '1.0'
+  version: "1.0"
   contact: {}
 tags: []
 servers: []
@@ -770,7 +783,7 @@ components:
         createdAt:
           format: date-time
           type: string
-          example: '2025-07-14T12:34:56Z'
+          example: "2025-07-14T12:34:56Z"
       required:
         - id
         - nome
@@ -780,11 +793,11 @@ components:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/Pessoa'
+            $ref: "#/components/schemas/Pessoa"
       required:
         - meta
         - rows
@@ -795,7 +808,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/PessoaPaginatedData'
+          $ref: "#/components/schemas/PessoaPaginatedData"
       required:
         - message
         - data
@@ -806,7 +819,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
       required:
         - message
         - data
@@ -831,7 +844,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
       required:
         - message
         - data
@@ -854,7 +867,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
       required:
         - message
         - data
@@ -865,7 +878,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
       required:
         - message
         - data
@@ -877,7 +890,7 @@ components:
           example: vivi@email.com
         password:
           type: string
-          example: '123456'
+          example: "123456"
         nome:
           type: string
           example: Vivi
@@ -893,7 +906,7 @@ components:
           example: conquista.engcomp@gmail.com
         password:
           type: string
-          example: '123456'
+          example: "123456"
       required:
         - email
         - password
@@ -920,7 +933,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Auth'
+          $ref: "#/components/schemas/Auth"
       required:
         - message
         - data
@@ -944,11 +957,11 @@ components:
           example: utensils
         cor:
           type: string
-          example: '#FF5733'
+          example: "#FF5733"
         createdAt:
           format: date-time
           type: string
-          example: '2025-07-17T10:20:30.000Z'
+          example: "2025-07-17T10:20:30.000Z"
       required:
         - id
         - nome
@@ -960,11 +973,11 @@ components:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/Categoria'
+            $ref: "#/components/schemas/Categoria"
       required:
         - meta
         - rows
@@ -975,7 +988,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/CategoriaPaginatedData'
+          $ref: "#/components/schemas/CategoriaPaginatedData"
       required:
         - message
         - data
@@ -986,7 +999,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
       required:
         - message
         - data
@@ -1018,7 +1031,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
       required:
         - message
         - data
@@ -1047,7 +1060,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
       required:
         - message
         - data
@@ -1058,7 +1071,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
       required:
         - message
         - data
@@ -1074,7 +1087,7 @@ components:
         createdAt:
           format: date-time
           type: string
-          example: '2025-07-17T10:20:30.000Z'
+          example: "2025-07-17T10:20:30.000Z"
       required:
         - id
         - nome
@@ -1083,11 +1096,11 @@ components:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/MeioPagamento'
+            $ref: "#/components/schemas/MeioPagamento"
       required:
         - meta
         - rows
@@ -1098,7 +1111,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/MeioPagamentoPaginatedData'
+          $ref: "#/components/schemas/MeioPagamentoPaginatedData"
       required:
         - message
         - data
@@ -1109,7 +1122,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/MeioPagamento'
+          $ref: "#/components/schemas/MeioPagamento"
       required:
         - message
         - data
@@ -1128,7 +1141,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/MeioPagamento'
+          $ref: "#/components/schemas/MeioPagamento"
       required:
         - message
         - data
@@ -1145,7 +1158,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/MeioPagamento'
+          $ref: "#/components/schemas/MeioPagamento"
       required:
         - message
         - data
@@ -1156,7 +1169,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/MeioPagamento'
+          $ref: "#/components/schemas/MeioPagamento"
       required:
         - message
         - data
@@ -1180,19 +1193,19 @@ components:
         tipoCategoria:
           type: array
           items:
-            $ref: '#/components/schemas/EnumOption'
+            $ref: "#/components/schemas/EnumOption"
         tipoTransacao:
           type: array
           items:
-            $ref: '#/components/schemas/EnumOption'
+            $ref: "#/components/schemas/EnumOption"
         tipoPatrimonio:
           type: array
           items:
-            $ref: '#/components/schemas/EnumOption'
+            $ref: "#/components/schemas/EnumOption"
         formaPagamento:
           type: array
           items:
-            $ref: '#/components/schemas/EnumOption'
+            $ref: "#/components/schemas/EnumOption"
       required:
         - tipoCategoria
         - tipoTransacao
@@ -1205,7 +1218,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Enums'
+          $ref: "#/components/schemas/Enums"
       required:
         - message
         - data
@@ -1229,7 +1242,7 @@ components:
           example: 3500.5
         data:
           type: string
-          example: '2025-07-21T12:00:00Z'
+          example: "2025-07-21T12:00:00Z"
         observacoes:
           type: string
           example: Pagamento referente ao mês de julho
@@ -1256,13 +1269,13 @@ components:
         createdAt:
           format: date-time
           type: string
-          example: '2025-07-17T10:20:30.000Z'
+          example: "2025-07-17T10:20:30.000Z"
         categoria:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
         pessoa:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
         meioPagamento:
-          $ref: '#/components/schemas/MeioPagamento'
+          $ref: "#/components/schemas/MeioPagamento"
       required:
         - id
         - descricao
@@ -1286,13 +1299,13 @@ components:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/TransacaoResponse'
+            $ref: "#/components/schemas/TransacaoResponse"
         resume:
-          $ref: '#/components/schemas/TransacoesResume'
+          $ref: "#/components/schemas/TransacoesResume"
       required:
         - meta
         - rows
@@ -1304,7 +1317,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/TransacaoPaginatedData'
+          $ref: "#/components/schemas/TransacaoPaginatedData"
       required:
         - message
         - data
@@ -1328,7 +1341,7 @@ components:
           example: 3500.5
         data:
           type: string
-          example: '2025-07-21T12:00:00Z'
+          example: "2025-07-21T12:00:00Z"
         observacoes:
           type: string
           example: Pagamento referente ao mês de julho
@@ -1355,7 +1368,7 @@ components:
         createdAt:
           format: date-time
           type: string
-          example: '2025-07-17T10:20:30.000Z'
+          example: "2025-07-17T10:20:30.000Z"
       required:
         - id
         - descricao
@@ -1371,7 +1384,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Transacao'
+          $ref: "#/components/schemas/Transacao"
       required:
         - message
         - data
@@ -1395,7 +1408,7 @@ components:
           example: 3500.5
         data:
           type: string
-          example: '2025-07-21T12:00:00Z'
+          example: "2025-07-21T12:00:00Z"
         formaPagamento:
           type: string
           enum:
@@ -1433,7 +1446,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Transacao'
+          $ref: "#/components/schemas/Transacao"
       required:
         - message
         - data
@@ -1457,7 +1470,7 @@ components:
           example: 3500.5
         data:
           type: string
-          example: '2025-07-21T12:00:00Z'
+          example: "2025-07-21T12:00:00Z"
         formaPagamento:
           type: string
           enum:
@@ -1488,7 +1501,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Transacao'
+          $ref: "#/components/schemas/Transacao"
       required:
         - message
         - data
@@ -1499,7 +1512,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/Transacao'
+          $ref: "#/components/schemas/Transacao"
       required:
         - message
         - data
@@ -1538,7 +1551,7 @@ components:
           example: 2300
         cor:
           type: string
-          example: '#FFF'
+          example: "#FFF"
       required:
         - categoria
         - valor
@@ -1553,8 +1566,8 @@ components:
           type: number
           example: 800
         cor:
-          type: number
-          example: '#FFF'
+          type: string
+          example: "#FFF"
       required:
         - categoria
         - valor
@@ -1568,7 +1581,7 @@ components:
         categorias:
           type: array
           items:
-            $ref: '#/components/schemas/DespesaPorCategoriaMesCategoria'
+            $ref: "#/components/schemas/DespesaPorCategoriaMesCategoria"
       required:
         - mes
         - categorias
@@ -1594,22 +1607,22 @@ components:
         receitasMes:
           type: array
           items:
-            $ref: '#/components/schemas/ReceitaPorMes'
+            $ref: "#/components/schemas/ReceitaPorMes"
         despesasMes:
           type: array
           items:
-            $ref: '#/components/schemas/DespesaPorMes'
+            $ref: "#/components/schemas/DespesaPorMes"
         despesasPorCategoriaAno:
           type: array
           items:
-            $ref: '#/components/schemas/DespesaPorCategoriaAno'
+            $ref: "#/components/schemas/DespesaPorCategoriaAno"
         despesasPorCategoriaMes:
           type: array
           items:
-            $ref: '#/components/schemas/DespesaPorCategoriaMes'
+            $ref: "#/components/schemas/DespesaPorCategoriaMes"
         atualizadoEm:
           type: string
-          example: '2025-07-21T16:35:00.000Z'
+          example: "2025-07-21T16:35:00.000Z"
           description: Data da última atualização
       required:
         - id
@@ -1629,7 +1642,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/GetResumoFinanceiro'
+          $ref: "#/components/schemas/GetResumoFinanceiro"
       required:
         - message
         - data
@@ -1653,7 +1666,7 @@ components:
           example: 3500.5
         data:
           type: string
-          example: '2025-07-21T12:00:00Z'
+          example: "2025-07-21T12:00:00Z"
         observacoes:
           type: string
           example: Pagamento referente ao mês de julho
@@ -1680,13 +1693,13 @@ components:
         createdAt:
           format: date-time
           type: string
-          example: '2025-07-17T10:20:30.000Z'
+          example: "2025-07-17T10:20:30.000Z"
         categoria:
-          $ref: '#/components/schemas/Categoria'
+          $ref: "#/components/schemas/Categoria"
         pessoa:
-          $ref: '#/components/schemas/Pessoa'
+          $ref: "#/components/schemas/Pessoa"
         meioPagamento:
-          $ref: '#/components/schemas/MeioPagamento'
+          $ref: "#/components/schemas/MeioPagamento"
       required:
         - id
         - descricao
@@ -1702,13 +1715,13 @@ components:
       type: object
       properties:
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/RelatorioTransacoesResponse'
+            $ref: "#/components/schemas/RelatorioTransacoesResponse"
         resume:
-          $ref: '#/components/schemas/TransacoesResume'
+          $ref: "#/components/schemas/TransacoesResume"
       required:
         - meta
         - rows
@@ -1720,7 +1733,7 @@ components:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/RelatorioTrasacoesPaginatedData'
+          $ref: "#/components/schemas/RelatorioTrasacoesPaginatedData"
       required:
         - message
         - data
