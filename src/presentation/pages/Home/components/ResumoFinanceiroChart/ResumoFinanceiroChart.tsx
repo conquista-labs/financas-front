@@ -10,6 +10,7 @@ import {
 } from "chart.js";
 import { ResumoFinanceiroChartProps } from "./resumoFinanceiroChart.types";
 import { formatMonth, options } from "./resumoFinanceiroChart.definitions";
+import { Box } from "@rarui-react/components";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -45,6 +46,10 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
     ],
   };
 
-  return <Bar data={chartData} options={options} />;
+  return (
+    <Box display="flex" alignItems="center" width="100%" height="100%">
+      <Bar data={chartData} options={options} />
+    </Box>
+  );
 };
 export default ResumoFinanceiroChart;
