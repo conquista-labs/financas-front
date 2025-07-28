@@ -705,7 +705,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetRelatoriosResponse'
+                $ref: '#/components/schemas/GetRelatorioTransacoesResponse'
       security:
         - access-token: []
       summary: Gerar relatório finaceiro
@@ -1623,7 +1623,7 @@ components:
       required:
         - message
         - data
-    RelatoriosResponse:
+    RelatorioTransacoesResponse:
       type: object
       properties:
         id:
@@ -1688,7 +1688,7 @@ components:
         - categoria
         - pessoa
         - meioPagamento
-    RelatoriosPaginatedData:
+    RelatorioTrasacoesPaginatedData:
       type: object
       properties:
         meta:
@@ -1696,21 +1696,21 @@ components:
         rows:
           type: array
           items:
-            $ref: '#/components/schemas/RelatoriosResponse'
+            $ref: '#/components/schemas/RelatorioTransacoesResponse'
         resume:
           $ref: '#/components/schemas/TransacoesResume'
       required:
         - meta
         - rows
         - resume
-    GetRelatoriosResponse:
+    GetRelatorioTransacoesResponse:
       type: object
       properties:
         message:
           type: string
           example: Operação realizada com sucesso
         data:
-          $ref: '#/components/schemas/RelatoriosPaginatedData'
+          $ref: '#/components/schemas/RelatorioTrasacoesPaginatedData'
       required:
         - message
         - data

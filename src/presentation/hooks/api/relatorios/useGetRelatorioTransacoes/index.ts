@@ -1,0 +1,1 @@
+export { useGetRelatorioTransacoes } from "./useGetRelatorioTransacoes";

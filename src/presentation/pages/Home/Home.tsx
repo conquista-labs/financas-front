@@ -18,28 +18,35 @@ import {
   //  DespesasPorCategoria,
   ResumoFinanceiroChart,
 } from "./components";
-import { formatCurrency } from "./home.definitions";
+import { formatCurrency, getLastUpdate } from "./home.definitions";
 import { Loading } from "@/presentation/components";
 
 const Home: React.FC = () => {
   const { auth } = useAuthStore();
   const { data, isLoading, refetch } = useGetResumoFinanceiro();
   const { mutate, isPending } = usePostResumoFinanceiro();
-
+  console.log(data?.data.atualizadoEm);
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$2xs">
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Title as="h4" color="$secondary" fontWeight="$bold">
           Olá, {auth.nome}
         </Title>
-        <Button
-          size="medium"
-          variant="text"
-          onClick={() => mutate(undefined, { onSuccess: () => refetch() })}
-        >
-          <Icon source={<RefreshIcon size="medium" />} />
-          Atualizar
-        </Button>
+        <Box display="flex" alignItems="center" gap="$2xs">
+          <Text fontSize="$s" color="$secondary">
+            Última atualização:
+            {data?.data.atualizadoEm && getLastUpdate(data?.data.atualizadoEm)}
+          </Text>
+
+          <Button
+            size="medium"
+            variant="text"
+            onClick={() => mutate(undefined, { onSuccess: () => refetch() })}
+          >
+            <Icon source={<RefreshIcon size="medium" />} />
+            Atualizar
+          </Button>
+        </Box>
       </Box>
 
       <Box

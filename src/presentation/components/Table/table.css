@@ -2,8 +2,8 @@
   overflow: auto;
   padding-bottom: 0;
   border-style: solid;
-  min-height: 550px;
-  max-height: 550px;
+  min-height: 557px;
+  max-height: 557px;
   border-width: var(--rarui-shape-border-width-1);
   background-color: var(--rarui-colors-surface-primary);
   border-color: var(--rarui-colors-border-subdued);

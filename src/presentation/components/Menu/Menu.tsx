@@ -53,10 +53,10 @@ const Menu: React.FC<MenuProps> = () => {
               alignItems="center"
               justifyContent="center"
               borderWidth="$none"
-              cursor="pointer"
               transitionProperty="all"
               transitionTimingFunction="ease-in"
               borderRadius="$2xs"
+              cursor="pointer"
               color={isMenuActive ? "$brand" : "$secondary"}
               backgroundColor={{
                 xs: isMenuActive ? "$secondary" : "$primary",

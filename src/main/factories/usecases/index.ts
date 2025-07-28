@@ -5,3 +5,4 @@ export * from "./meiosPagamento";
 export * from "./pessoas";
 export * from "./resumoFinanceiro";
 export * from "./transacoes";
+export * from "./relatorios";

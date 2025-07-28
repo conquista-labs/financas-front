@@ -13,7 +13,7 @@ import { Categoria } from "./categoria";
 import { MeioPagamento } from "./meioPagamento";
 import { Pessoa } from "./pessoa";
 
-export interface RelatoriosResponse {
+export interface RelatorioTransacoesResponse {
   id: string;
   descricao: string;
   categoriaId: string;
@@ -22,13 +22,13 @@ export interface RelatoriosResponse {
   data: string;
   observacoes?: string;
   meioPagamentoId?: string;
-  formaPagamento?: RelatoriosResponse.FormaPagamentoEnum;
+  formaPagamento?: RelatorioTransacoesResponse.FormaPagamentoEnum;
   createdAt: string;
   categoria: Categoria;
   pessoa: Pessoa;
   meioPagamento: MeioPagamento;
 }
-export namespace RelatoriosResponse {
+export namespace RelatorioTransacoesResponse {
   export type FormaPagamentoEnum =
     | "avista"
     | "parcela1x"

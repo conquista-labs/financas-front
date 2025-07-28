@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   DateParam,
@@ -24,7 +24,7 @@ import { urlRouters } from "@/presentation/router/router.definitions";
 import {
   useDeleteTransacoesId,
   useGetTransacoes,
-  usePostResumoFinanceiro,
+  useGetRelatorioTransacoes,
 } from "@/presentation/hooks/api";
 import { Breadcrumb, Table } from "@/presentation/components";
 import { useIsMobile, usePagination } from "@/presentation/hooks/core";
@@ -34,6 +34,8 @@ import { Filters, TableFooter } from "./components";
 const Transactions: React.FC = () => {
   const { isMobile } = useIsMobile();
   const [openFilters, setOpenFilters] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [queryParams, setQueryParams] = useQueryParams({
     startDate: withDefault(DateParam, startOfMonth(new Date())),
@@ -45,57 +47,98 @@ const Transactions: React.FC = () => {
     search: withDefault(StringParam, ""),
   });
 
-  const handleOpenFilters = () => setOpenFilters(!openFilters);
+  const formattedParams = useMemo(
+    () => ({
+      ...queryParams,
+      startDate: format(queryParams.startDate, "yyyy-MM-dd"),
+      endDate: queryParams.endDate
+        ? format(queryParams.endDate, "yyyy-MM-dd")
+        : "",
+    }),
+    [queryParams],
+  );
 
   const { page, pageSize, onChangePage } = usePagination();
-  const { data, isLoading, refetch } = useGetTransacoes({
+  const {
+    data,
+    isLoading: isLoadingGetTransacoes,
+    refetch,
+  } = useGetTransacoes({
     page,
     limit: pageSize,
-    ...queryParams,
-    startDate: format(queryParams.startDate, "yyyy-MM-dd"),
-    endDate: queryParams.endDate
-      ? format(queryParams.endDate, "yyyy-MM-dd")
-      : "",
+    ...formattedParams,
   });
 
-  const location = useLocation();
+  const {
+    refetch: getRelatorioTransacoes,
+    isLoading: isLoadingGetRelatorioTransacoes,
+  } = useGetRelatorioTransacoes(
+    { page, limit: pageSize, ...formattedParams },
+    { enabled: false },
+  );
+
+  const { mutate, isPending } = useDeleteTransacoesId();
+
   const currentSearch = location.search;
 
-  const navigate = useNavigate();
+  const handleNavigate = useCallback(
+    (path: string) => {
+      navigate(`${path}${currentSearch}`);
+    },
+    [navigate, currentSearch],
+  );
 
-  const handleNavigate = (path: string) => {
-    navigate(`${path}${currentSearch}`);
+  const handleDateChange = ([newStartDate, newEndDate]: [Date, Date]) => {
+    setQueryParams({ startDate: newStartDate, endDate: newEndDate });
+    onChangePage({ page: 1, pageSize });
   };
-
-  const handleChange = ([newStartDate, newEndDate]: [Date, Date]) => {
-    setQueryParams({
-      startDate: newStartDate,
-      endDate: newEndDate,
-    });
-    onChangePage({ page: 1, pageSize: pageSize });
-  };
-
-  const { mutate: mutateDelete, isPending } = useDeleteTransacoesId();
-  const { mutate: mutateResumeFinacial } = usePostResumoFinanceiro();
 
   const navigateMonth = (direction: "prev" | "next") => {
     const multiplier = direction === "prev" ? -1 : 1;
+    const newStart = addMonths(queryParams.startDate, multiplier);
+    const newEnd = queryParams.endDate
+      ? addMonths(queryParams.endDate, multiplier)
+      : endOfMonth(newStart);
 
-    setQueryParams({
-      startDate: addMonths(queryParams.startDate, multiplier),
-      endDate: queryParams.endDate
-        ? addMonths(queryParams.endDate, multiplier)
-        : addMonths(endOfMonth(queryParams.startDate), multiplier),
-    });
-
-    onChangePage({ page: 1, pageSize: 10 }); // garante reset de paginação
+    setQueryParams({ startDate: newStart, endDate: newEnd });
+    onChangePage({ page: 1, pageSize: 10 });
   };
 
-  const handleResume = () => {};
+  const handleResume = async () => {
+    try {
+      const { data } = await getRelatorioTransacoes();
+      const blob = new Blob([data as unknown as BlobPart], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "relatorio.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Erro ao gerar relatório:", error);
+    }
+  };
+
+  const columns = useMemo(
+    () => getColumns(handleNavigate, mutate, refetch),
+    [handleNavigate, mutate, refetch],
+  );
+
+  const isLoading = useMemo(
+    () =>
+      isLoadingGetTransacoes || isLoadingGetRelatorioTransacoes || isPending,
+    [isLoadingGetTransacoes, isLoadingGetRelatorioTransacoes, isPending],
+  );
 
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$s">
       <Breadcrumb crumbs={["transactions"]} />
+
       <Box
         display="flex"
         justifyContent="space-between"
@@ -113,7 +156,7 @@ const Transactions: React.FC = () => {
               dateFormat="MMMM d, yyyy"
               startDate={queryParams.startDate}
               endDate={queryParams.endDate as Date}
-              onChange={(dates) => handleChange(dates as [Date, Date])}
+              onChange={(dates) => handleDateChange(dates as [Date, Date])}
               selected={queryParams.startDate}
               selectsRange
             />
@@ -123,6 +166,7 @@ const Transactions: React.FC = () => {
             />
           </Box>
         </Box>
+
         <Box
           display="flex"
           gap="$2xs"
@@ -130,7 +174,7 @@ const Transactions: React.FC = () => {
         >
           <Button
             variant="outlined"
-            onClick={handleOpenFilters}
+            onClick={() => setOpenFilters(!openFilters)}
             full={isMobile}
           >
             Filtros
@@ -145,18 +189,20 @@ const Transactions: React.FC = () => {
           </Button>
         </Box>
       </Box>
+
       <Table
-        columns={getColumns(handleNavigate, mutateDelete, refetch)}
+        columns={columns}
         rows={data?.data.rows ?? []}
         total={data?.data.meta.total ?? 0}
-        isLoading={isLoading || isPending}
+        isLoading={isLoading}
       >
         <TableFooter
           total={data?.data.resume.total ?? "R$ 0.00"}
           handleResume={handleResume}
         />
       </Table>
-      <Filters open={openFilters} onRemove={handleOpenFilters} />
+
+      <Filters open={openFilters} onRemove={() => setOpenFilters(false)} />
     </Box>
   );
 };

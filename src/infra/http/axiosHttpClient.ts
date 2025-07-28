@@ -17,6 +17,7 @@ export class AxiosHttpClient implements HttpClient {
         data: data.body,
         headers: data.headers,
         params: data.params,
+        responseType: data.responseType,
         paramsSerializer: (params) =>
           qs.stringify(params, { arrayFormat: "repeat" }),
       });

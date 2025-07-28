@@ -15,7 +15,7 @@ export const useGetTransacoes = (
   const getTransacoes = makeGetTransacoesFactory();
 
   return useQuery({
-    queryKey: ["get-Transacoes", params],
+    queryKey: ["get-transacoes", params],
     queryFn: async () => {
       try {
         return await getTransacoes.get(params);

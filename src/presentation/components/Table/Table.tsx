@@ -1,4 +1,4 @@
-import { useMemo, type JSX } from "react";
+import { Fragment, useMemo, type JSX } from "react";
 import {
   Box,
   Text,
@@ -28,7 +28,16 @@ function Table<T>({
   const renderCell = (column: (typeof allColumns)[number], row: T) => {
     const value = row[column.field];
     const formatter = column.options?.formatter;
+    const boxProps = column.options?.boxProps;
 
+    if (!value && value !== 0)
+      return (
+        <Box height="40.5px" display="flex" alignItems="center" width="100%">
+          <Text textAlign={boxProps?.textAlign} color="$disabled" width="100%">
+            —
+          </Text>
+        </Box>
+      );
     if (formatter) return formatter(value, row);
 
     return (
@@ -38,16 +47,27 @@ function Table<T>({
     );
   };
 
-  const rows = useMemo(
-    () => (isLoading ? Array.from({ length: 10 }) : lines) as T[],
-    [lines, isLoading],
-  );
+  const rows = useMemo(() => {
+    if (isLoading) {
+      return Array.from({ length: 10 }) as T[];
+    }
+
+    const emptyCount = 8 - lines.length;
+    const filledRows = lines;
+
+    // Garante que cada linha vazia tenha um ID único se necessário
+    const emptyRows = Array.from({ length: emptyCount }, () =>
+      Object.fromEntries(allColumns.map((column) => [column.field, ""])),
+    ) as T[];
+
+    return [...filledRows, ...emptyRows];
+  }, [lines, isLoading, allColumns]);
 
   return (
     <>
       <Box display="flex" flexDirection="column" gap="$xs">
         <div className="table-container">
-          <Box as="table" width="100%" height="300px">
+          <Box as="table" width="100%" maxHeight="300px">
             <Box
               as="thead"
               position="sticky"
@@ -88,19 +108,14 @@ function Table<T>({
                   borderColor="$divider"
                 >
                   {allColumns.map((column, colIndex) => (
-                    <>
-                      <Box
-                        as="td"
-                        key={`cell-${rowIndex}-${colIndex}`}
-                        padding="$3xs"
-                        verticalAlign="middle"
-                      >
+                    <Fragment key={`cell-${rowIndex}-${colIndex}`}>
+                      <Box as="td" padding="$3xs" verticalAlign="middle">
                         {!isLoading && renderCell(column, row)}
                         {isLoading && (
-                          <Skeleton height="29.7px" borderRadius="4px" />
+                          <Skeleton height="29px" borderRadius="4px" />
                         )}
                       </Box>
-                    </>
+                    </Fragment>
                   ))}
                 </Box>
               ))}

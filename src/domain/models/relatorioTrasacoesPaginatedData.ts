@@ -10,11 +10,11 @@
  * Do not edit the class manually.
  */
 import { PaginationMeta } from "./paginationMeta";
-import { RelatoriosResponse } from "./relatoriosResponse";
+import { RelatorioTransacoesResponse } from "./relatorioTransacoesResponse";
 import { TransacoesResume } from "./transacoesResume";
 
-export interface RelatoriosPaginatedData {
+export interface RelatorioTrasacoesPaginatedData {
   meta: PaginationMeta;
-  rows: Array<RelatoriosResponse>;
+  rows: Array<RelatorioTransacoesResponse>;
   resume: TransacoesResume;
 }
