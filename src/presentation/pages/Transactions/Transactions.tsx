@@ -201,7 +201,6 @@ const Transactions: React.FC = () => {
           handleResume={handleResume}
         />
       </Table>
-
       <Filters open={openFilters} onRemove={() => setOpenFilters(false)} />
     </Box>
   );

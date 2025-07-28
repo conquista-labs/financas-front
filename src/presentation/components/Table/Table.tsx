@@ -19,6 +19,8 @@ function Table<T>({
   total,
   isLoading,
   children,
+  tableContainerStyles,
+  showPagination = true,
 }: TableProps<T>): JSX.Element {
   const { page, totalPages, pageSize, onChangePage, onChangePageSize } =
     usePagination(total);
@@ -65,8 +67,8 @@ function Table<T>({
 
   return (
     <>
-      <Box display="flex" flexDirection="column" gap="$xs">
-        <div className="table-container">
+      <Box display="flex" flexDirection="column" gap="$xs" width="100%">
+        <div className="table-container" style={tableContainerStyles}>
           <Box as="table" width="100%" maxHeight="300px">
             <Box
               as="thead"
@@ -123,32 +125,36 @@ function Table<T>({
             {children}
           </Box>
         </div>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          flexDirection={{ xs: "column", md: "row" }}
-          gap="$2xs"
-        >
-          <Box display="flex" alignItems="center" gap="$2xs">
-            <Text color="$brand" fontSize="$s" fontWeight="$bold">
-              Itens por página
-            </Text>
-            <Select
-              enabledFlip
-              value={pageSizeOptions.find(
-                (option) => Number(option.value) === pageSize,
-              )}
-              options={pageSizeOptions}
-              onChange={(option: any) => onChangePageSize(option?.[0].value)}
+        {showPagination && (
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            flexDirection={{ xs: "column", md: "row" }}
+            gap="$2xs"
+          >
+            <Box display="flex" alignItems="center" gap="$2xs">
+              <Text color="$brand" fontSize="$s" fontWeight="$bold">
+                Itens por página
+              </Text>
+              <Select
+                enabledFlip
+                value={pageSizeOptions.find(
+                  (option) => Number(option.value) === pageSize,
+                )}
+                options={pageSizeOptions}
+                onChange={(option: any) => onChangePageSize(option?.[0].value)}
+              />
+            </Box>
+            <Pagination
+              activePage={page}
+              pageCount={totalPages}
+              onPageChange={(page) =>
+                onChangePage({ page, pageSize: pageSize })
+              }
             />
           </Box>
-          <Pagination
-            activePage={page}
-            pageCount={totalPages}
-            onPageChange={(page) => onChangePage({ page, pageSize: pageSize })}
-          />
-        </Box>
+        )}
         <Loading isLoading={isLoading} />
       </Box>
     </>

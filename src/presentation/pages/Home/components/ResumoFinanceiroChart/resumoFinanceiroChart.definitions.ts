@@ -10,7 +10,7 @@ export const options: ChartOptions<"bar"> = {
   responsive: true,
   plugins: {
     legend: {
-      position: "top",
+      position: "bottom",
       labels: {
         font: {
           family: "Outfit",

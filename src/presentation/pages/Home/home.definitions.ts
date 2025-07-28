@@ -16,7 +16,6 @@ export const formatCurrency = (value: number) => {
 };
 
 export const getLastUpdate = (atualizadoEm: string) => {
-  console.log(atualizadoEm);
   const data = new Date(atualizadoEm);
 
   const hora = format(data, "HH:mm");

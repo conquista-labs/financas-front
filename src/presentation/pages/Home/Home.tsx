@@ -1,12 +1,5 @@
-import React from "react";
-import {
-  Box,
-  // Divider,
-  Title,
-  Text,
-  Button,
-  Icon,
-} from "@rarui-react/components";
+import React, { useMemo } from "react";
+import { Box, Title, Text, Button, Icon } from "@rarui-react/components";
 import { RefreshIcon } from "@rarui/icons";
 import {
   useGetResumoFinanceiro,
@@ -16,6 +9,7 @@ import {
 import { useAuthStore } from "@/presentation/store";
 import {
   //  DespesasPorCategoria,
+  ResumoMensalTable,
   ResumoFinanceiroChart,
 } from "./components";
 import { formatCurrency, getLastUpdate } from "./home.definitions";
@@ -23,9 +17,18 @@ import { Loading } from "@/presentation/components";
 
 const Home: React.FC = () => {
   const { auth } = useAuthStore();
-  const { data, isLoading, refetch } = useGetResumoFinanceiro();
+  const {
+    data,
+    isLoading: isLoadingGetResumoFinanceiro,
+    refetch,
+  } = useGetResumoFinanceiro();
   const { mutate, isPending } = usePostResumoFinanceiro();
-  console.log(data?.data.atualizadoEm);
+
+  const isLoading = useMemo(
+    () => isLoadingGetResumoFinanceiro || isPending,
+    [isLoadingGetResumoFinanceiro, isPending],
+  );
+
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$2xs">
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -92,9 +95,8 @@ const Home: React.FC = () => {
       </Box>
       <Box
         display="grid"
-        gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
+        gridTemplateColumns={{ xs: "1fr", md: "1fr", lg: "1fr 1fr" }}
         gap="$s"
-        gridTemplateRows="500px"
       >
         <Box
           flex="1"
@@ -108,17 +110,13 @@ const Home: React.FC = () => {
           flexDirection="column"
           gap="$2xs"
         >
-          {/* <Title as="h6" color="$secondary">
-            Despesas e receitas mensal
-          </Title>
-          <Divider /> */}
           <ResumoFinanceiroChart
             receitas={data?.data.receitasPorMes ?? []}
             despesas={data?.data.despesasPorMes ?? []}
           />
         </Box>
 
-        {/* <Box
+        <Box
           flex="1"
           backgroundColor="$primary"
           borderRadius="$xs"
@@ -130,16 +128,14 @@ const Home: React.FC = () => {
           flexDirection="column"
           gap="$2xs"
         >
-          <Title as="h6" color="$secondary">
-            Despesa anual por catégoria
-          </Title>
-          <Divider />
-          <DespesasPorCategoria
-            despesas={data?.data.despesasPorCategoria ?? []}
+          <ResumoMensalTable
+            receitas={data?.data.receitasPorMes ?? []}
+            despesas={data?.data.despesasPorMes ?? []}
+            isLoading={isLoading}
           />
-        </Box> */}
+        </Box>
       </Box>
-      <Loading isLoading={isLoading || isPending} />
+      <Loading isLoading={isLoading} />
     </Box>
   );
 };

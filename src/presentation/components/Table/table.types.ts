@@ -27,4 +27,6 @@ export interface TableProps<T> {
   total: number;
   isLoading?: boolean;
   children?: ReactNode;
+  showPagination?: boolean;
+  tableContainerStyles?: React.CSSProperties;
 }
