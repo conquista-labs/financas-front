@@ -2,6 +2,7 @@ import { type HttpClient, HttpStatusCode } from "@/data/protocols";
 import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
 import type {
   PostResumoFinanceiroModel,
+  PostResumoFinanceiroParms,
   PostResumoFinanceiroUseCase,
 } from "@/domain/usecases";
 
@@ -11,10 +12,12 @@ export class PostResumoFinanceiro implements PostResumoFinanceiroUseCase {
     private readonly httpClient: HttpClient,
   ) {}
 
-  async post(): Promise<PostResumoFinanceiroModel> {
+  async post(
+    params: PostResumoFinanceiroParms,
+  ): Promise<PostResumoFinanceiroModel> {
     const httpResponse =
       await this.httpClient.request<PostResumoFinanceiroModel>({
-        url: this.url,
+        url: `${this.url.replace(":ano", `${params.year}`)}`,
         method: "post",
       });
 

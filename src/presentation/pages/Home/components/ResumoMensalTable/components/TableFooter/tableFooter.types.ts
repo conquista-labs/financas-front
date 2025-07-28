@@ -1,4 +1,4 @@
 export interface TableFooterProps {
-  totalReceitasAno: number;
-  totalDespesasAno: number;
+  receitasAno: number;
+  despesasAno: number;
 }

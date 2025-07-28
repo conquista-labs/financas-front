@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DespesaPorCategoriaMesCategoria } from "./despesaPorCategoriaMesCategoria";
 
-export interface DespesaPorCategoria {
-  categoria: string;
-  valor: number;
-  cor: string;
+export interface DespesaPorCategoriaMes {
+  mes: string;
+  categorias: Array<DespesaPorCategoriaMesCategoria>;
 }

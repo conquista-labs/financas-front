@@ -11,7 +11,12 @@ import {
 import { useIsMobile } from "@/presentation/hooks/core";
 import { Input, Select } from "@/presentation/components";
 
-import { buildOptions, defaultForm, schema } from "./filters.definitions";
+import {
+  buildOptions,
+  defaultForm,
+  optionsTypes,
+  schema,
+} from "./filters.definitions";
 import {
   useGetCategorias,
   useGetEnums,
@@ -30,6 +35,7 @@ const Filters: React.FC<FiltersProps> = ({ open, onRemove }) => {
     meioPagamentoId: withDefault(StringParam, ""),
     formaPagamento: withDefault(StringParam, ""),
     search: withDefault(StringParam, ""),
+    tipo: withDefault(StringParam, ""),
   });
 
   const { isMobile } = useIsMobile();
@@ -108,6 +114,17 @@ const Filters: React.FC<FiltersProps> = ({ open, onRemove }) => {
           gap="$s"
         >
           <Input label="Buscar" id="search" name="search" control={control} />
+          <Select
+            label="Tipo"
+            id="tipo"
+            name="tipo"
+            placeholder="Selecione o tipo"
+            options={optionsTypes}
+            control={control}
+            maxHeight="300px"
+            portalId="sidebar-filters-transactions"
+            filterOptions={false}
+          />
           <Select
             label="Categoria"
             id="categoriaId"

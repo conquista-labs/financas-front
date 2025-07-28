@@ -10,35 +10,29 @@ import {
 } from "chart.js";
 import { ResumoFinanceiroChartProps } from "./resumoFinanceiroChart.types";
 import { formatMonth, options } from "./resumoFinanceiroChart.definitions";
-import { Box } from "@rarui-react/components";
+import { Box, Title } from "@rarui-react/components";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
-  receitas,
-  despesas,
+  receitasMes,
+  despesasMes,
 }) => {
-  const filterDespesas = despesas.filter((despesa) =>
-    despesa.mes.includes("2025"),
-  );
-  const filterReceitas = receitas.filter((receita) =>
-    receita.mes.includes("2025"),
-  );
-  const labels = filterDespesas.map((item) => formatMonth(item.mes));
+  const labels = despesasMes.map((item) => formatMonth(item.mes));
 
   const chartData = {
     labels,
     datasets: [
       {
         label: "Receitas",
-        data: filterReceitas.map((item) => Number(item.valor)),
+        data: receitasMes.map((item) => Number(item.valor)),
         backgroundColor: "#96C283",
         borderRadius: 2,
         barThickness: 20,
       },
       {
         label: "Despesas",
-        data: filterDespesas.map((item) => Number(item.valor)),
+        data: despesasMes.map((item) => Number(item.valor)),
         backgroundColor: "#DB4D4C",
         borderRadius: 2,
         barThickness: 20,
@@ -47,7 +41,16 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
   };
 
   return (
-    <Box display="flex" alignItems="center" width="100%" height="100%">
+    <Box
+      display="flex"
+      alignItems="center"
+      width="100%"
+      height="100%"
+      flexDirection="column"
+    >
+      <Title as="h6" color="$secondary">
+        Receitas e Despesas
+      </Title>
       <Bar data={chartData} options={options} />
     </Box>
   );

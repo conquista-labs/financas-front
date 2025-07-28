@@ -6,6 +6,6 @@ import { makeApiUrl } from "@/main/factories/http";
 export const makePostResumoFinanceiroFactory =
   (): PostResumoFinanceiroUseCase =>
     new PostResumoFinanceiro(
-      makeApiUrl("/resumo-financeiro"),
+      makeApiUrl("/resumo-financeiro/:ano"),
       makeAuthorizeHttpClient(),
     );

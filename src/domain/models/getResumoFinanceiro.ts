@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DespesaPorCategoria } from "./despesaPorCategoria";
+import { DespesaPorCategoriaAno } from "./despesaPorCategoriaAno";
 import { DespesaPorMes } from "./despesaPorMes";
-import { DespesaPorCategoriaPorMes } from "./despesaPorCategoriaPorMes";
+import { DespesaPorCategoriaMes } from "./despesaPorCategoriaMes";
 import { ReceitaPorMes } from "./receitaPorMes";
 
 export interface GetResumoFinanceiro {
@@ -19,14 +19,14 @@ export interface GetResumoFinanceiro {
    * ID do resumo financeiro
    */
   id: number;
-  totalReceitasAno: number;
-  totalDespesasAno: number;
+  receitasAno: number;
+  despesasAno: number;
   saldoAno: number;
   patrimonio: number;
-  receitasPorMes: Array<ReceitaPorMes>;
-  despesasPorMes: Array<DespesaPorMes>;
-  despesasPorCategoria: Array<DespesaPorCategoria>;
-  despesasPorCategoriaPorMes: Array<DespesaPorCategoriaPorMes>;
+  receitasMes: Array<ReceitaPorMes>;
+  despesasMes: Array<DespesaPorMes>;
+  despesasPorCategoriaAno: Array<DespesaPorCategoriaAno>;
+  despesasPorCategoriaMes: Array<DespesaPorCategoriaMes>;
   /**
    * Data da última atualização
    */

@@ -45,6 +45,7 @@ const Transactions: React.FC = () => {
     meioPagamentoId: withDefault(StringParam, ""),
     formaPagamento: withDefault(StringParam, ""),
     search: withDefault(StringParam, ""),
+    tipo: withDefault(StringParam, ""),
   });
 
   const formattedParams = useMemo(

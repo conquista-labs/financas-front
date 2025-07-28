@@ -517,6 +517,12 @@ paths:
           description: Forma de pagamento usada para filtrar as transações
           schema:
             type: string
+        - name: tipo
+          required: false
+          in: query
+          description: Tipo despesa ou receita usado para filtrar as transações
+          schema:
+            type: string
       responses:
         '200':
           description: Lista de transações retornada com sucesso.
@@ -1521,7 +1527,7 @@ components:
       required:
         - mes
         - valor
-    DespesaPorCategoria:
+    DespesaPorCategoriaAno:
       type: object
       properties:
         categoria:
@@ -1537,7 +1543,7 @@ components:
         - categoria
         - valor
         - cor
-    DespesaPorCategoriaPorMesCategoria:
+    DespesaPorCategoriaMesCategoria:
       type: object
       properties:
         categoria:
@@ -1546,10 +1552,14 @@ components:
         valor:
           type: number
           example: 800
+        cor:
+          type: number
+          example: '#FFF'
       required:
         - categoria
         - valor
-    DespesaPorCategoriaPorMes:
+        - cor
+    DespesaPorCategoriaMes:
       type: object
       properties:
         mes:
@@ -1558,7 +1568,7 @@ components:
         categorias:
           type: array
           items:
-            $ref: '#/components/schemas/DespesaPorCategoriaPorMesCategoria'
+            $ref: '#/components/schemas/DespesaPorCategoriaMesCategoria'
       required:
         - mes
         - categorias
@@ -1569,10 +1579,10 @@ components:
           type: number
           example: 1
           description: ID do resumo financeiro
-        totalReceitasAno:
+        receitasAno:
           type: number
           example: 12450.75
-        totalDespesasAno:
+        despesasAno:
           type: number
           example: 8930.1
         saldoAno:
@@ -1581,36 +1591,36 @@ components:
         patrimonio:
           type: number
           example: 54000
-        receitasPorMes:
+        receitasMes:
           type: array
           items:
             $ref: '#/components/schemas/ReceitaPorMes'
-        despesasPorMes:
+        despesasMes:
           type: array
           items:
             $ref: '#/components/schemas/DespesaPorMes'
-        despesasPorCategoria:
+        despesasPorCategoriaAno:
           type: array
           items:
-            $ref: '#/components/schemas/DespesaPorCategoria'
-        despesasPorCategoriaPorMes:
+            $ref: '#/components/schemas/DespesaPorCategoriaAno'
+        despesasPorCategoriaMes:
           type: array
           items:
-            $ref: '#/components/schemas/DespesaPorCategoriaPorMes'
+            $ref: '#/components/schemas/DespesaPorCategoriaMes'
         atualizadoEm:
           type: string
           example: '2025-07-21T16:35:00.000Z'
           description: Data da última atualização
       required:
         - id
-        - totalReceitasAno
-        - totalDespesasAno
+        - receitasAno
+        - despesasAno
         - saldoAno
         - patrimonio
-        - receitasPorMes
-        - despesasPorMes
-        - despesasPorCategoria
-        - despesasPorCategoriaPorMes
+        - receitasMes
+        - despesasMes
+        - despesasPorCategoriaAno
+        - despesasPorCategoriaMes
         - atualizadoEm
     GetResumoFinanceiroResponse:
       type: object

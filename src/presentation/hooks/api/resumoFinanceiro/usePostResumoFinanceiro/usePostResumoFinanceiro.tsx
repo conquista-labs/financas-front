@@ -7,7 +7,10 @@ import type { AxiosError } from "axios";
 import { useToast } from "@rarui-react/components/dist/Toast";
 
 import { makePostResumoFinanceiroFactory } from "@/main/factories/usecases";
-import type { PostResumoFinanceiroModel } from "@/domain/usecases";
+import type {
+  PostResumoFinanceiroModel,
+  PostResumoFinanceiroParms,
+} from "@/domain/usecases";
 import type { UsePostResumoFinanceiroOptions } from "./usePostResumoFinanceiro.types";
 
 export const usePostResumoFinanceiro = (
@@ -15,17 +18,20 @@ export const usePostResumoFinanceiro = (
 ): UseMutationResult<
   PostResumoFinanceiroModel,
   AxiosError,
-  PostResumoFinanceiroModel
+  PostResumoFinanceiroParms
 > => {
   const { addToast } = useToast();
   const postResumoFinanceiro = makePostResumoFinanceiroFactory();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ["post-ResumoFinanceiro"],
-    mutationFn: () => postResumoFinanceiro.post(),
+    mutationKey: ["post-resumo-financeiro"],
+    mutationFn: (params: PostResumoFinanceiroParms) =>
+      postResumoFinanceiro.post(params),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["get-resumo-financeiro"] });
+      queryClient.invalidateQueries({
+        queryKey: ["post-resumo-financeiro"],
+      });
     },
     onError: (error) => {
       addToast({

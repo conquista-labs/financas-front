@@ -2,6 +2,7 @@ import { type HttpClient, HttpStatusCode } from "@/data/protocols";
 import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
 import type {
   GetResumoFinanceiroModel,
+  GetResumoFinanceiroParams,
   GetResumoFinanceiroUseCase,
 } from "@/domain/usecases";
 
@@ -11,11 +12,14 @@ export class GetResumoFinanceiro implements GetResumoFinanceiroUseCase {
     private readonly httpClient: HttpClient,
   ) {}
 
-  async get(): Promise<GetResumoFinanceiroModel> {
+  async get(
+    params: GetResumoFinanceiroParams,
+  ): Promise<GetResumoFinanceiroModel> {
     const httpResponse =
       await this.httpClient.request<GetResumoFinanceiroModel>({
         url: this.url,
         method: "get",
+        params,
       });
 
     switch (httpResponse.statusCode) {

@@ -12,7 +12,19 @@ export const defaultForm = {
   pessoaId: "",
   meioPagamentoId: "",
   formaPagamento: "",
+  tipo: "",
 };
 
 export const buildOptions = (data: { id: string; nome: string }[]) =>
   data.map((line) => ({ label: line.nome, value: line.id }));
+
+export const optionsTypes = [
+  {
+    label: "Despesa",
+    value: "despesa",
+  },
+  {
+    label: "Receita",
+    value: "receita",
+  },
+];

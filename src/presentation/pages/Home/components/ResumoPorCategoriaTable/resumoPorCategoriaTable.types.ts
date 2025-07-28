@@ -1,10 +1,9 @@
 import {
-  DespesaPorCategoria,
-  DespesaPorCategoriaPorMes,
+  DespesaPorCategoriaAno,
+  DespesaPorCategoriaMes,
 } from "@/domain/models";
 
 export interface ResumoPorCategoriaTableProps {
-  despesasCategoriasMes: DespesaPorCategoriaPorMes[];
-  despesasCategoriasAno: DespesaPorCategoria[];
-  isLoading: boolean;
+  despesasPorCategoriaMes: DespesaPorCategoriaMes[];
+  despesasPorCategoriaAno: DespesaPorCategoriaAno[];
 }

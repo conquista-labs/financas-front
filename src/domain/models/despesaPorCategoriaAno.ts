@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-export interface DespesaPorCategoriaPorMesCategoria {
+export interface DespesaPorCategoriaAno {
   categoria: string;
   valor: number;
   cor: string;

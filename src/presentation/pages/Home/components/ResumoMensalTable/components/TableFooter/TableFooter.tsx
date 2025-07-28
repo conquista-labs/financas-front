@@ -4,10 +4,10 @@ import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
 import { TableFooterProps } from "./tableFooter.types";
 
 const TableFooter: React.FC<TableFooterProps> = ({
-  totalDespesasAno,
-  totalReceitasAno,
+  despesasAno,
+  receitasAno,
 }) => {
-  const saldo = totalReceitasAno - totalDespesasAno;
+  const saldo = despesasAno - receitasAno;
   return (
     <Box
       as="tfoot"
@@ -47,7 +47,7 @@ const TableFooter: React.FC<TableFooterProps> = ({
           fontSize="$body-s"
           color="$error"
         >
-          {formatCurrency(totalDespesasAno)}
+          {formatCurrency(despesasAno)}
         </Box>
         <Box
           as="td"
@@ -58,7 +58,7 @@ const TableFooter: React.FC<TableFooterProps> = ({
           fontSize="$body-s"
           color="$success"
         >
-          {formatCurrency(totalReceitasAno)}
+          {formatCurrency(receitasAno)}
         </Box>
         <Box
           as="td"

@@ -103,10 +103,16 @@ export const getColumns = () =>
     })
     .setColum("Ano", "ano", {
       formatter: (field) => (
-        <Text fontSize="$s" color="$brand" fontWeight="$bold">
+        <Text
+          fontSize="$s"
+          color="$brand"
+          fontWeight="$bold"
+          textAlign="center"
+        >
           {formatCurrency(field)}
         </Text>
       ),
+      boxProps: { textAlign: "center" },
     });
 
 export const formatMonth = (mes: string): string => {

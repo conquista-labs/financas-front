@@ -17,7 +17,12 @@ const Header: React.FC<{
   atualizadoEm?: string;
   onAtualizar: () => void;
 }) => (
-  <Box display="flex" justifyContent="space-between" alignItems="center">
+  <Box
+    display="flex"
+    alignItems="center"
+    justifyContent="space-between"
+    flexDirection={{ xs: "column", md: "row" }}
+  >
     <Title as="h4" color="$secondary" fontWeight="$bold">
       Olá, {nome}
     </Title>

@@ -3,33 +3,25 @@ import React, { useMemo } from "react";
 import { ResumoMensalTableProps } from "./resumoMensalTable.types";
 import { formatMonth, getColumns } from "./resumoMensalTable.definitions";
 import { Table } from "@/presentation/components";
-import { Box } from "@rarui-react/components";
+import { Box, Title } from "@rarui-react/components";
 import { TableFooter } from "./components";
 
 export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
-  receitas,
-  despesas,
-  totalReceitasAno,
-  totalDespesasAno,
-  isLoading,
+  receitasMes,
+  despesasMes,
+  receitasAno,
+  despesasAno,
 }) => {
-  const filterDespesas = despesas.filter((despesa) =>
-    despesa.mes.includes("2025"),
-  );
-  const filterReceitas = receitas.filter((receita) =>
-    receita.mes.includes("2025"),
-  );
-
   const rows = useMemo(() => {
     const mesesSet = new Set([
-      ...filterDespesas.map((r) => r.mes),
-      ...filterReceitas.map((d) => d.mes),
+      ...despesasMes.map((r) => r.mes),
+      ...receitasMes.map((d) => d.mes),
     ]);
     const mesesOrdenados = Array.from(mesesSet).sort();
 
     return mesesOrdenados.map((mes) => {
-      const receitaMes = receitas.find((r) => r.mes === mes)?.valor || 0;
-      const despesaMes = despesas.find((d) => d.mes === mes)?.valor || 0;
+      const receitaMes = receitasMes.find((r) => r.mes === mes)?.valor || 0;
+      const despesaMes = despesasMes.find((d) => d.mes === mes)?.valor || 0;
       const saldo = receitaMes - despesaMes;
 
       return {
@@ -39,22 +31,28 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
         saldo,
       };
     });
-  }, [filterReceitas, filterReceitas]);
+  }, [receitasMes, receitasMes]);
 
   return (
-    <Box display="flex" alignItems="center" width="100%" height="100%">
+    <Box
+      display="flex"
+      alignItems="center"
+      width="100%"
+      height="100%"
+      flexDirection="column"
+      gap="$2xs"
+    >
+      <Title as="h6" color="$secondary">
+        Resumo de Receitas e Despesas
+      </Title>
       <Table
         columns={getColumns()}
         rows={rows ?? []}
         total={12}
         showPagination={false}
-        isLoading={isLoading}
         tableContainerStyles={{ minHeight: "auto" }}
       >
-        <TableFooter
-          totalReceitasAno={totalReceitasAno}
-          totalDespesasAno={totalDespesasAno}
-        />
+        <TableFooter receitasAno={receitasAno} despesasAno={despesasAno} />
       </Table>
     </Box>
   );
