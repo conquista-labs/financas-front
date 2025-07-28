@@ -1,6 +1,6 @@
 import { Box, Text } from "@rarui-react/components";
 import { ColumnsDefinitions } from "@/presentation/components";
-import { formatCurrency } from "../../home.definitions";
+import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
 
 export const getColumns = () =>
   new ColumnsDefinitions<any>()

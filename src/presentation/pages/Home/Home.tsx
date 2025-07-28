@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
-import { Box, Title, Text, Button, Icon } from "@rarui-react/components";
-import { RefreshIcon } from "@rarui/icons";
+import { Box, Title, Text } from "@rarui-react/components";
 import {
   useGetResumoFinanceiro,
   usePostResumoFinanceiro,
@@ -8,133 +7,103 @@ import {
 
 import { useAuthStore } from "@/presentation/store";
 import {
-  //  DespesasPorCategoria,
   ResumoMensalTable,
   ResumoFinanceiroChart,
+  ResumoPorCategoriaTable,
+  Card,
+  Header,
 } from "./components";
-import { formatCurrency, getLastUpdate } from "./home.definitions";
+import { formatCurrency } from "./home.definitions";
 import { Loading } from "@/presentation/components";
 
 const Home: React.FC = () => {
   const { auth } = useAuthStore();
-  const {
-    data,
-    isLoading: isLoadingGetResumoFinanceiro,
-    refetch,
-  } = useGetResumoFinanceiro();
+  const { data, isLoading: loadingResumo, refetch } = useGetResumoFinanceiro();
   const { mutate, isPending } = usePostResumoFinanceiro();
 
   const isLoading = useMemo(
-    () => isLoadingGetResumoFinanceiro || isPending,
-    [isLoadingGetResumoFinanceiro, isPending],
+    () => loadingResumo || isPending,
+    [loadingResumo, isPending],
   );
 
-  return (
-    <Box display="flex" height="100%" flexDirection="column" gap="$2xs">
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Title as="h4" color="$secondary" fontWeight="$bold">
-          Olá, {auth.nome}
-        </Title>
-        <Box display="flex" alignItems="center" gap="$2xs">
-          <Text fontSize="$s" color="$secondary">
-            Última atualização:
-            {data?.data.atualizadoEm && getLastUpdate(data?.data.atualizadoEm)}
-          </Text>
+  const resumo = data?.data;
+  const receitasPorMes = resumo?.receitasPorMes ?? [];
+  const despesasPorMes = resumo?.despesasPorMes ?? [];
+  const totalReceitas = resumo?.totalReceitasAno ?? 0;
+  const totalDespesas = resumo?.totalDespesasAno ?? 0;
 
-          <Button
-            size="medium"
-            variant="text"
-            onClick={() => mutate(undefined, { onSuccess: () => refetch() })}
-          >
-            <Icon source={<RefreshIcon size="medium" />} />
-            Atualizar
-          </Button>
-        </Box>
+  const handleAtualizar = () =>
+    mutate(undefined, { onSuccess: () => refetch() });
+
+  if (!resumo && !isLoading) {
+    return (
+      <Box padding="$md">
+        <Text color="$error">Erro ao carregar dados financeiros.</Text>
       </Box>
+    );
+  }
+
+  return (
+    <Box
+      display="flex"
+      height="100%"
+      flexDirection="column"
+      gap="$2xs"
+      pb="$xl"
+    >
+      <Header
+        nome={auth.nome}
+        atualizadoEm={resumo?.atualizadoEm}
+        onAtualizar={handleAtualizar}
+      />
 
       <Box
         display="grid"
         gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
         gap="$s"
       >
-        <Box
-          flex="1"
-          backgroundColor="$primary"
-          borderRadius="$xs"
-          borderWidth="$1"
-          borderStyle="solid"
-          borderColor="$subdued"
-          padding="$s"
-          display="flex"
-          flexDirection="column"
-          gap="$3xs"
-          boxSizing="border-box"
-        >
+        <Card>
           <Text color="$secondary">Total de receitas do ano</Text>
           <Title as="h6" color="$success">
-            {formatCurrency(data?.data.totalReceitasAno ?? 0)}
+            {formatCurrency(totalReceitas)}
           </Title>
-        </Box>
-        <Box
-          flex="1"
-          backgroundColor="$primary"
-          borderRadius="$xs"
-          borderWidth="$1"
-          borderStyle="solid"
-          borderColor="$subdued"
-          padding="$s"
-          display="flex"
-          flexDirection="column"
-          gap="$3xs"
-        >
+        </Card>
+        <Card>
           <Text color="$secondary">Total de despesas do ano</Text>
           <Title as="h6" color="$error">
-            {formatCurrency(data?.data.totalDespesasAno ?? 0)}
+            {formatCurrency(totalDespesas)}
           </Title>
-        </Box>
+        </Card>
       </Box>
       <Box
         display="grid"
-        gridTemplateColumns={{ xs: "1fr", md: "1fr", lg: "1fr 1fr" }}
+        gridTemplateColumns={{ xs: "1fr", lg: "1fr 1fr" }}
         gap="$s"
       >
-        <Box
-          flex="1"
-          backgroundColor="$primary"
-          borderRadius="$xs"
-          borderWidth="$1"
-          borderStyle="solid"
-          borderColor="$subdued"
-          padding="$xs"
-          display="flex"
-          flexDirection="column"
-          gap="$2xs"
-        >
+        <Card>
           <ResumoFinanceiroChart
-            receitas={data?.data.receitasPorMes ?? []}
-            despesas={data?.data.despesasPorMes ?? []}
+            receitas={receitasPorMes}
+            despesas={despesasPorMes}
           />
-        </Box>
-
-        <Box
-          flex="1"
-          backgroundColor="$primary"
-          borderRadius="$xs"
-          borderWidth="$1"
-          borderStyle="solid"
-          borderColor="$subdued"
-          padding="$xs"
-          display="flex"
-          flexDirection="column"
-          gap="$2xs"
-        >
+        </Card>
+        <Card>
           <ResumoMensalTable
-            receitas={data?.data.receitasPorMes ?? []}
-            despesas={data?.data.despesasPorMes ?? []}
+            receitas={receitasPorMes}
+            despesas={despesasPorMes}
+            totalReceitasAno={totalReceitas}
+            totalDespesasAno={totalDespesas}
             isLoading={isLoading}
           />
-        </Box>
+        </Card>
       </Box>
+      <Card>
+        <ResumoPorCategoriaTable
+          despesasCategoriasAno={resumo?.despesasPorCategoria ?? []}
+          despesasCategoriasMes={resumo?.despesasPorCategoriaPorMes ?? []}
+          isLoading={isLoading}
+        />
+      </Card>
+
       <Loading isLoading={isLoading} />
     </Box>
   );

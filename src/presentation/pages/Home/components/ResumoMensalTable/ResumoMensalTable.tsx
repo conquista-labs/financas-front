@@ -4,10 +4,13 @@ import { ResumoMensalTableProps } from "./resumoMensalTable.types";
 import { formatMonth, getColumns } from "./resumoMensalTable.definitions";
 import { Table } from "@/presentation/components";
 import { Box } from "@rarui-react/components";
+import { TableFooter } from "./components";
 
 export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
   receitas,
   despesas,
+  totalReceitasAno,
+  totalDespesasAno,
   isLoading,
 }) => {
   const filterDespesas = despesas.filter((despesa) =>
@@ -47,7 +50,12 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
         showPagination={false}
         isLoading={isLoading}
         tableContainerStyles={{ minHeight: "auto" }}
-      />
+      >
+        <TableFooter
+          totalReceitasAno={totalReceitasAno}
+          totalDespesasAno={totalDespesasAno}
+        />
+      </Table>
     </Box>
   );
 };
