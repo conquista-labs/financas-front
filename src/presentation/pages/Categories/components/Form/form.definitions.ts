@@ -5,7 +5,7 @@ export const schema = object({
   nome: string().required("Nome é obrigatório"),
   cor: string().required("Cor é obrigatório"),
   tipo: string().required("Tipo é obrigatório"),
-  tetoGasto: string().optional(),
+  tetoGasto: string().nullable().optional(),
 }).required();
 
 export const defaultForm = {
