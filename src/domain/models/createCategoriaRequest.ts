@@ -24,6 +24,10 @@ export interface CreateCategoriaRequest {
    */
   icone?: string;
   /**
+   * Teto de gasto da categoria
+   */
+  tetoGasto?: number;
+  /**
    * Cor da categoria em hexadecimal
    */
   cor?: string;

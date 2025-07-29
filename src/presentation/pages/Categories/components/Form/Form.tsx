@@ -13,18 +13,22 @@ import {
   Select,
 } from "@/presentation/components";
 
+import { Categoria } from "@/domain/models";
 import { defaultForm, schema, tipoCategoriaOptions } from "./form.definitions";
+
 import type { FormProps } from "./form.types";
 
 const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
   const navigate = useNavigate();
   const { isMobile } = useIsMobile();
 
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, watch, control } = useForm({
     resolver: yupResolver(schema),
     values: { ...defaultForm, ...defaultValues },
     mode: "onChange",
   });
+
+  const isExpense = watch("tipo") == Categoria.TipoEnum.Despesa;
 
   return (
     <Box display="flex" flexDirection="column" gap="$md" width="100%">
@@ -55,21 +59,6 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 placeholder="Digite o nome"
                 control={control}
               />
-              <InputCurrency
-                label="Teto de gasto"
-                name="valor"
-                id="valor"
-                placeholder="Digite o valor"
-                control={control}
-                leadingStart={<Text>R$</Text>}
-              />
-            </Box>
-            <Box
-              display="flex"
-              flexDirection={{ xs: "column", md: "row" }}
-              gap="$s"
-              width="100%"
-            >
               <Select
                 id="tipo"
                 label="Tipo"
@@ -78,6 +67,25 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 control={control}
                 options={tipoCategoriaOptions}
               />
+            </Box>
+
+            <Box
+              display="flex"
+              flexDirection={{ xs: "column", md: "row" }}
+              justifyContent="flex-end"
+              gap="$s"
+              width="100%"
+            >
+              {isExpense && (
+                <InputCurrency
+                  label="Teto de gasto"
+                  name="tetoGasto"
+                  id="tetoGasto"
+                  placeholder="Digite o valor do teto de gasto"
+                  control={control}
+                  leadingStart={<Text>R$</Text>}
+                />
+              )}
               <ColorPicker label="Cor" name="cor" control={control} />
             </Box>
           </Box>

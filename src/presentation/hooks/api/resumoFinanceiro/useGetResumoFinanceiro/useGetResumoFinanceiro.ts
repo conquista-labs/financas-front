@@ -7,6 +7,7 @@ import type {
 import { makeGetResumoFinanceiroFactory } from "@/main/factories/usecases";
 
 import type { UseGetResumoFinanceiroOptions } from "./useGetResumoFinanceiro.types";
+import { DAY_TIME } from "@/app.definitions";
 
 export const useGetResumoFinanceiro = (
   params: GetResumoFinanceiroParams,
@@ -23,6 +24,8 @@ export const useGetResumoFinanceiro = (
         throw error;
       }
     },
+    staleTime: DAY_TIME,
+    gcTime: DAY_TIME,
     ...options,
   });
 };

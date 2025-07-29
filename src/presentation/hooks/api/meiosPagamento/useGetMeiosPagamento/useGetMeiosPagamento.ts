@@ -7,6 +7,7 @@ import type {
 import { makeGetMeiosPagamentoFactory } from "@/main/factories/usecases";
 
 import type { UseGetMeiosPagamentoOptions } from "./useGetMeiosPagamento.types";
+import { DAY_TIME } from "@/app.definitions";
 
 export const useGetMeiosPagamento = (
   params: GetMeiosPagamentoParams,
@@ -23,6 +24,8 @@ export const useGetMeiosPagamento = (
         throw error;
       }
     },
+    staleTime: DAY_TIME,
+    gcTime: DAY_TIME,
     ...options,
   });
 };

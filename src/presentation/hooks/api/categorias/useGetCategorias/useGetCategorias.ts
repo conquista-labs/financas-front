@@ -7,6 +7,7 @@ import type {
 import { makeGetCategoriasFactory } from "@/main/factories/usecases";
 
 import type { UseGetCategoriasOptions } from "./useGetCategorias.types";
+import { DAY_TIME } from "@/app.definitions";
 
 export const useGetCategorias = (
   params: GetCategoriasParams,
@@ -23,6 +24,8 @@ export const useGetCategorias = (
         throw error;
       }
     },
+    staleTime: DAY_TIME,
+    gcTime: DAY_TIME,
     ...options,
   });
 };

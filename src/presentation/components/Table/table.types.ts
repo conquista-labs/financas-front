@@ -8,6 +8,7 @@ export interface Column<T> {
     boxProps?: Omit<BoxProps, "ref">;
     formatter?: (field: T[keyof T], row: T) => string | React.ReactNode;
     showNameColumnMobile?: boolean;
+    defautValue?: string;
   };
 }
 

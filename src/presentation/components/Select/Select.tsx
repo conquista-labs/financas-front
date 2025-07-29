@@ -45,6 +45,7 @@ const Select: React.FC<SelectProps> = ({
         onChange={(option: any) => {
           field.onChange(option?.[0]?.value);
         }}
+        appearance={error?.message ? "error" : undefined}
         {...props}
       >
         {filterOptions && (

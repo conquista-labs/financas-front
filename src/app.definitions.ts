@@ -4,6 +4,8 @@ import {
   type QueryClientConfig,
 } from "@tanstack/react-query";
 
+export const DAY_TIME = 1000 * 60 * 60 * 24;
+
 export const makeQueryClient = (config?: QueryClientConfig) => {
   return new QueryClient({
     defaultOptions: {

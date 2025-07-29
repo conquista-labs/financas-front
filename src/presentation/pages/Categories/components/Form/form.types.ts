@@ -1,7 +1,7 @@
 import { Categoria } from "@/domain/models";
 
 export interface FormProps {
-  defaultValues?: Categoria;
+  defaultValues?: Omit<Categoria, "tetoGasto">;
   onSubmit: any;
   isPending: boolean;
 }

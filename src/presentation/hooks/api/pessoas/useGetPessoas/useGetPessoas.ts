@@ -4,6 +4,7 @@ import type { GetPessoasModel, GetPessoasParams } from "@/domain/usecases";
 import { makeGetPessoasFactory } from "@/main/factories/usecases";
 
 import type { UseGetPessoasOptions } from "./useGetPessoas.types";
+import { DAY_TIME } from "@/app.definitions";
 
 export const useGetPessoas = (
   params: GetPessoasParams,
@@ -20,6 +21,8 @@ export const useGetPessoas = (
         throw error;
       }
     },
+    staleTime: DAY_TIME,
+    gcTime: DAY_TIME,
     ...options,
   });
 };

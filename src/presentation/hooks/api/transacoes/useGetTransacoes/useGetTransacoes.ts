@@ -7,6 +7,7 @@ import type {
 import { makeGetTransacoesFactory } from "@/main/factories/usecases";
 
 import type { UseGetTransacoesOptions } from "./useGetTransacoes.types";
+import { DAY_TIME } from "@/app.definitions";
 
 export const useGetTransacoes = (
   params: GetTransacoesParams,
@@ -23,6 +24,8 @@ export const useGetTransacoes = (
         throw error;
       }
     },
+    staleTime: DAY_TIME,
+    gcTime: DAY_TIME,
     ...options,
   });
 };

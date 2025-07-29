@@ -8,10 +8,11 @@ import { Box, Title } from "@rarui-react/components";
 interface LinhaFixa {
   categoria: string;
   cor: string;
+  tetoGasto?: number;
 }
 
 type LinhaTabela = LinhaFixa & {
-  [mesFormatado: string]: number | string;
+  [mesFormatado: string]: number | string | undefined;
 };
 
 export const ResumoPorCategoriaTable: React.FC<
@@ -22,11 +23,15 @@ export const ResumoPorCategoriaTable: React.FC<
 
     // Preencher meses
     despesasPorCategoriaMes.forEach(({ mes, categorias }) => {
-      const mesFormatado = formatMonth(mes); // Ex: "jul"
+      const mesFormatado = formatMonth(mes);
 
-      categorias.forEach(({ categoria, valor, cor }) => {
+      categorias.forEach(({ categoria, valor, cor, tetoGasto }) => {
         if (!categoriasMap.has(categoria)) {
-          categoriasMap.set(categoria, { categoria, cor });
+          categoriasMap.set(categoria, {
+            categoria,
+            cor,
+            tetoGastoMes: tetoGasto,
+          });
         }
 
         const row = categoriasMap.get(categoria)!;
@@ -35,10 +40,11 @@ export const ResumoPorCategoriaTable: React.FC<
     });
 
     // Preencher coluna "ano"
-    despesasPorCategoriaAno.forEach(({ categoria, valor }) => {
+    despesasPorCategoriaAno.forEach(({ categoria, valor, tetoGasto }) => {
       const row = categoriasMap.get(categoria);
       if (row) {
         row["ano"] = valor;
+        row["tetoGastoAno"] = tetoGasto;
       }
     });
 

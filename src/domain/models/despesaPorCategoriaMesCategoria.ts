@@ -14,4 +14,5 @@ export interface DespesaPorCategoriaMesCategoria {
   categoria: string;
   valor: number;
   cor: string;
+  tetoGasto?: number;
 }

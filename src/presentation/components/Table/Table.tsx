@@ -31,12 +31,17 @@ function Table<T>({
     const value = row[column.field];
     const formatter = column.options?.formatter;
     const boxProps = column.options?.boxProps;
+    const defautValue = column.options?.defautValue;
 
     if (!value && value !== 0)
       return (
         <Box height="40.5px" display="flex" alignItems="center" width="100%">
-          <Text textAlign={boxProps?.textAlign} color="$disabled" width="100%">
-            —
+          <Text
+            textAlign={boxProps?.textAlign}
+            color={defautValue ? "$primary" : "$disabled"}
+            width="100%"
+          >
+            {defautValue ? defautValue : "—"}
           </Text>
         </Box>
       );

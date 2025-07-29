@@ -1,4 +1,4 @@
-import { IconButton, Status, Box } from "@rarui-react/components";
+import { IconButton, Status, Box, Text } from "@rarui-react/components";
 import { EditFilledIcon, TrashFilledIcon } from "@rarui/icons";
 import type { UseMutateFunction } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -39,6 +39,14 @@ export const getColumns = (
       },
     })
     .setColum("Nome", "nome")
+    .setColum("Teto de Gasto", "tetoGasto", {
+      formatter: (field) => (
+        <Text color="$primary" fontSize="$s" textAlign="center">
+          {field}
+        </Text>
+      ),
+      boxProps: { width: "130px", textAlign: "center" },
+    })
     .setColum("Tipo", "tipo", {
       formatter: (field) => {
         const isExpense = field === "despesa";

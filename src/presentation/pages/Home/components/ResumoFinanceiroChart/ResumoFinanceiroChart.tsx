@@ -43,10 +43,11 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
   return (
     <Box
       display="flex"
-      alignItems="center"
       width="100%"
       height="100%"
       flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
     >
       <Title as="h6" color="$secondary">
         Receitas e Despesas

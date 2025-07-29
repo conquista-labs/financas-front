@@ -15,6 +15,7 @@ export interface Categoria {
   nome: string;
   tipo: Categoria.TipoEnum;
   icone: string;
+  tetoGasto: number;
   cor: string;
   createdAt: string;
 }
