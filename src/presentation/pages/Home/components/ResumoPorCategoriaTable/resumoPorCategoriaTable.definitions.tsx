@@ -44,7 +44,7 @@ export const getColumns = () => {
   monthKeys.forEach(({ label, key }) => {
     columns.setColum(label, key, {
       formatter: (field, row) => {
-        const color = getColorByTeto(field, row.tetoGasto);
+        const color = getColorByTeto(field, row.tetoGastoMes);
         return (
           <Text fontSize="$s" color={color}>
             {formatCurrency(field)}
