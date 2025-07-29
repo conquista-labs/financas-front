@@ -1,11 +1,17 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { Box, Button, Card } from "@rarui-react/components";
+import { Box, Button, Card, Text } from "@rarui-react/components";
 import { useNavigate } from "react-router-dom";
 
 import { urlRouters } from "@/presentation/router/router.definitions";
 import { useIsMobile } from "@/presentation/hooks/core";
-import { ColorPicker, Input, Loading, Select } from "@/presentation/components";
+import {
+  ColorPicker,
+  Input,
+  InputCurrency,
+  Loading,
+  Select,
+} from "@/presentation/components";
 
 import { defaultForm, schema, tipoCategoriaOptions } from "./form.definitions";
 import type { FormProps } from "./form.types";
@@ -36,13 +42,28 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
             gap="$s"
             alignItems="flex-end"
           >
-            <Input
-              label="Nome"
-              name="nome"
-              id="nome"
-              placeholder="Digite o nome"
-              control={control}
-            />
+            <Box
+              width="100%"
+              display="flex"
+              flexDirection={{ xs: "column", lg: "row" }}
+              gap={{ xs: "$s", lg: "$2xs" }}
+            >
+              <Input
+                label="Nome"
+                name="nome"
+                id="nome"
+                placeholder="Digite o nome"
+                control={control}
+              />
+              <InputCurrency
+                label="Teto de gasto"
+                name="valor"
+                id="valor"
+                placeholder="Digite o valor"
+                control={control}
+                leadingStart={<Text>R$</Text>}
+              />
+            </Box>
             <Box
               display="flex"
               flexDirection={{ xs: "column", md: "row" }}

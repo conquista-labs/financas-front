@@ -24,9 +24,3 @@ export const defaultForm = {
 
 export const buildOptions = (data: { id: string; nome: string }[]) =>
   data.map((line) => ({ label: line.nome, value: line.id }));
-
-export const parseCurrencyToNumber = (value: string): number => {
-  if (!value) return 0;
-  // Remove R$, espaços e pontos, troca vírgula por ponto
-  return parseFloat(value.replace(/\./g, "").replace(",", "."));
-};

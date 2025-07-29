@@ -8,18 +8,13 @@ import { useIsMobile } from "@/presentation/hooks/core";
 import {
   DatePicker,
   Input,
-  // InputCurrency,
+  InputCurrency,
   Loading,
   Select,
   Textarea,
 } from "@/presentation/components";
 
-import {
-  buildOptions,
-  defaultForm,
-  // parseCurrencyToNumber,
-  schema,
-} from "./form.definitions";
+import { buildOptions, defaultForm, schema } from "./form.definitions";
 import type { FormProps } from "./form.types";
 import {
   useGetCategorias,
@@ -154,7 +149,7 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
                 control={control}
               />
             </Box>
-            <Input
+            <InputCurrency
               label="Valor"
               name="valor"
               id="valor"

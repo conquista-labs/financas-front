@@ -1,9 +1,8 @@
-import React from "react"; // useEffect
+import React from "react";
 import { useController } from "react-hook-form";
 import { Box, Text, Label, Input as RaruiInput } from "@rarui-react/components";
-import { useMask } from "@react-input/mask";
+import { NumericFormat } from "react-number-format";
 import { type InputProps } from "./inputCurrency.types";
-// import { formatCurrency } from "./inputCurrency.definitions";
 
 const InputCurrency: React.FC<InputProps> = ({
   label,
@@ -13,55 +12,30 @@ const InputCurrency: React.FC<InputProps> = ({
   ...props
 }) => {
   const {
-    field: {
-      value,
-      // onChange,
-      onBlur,
-    },
+    field: { value, onChange },
     fieldState: { error },
   } = useController({
     name,
     control,
   });
 
-  // Máscara de moeda: permite apenas números e formata como R$ 1.234,56
-  const inputRef = useMask({
-    mask: "__.___,__",
-    replacement: { _: /\d/ },
-    showMask: false,
-  });
-
-  // useEffect(() => {
-  //   if (value) {
-  //     onChange(inputRef.current.value);
-  //   }
-  // }, []);
-
-  // Quando o valor do formulário muda, atualiza o input
-  // useEffect(() => {
-  //   if (inputRef.current && value !== undefined && value !== null) {
-  //     inputRef.current.value = formatCurrency(value);
-  //   }
-  // }, [value]);
-
-  const handleChange = () =>
-    // e: React.ChangeEvent<HTMLInputElement>
-    {
-      // onChange(e.target.value);
-    };
-
   return (
     <Box display="flex" flexDirection="column" gap="$3xs" width="100%">
       <Label htmlFor={id}>{label}</Label>
-      <RaruiInput
-        id={id}
-        ref={inputRef}
-        value={value ?? ""}
-        onChange={handleChange}
-        onBlur={onBlur}
-        appearance={error?.message ? "error" : undefined}
-        {...props}
+      <NumericFormat
+        thousandSeparator="."
+        decimalSeparator=","
+        decimalScale={2}
+        fixedDecimalScale
+        allowNegative={false}
+        onValueChange={(values) => {
+          onChange(values.floatValue);
+        }}
+        value={value}
+        customInput={RaruiInput}
+        {...(props as any)}
       />
+
       {error?.message && (
         <Text fontSize="$s" color="$error">
           {error.message}

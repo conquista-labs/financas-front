@@ -49,6 +49,8 @@ const Home: React.FC = () => {
   const despesasMes = resumo?.despesasMes ?? [];
   const receitasAno = resumo?.receitasAno ?? 0;
   const despesasAno = resumo?.despesasAno ?? 0;
+  const despesasPorCategoriaAno = resumo?.despesasPorCategoriaAno ?? [];
+  const despesasPorCategoriaMes = resumo?.despesasPorCategoriaMes ?? [];
 
   const handleAtualizar = () =>
     mutate({ year: Number(year) }, { onSuccess: () => refetch() });
@@ -72,7 +74,7 @@ const Home: React.FC = () => {
         onAtualizar={handleAtualizar}
       />
 
-      <Box display="flex" justifyContent="flex-start">
+      <Box display="flex" justifyContent="flex-end">
         <Box
           display="flex"
           alignItems="center"
@@ -137,8 +139,8 @@ const Home: React.FC = () => {
       </Box>
       <Card>
         <ResumoPorCategoriaTable
-          despesasPorCategoriaAno={resumo?.despesasPorCategoriaAno ?? []}
-          despesasPorCategoriaMes={resumo?.despesasPorCategoriaMes ?? []}
+          despesasPorCategoriaAno={despesasPorCategoriaAno}
+          despesasPorCategoriaMes={despesasPorCategoriaMes}
         />
       </Card>
       <Loading isLoading={isLoading} />

@@ -29,7 +29,9 @@ const DatePicker: React.FC<DatepickerProps> = ({
       <Label htmlFor={id}>{label}</Label>
       <RaruiDatepicker
         selected={field.value}
-        onChange={field.onChange}
+        onChange={(date) =>
+          field.onChange(new Date(date as Date).toISOString())
+        }
         {...props}
       />
       {error?.message && (

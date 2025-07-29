@@ -63,3 +63,7 @@
     Outfit, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", arial,
     sans-serif;
 }
+
+.react-datepicker-popper {
+  z-index: 9999;
+}
