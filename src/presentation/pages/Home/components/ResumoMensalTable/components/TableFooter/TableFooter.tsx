@@ -7,7 +7,7 @@ const TableFooter: React.FC<TableFooterProps> = ({
   despesasAno,
   receitasAno,
 }) => {
-  const saldo = despesasAno - receitasAno;
+  const saldo = receitasAno - despesasAno;
   return (
     <Box
       as="tfoot"
