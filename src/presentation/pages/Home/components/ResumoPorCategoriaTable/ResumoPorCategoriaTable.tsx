@@ -50,7 +50,7 @@ export const ResumoPorCategoriaTable: React.FC<
 
     return Array.from(categoriasMap.values());
   }, [despesasPorCategoriaMes, despesasPorCategoriaAno]);
-  console.log(rows);
+
   return (
     <Box
       display="flex"
