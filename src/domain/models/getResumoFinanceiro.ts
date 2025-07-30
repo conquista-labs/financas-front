@@ -11,6 +11,7 @@
  */
 import { DespesaPorCategoriaAno } from "./despesaPorCategoriaAno";
 import { DespesaPorMes } from "./despesaPorMes";
+import { SaldosPorMes } from "./saldosPorMes";
 import { DespesaPorCategoriaMes } from "./despesaPorCategoriaMes";
 import { ReceitaPorMes } from "./receitaPorMes";
 
@@ -25,6 +26,7 @@ export interface GetResumoFinanceiro {
   patrimonio: number;
   receitasMes: Array<ReceitaPorMes>;
   despesasMes: Array<DespesaPorMes>;
+  saldosMes: Array<SaldosPorMes>;
   despesasPorCategoriaAno: Array<DespesaPorCategoriaAno>;
   despesasPorCategoriaMes: Array<DespesaPorCategoriaMes>;
   /**

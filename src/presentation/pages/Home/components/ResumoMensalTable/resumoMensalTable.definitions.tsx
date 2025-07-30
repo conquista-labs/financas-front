@@ -7,17 +7,27 @@ export const getColumns = () =>
     .setColum("Mês", "mes")
     .setColum("Despesas", "despesa", {
       formatter: (field) => (
-        <Text fontSize="$s" color="$error">
+        <Text fontSize="$s" color="$error" textAlign="center">
           {formatCurrency(field)}
         </Text>
       ),
+      boxProps: { textAlign: "center" },
     })
     .setColum("Receitas", "receita", {
       formatter: (field) => (
-        <Text fontSize="$s" color="$success">
+        <Text fontSize="$s" color="$success" textAlign="center">
           {formatCurrency(field)}
         </Text>
       ),
+      boxProps: { textAlign: "center" },
+    })
+    .setColum("Saldo mês anterior", "saldoMesAnterior", {
+      formatter: (field) => (
+        <Text fontSize="$s" color="$success" textAlign="center">
+          {formatCurrency(field)}
+        </Text>
+      ),
+      boxProps: { textAlign: "center" },
     })
     .setColum("Saldo", "saldo", {
       formatter: (field) => {

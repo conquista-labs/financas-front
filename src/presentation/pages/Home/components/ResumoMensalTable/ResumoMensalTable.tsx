@@ -11,27 +11,34 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
   despesasMes,
   receitasAno,
   despesasAno,
+  saldosMes,
 }) => {
   const rows = useMemo(() => {
     const mesesSet = new Set([
       ...despesasMes.map((r) => r.mes),
       ...receitasMes.map((d) => d.mes),
+      ...saldosMes.map((s) => s.mes),
     ]);
+
     const mesesOrdenados = Array.from(mesesSet).sort();
 
     return mesesOrdenados.map((mes) => {
       const receitaMes = receitasMes.find((r) => r.mes === mes)?.valor || 0;
       const despesaMes = despesasMes.find((d) => d.mes === mes)?.valor || 0;
-      const saldo = receitaMes - despesaMes;
+      const saldoMesAnterior = saldosMes.find((s) => s.mes === mes)?.valor || 0;
+      const saldo = receitaMes + saldoMesAnterior - despesaMes;
 
       return {
         mes: formatMonth(mes), // ex: "jan/2025"
         receita: receitaMes,
         despesa: despesaMes,
         saldo,
+        saldoMesAnterior,
       };
     });
-  }, [receitasMes, receitasMes]);
+  }, [receitasMes, receitasMes, saldosMes]);
+
+  console.log(rows);
 
   return (
     <Box

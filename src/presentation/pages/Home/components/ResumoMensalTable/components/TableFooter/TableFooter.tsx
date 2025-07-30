@@ -46,6 +46,7 @@ const TableFooter: React.FC<TableFooterProps> = ({
           fontWeight="$bold"
           fontSize="$body-s"
           color="$error"
+          textAlign="center"
         >
           {formatCurrency(despesasAno)}
         </Box>
@@ -57,9 +58,19 @@ const TableFooter: React.FC<TableFooterProps> = ({
           fontWeight="$bold"
           fontSize="$body-s"
           color="$success"
+          textAlign="center"
         >
           {formatCurrency(receitasAno)}
         </Box>
+        <Box
+          as="td"
+          padding="$2xs"
+          verticalAlign="middle"
+          fontFamily="$body"
+          fontWeight="$bold"
+          fontSize="$body-s"
+          color="$error"
+        />
         <Box
           as="td"
           padding="$2xs"

@@ -50,6 +50,7 @@ export * from "./receitaPorMes";
 export * from "./registerRequest";
 export * from "./relatorioTransacoesResponse";
 export * from "./relatorioTrasacoesPaginatedData";
+export * from "./saldosPorMes";
 export * from "./transacao";
 export * from "./transacaoPaginatedData";
 export * from "./transacaoResponse";

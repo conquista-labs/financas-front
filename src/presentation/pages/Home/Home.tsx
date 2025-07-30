@@ -53,6 +53,7 @@ const Home: React.FC = () => {
   const resumo = data?.data;
   const receitasMes = resumo?.receitasMes ?? [];
   const despesasMes = resumo?.despesasMes ?? [];
+  const saldosMes = resumo?.saldosMes ?? [];
   const receitasAno = resumo?.receitasAno ?? 0;
   const despesasAno = resumo?.despesasAno ?? 0;
   const despesasPorCategoriaAno = resumo?.despesasPorCategoriaAno ?? [];
@@ -181,6 +182,7 @@ const Home: React.FC = () => {
             despesasMes={despesasMes}
             receitasAno={receitasAno}
             despesasAno={despesasAno}
+            saldosMes={saldosMes}
           />
         </Card>
       </Box>

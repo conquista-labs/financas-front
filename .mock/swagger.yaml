@@ -672,6 +672,28 @@ paths:
       summary: Calcular resumo financeiro
       tags:
         - Resumo Financeiro
+  /resumo-financeiro/fechar-mes/{mes}/{ano}:
+    post:
+      operationId: ResumoFinanceiroController_closeMonth
+      parameters:
+        - name: mes
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: ano
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Fechamento financeiro do mês realizado com sucesso.
+      security:
+        - access-token: []
+      summary: Realiza o fechamento financeiro do mês solicitado
+      tags:
+        - Resumo Financeiro
   /relatorios/transacoes:
     get:
       operationId: RelatoriosController_gerarRelatorioTransacoes
@@ -1552,6 +1574,18 @@ components:
       required:
         - mes
         - valor
+    SaldosPorMes:
+      type: object
+      properties:
+        mes:
+          type: string
+          example: 2025-01
+        valor:
+          type: number
+          example: 2500
+      required:
+        - mes
+        - valor
     DespesaPorCategoriaAno:
       type: object
       properties:
@@ -1630,6 +1664,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DespesaPorMes'
+        saldosMes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaldosPorMes'
         despesasPorCategoriaAno:
           type: array
           items:
@@ -1650,6 +1688,7 @@ components:
         - patrimonio
         - receitasMes
         - despesasMes
+        - saldosMes
         - despesasPorCategoriaAno
         - despesasPorCategoriaMes
         - atualizadoEm
