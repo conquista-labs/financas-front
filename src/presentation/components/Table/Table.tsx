@@ -40,6 +40,7 @@ function Table<T>({
             textAlign={boxProps?.textAlign}
             color={defautValue ? "$primary" : "$disabled"}
             width="100%"
+            fontSize="$s"
           >
             {defautValue ? defautValue : "—"}
           </Text>
