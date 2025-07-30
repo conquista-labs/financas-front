@@ -5,6 +5,7 @@ import {
   Text,
   Datepicker,
   IconButton,
+  Icon,
 } from "@rarui-react/components";
 import {
   useGetResumoFinanceiro,
@@ -21,7 +22,12 @@ import {
 } from "./components";
 import { formatCurrency } from "./home.definitions";
 import { Loading } from "@/presentation/components";
-import { ArrowLeftIcon, ArrowRightIcon } from "@rarui/icons";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CreditCardOutlinedIcon,
+  DocumentOutlinedIcon,
+} from "@rarui/icons";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import { addYears, subYears, format } from "date-fns";
 
@@ -104,16 +110,57 @@ const Home: React.FC = () => {
         gap="$s"
       >
         <Card>
-          <Text color="$secondary">Total de receitas do ano</Text>
-          <Title as="h6" color="$success">
-            {formatCurrency(receitasAno)}
-          </Title>
+          <Box display="flex" justifyContent="space-between" padding="$xs">
+            <Box display="flex" flexDirection="column" gap="$3xs">
+              <Text color="$secondary">Total de receitas do ano</Text>
+              <Title as="h6" color="$success">
+                {formatCurrency(receitasAno)}
+              </Title>
+            </Box>
+            <Box
+              backgroundColor="$secondary"
+              width="44px"
+              height="44px"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              borderRadius="$pill"
+            >
+              <Icon
+                color="$success"
+                source={<DocumentOutlinedIcon size={24} />}
+              />
+            </Box>
+          </Box>
         </Card>
         <Card>
-          <Text color="$secondary">Total de despesas do ano</Text>
-          <Title as="h6" color="$error">
-            {formatCurrency(despesasAno)}
-          </Title>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            padding="$xs"
+          >
+            <Box display="flex" flexDirection="column" gap="$3xs">
+              <Text color="$secondary">Total de despesas do ano</Text>
+              <Title as="h6" color="$error">
+                {formatCurrency(despesasAno)}
+              </Title>
+            </Box>
+            <Box
+              backgroundColor="$secondary"
+              width="44px"
+              height="44px"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              borderRadius="$pill"
+            >
+              <Icon
+                color="$error"
+                source={<CreditCardOutlinedIcon size={24} />}
+              />
+            </Box>
+          </Box>
         </Card>
       </Box>
 

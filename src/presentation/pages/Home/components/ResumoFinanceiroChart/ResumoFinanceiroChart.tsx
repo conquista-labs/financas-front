@@ -11,6 +11,8 @@ import {
 import { ResumoFinanceiroChartProps } from "./resumoFinanceiroChart.types";
 import { formatMonth, options } from "./resumoFinanceiroChart.definitions";
 import { Box, Title } from "@rarui-react/components";
+import { useTheme } from "@/App";
+import { useIsMobile } from "@/presentation/hooks/core";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -19,6 +21,8 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
   despesasMes,
 }) => {
   const labels = despesasMes.map((item) => formatMonth(item.mes));
+  const { darkMode } = useTheme();
+  const { isMobile } = useIsMobile();
 
   const chartData = {
     labels,
@@ -28,14 +32,14 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
         data: receitasMes.map((item) => Number(item.valor)),
         backgroundColor: "#96C283",
         borderRadius: 2,
-        barThickness: 20,
+        barThickness: isMobile ? 15 : 20,
       },
       {
         label: "Despesas",
         data: despesasMes.map((item) => Number(item.valor)),
         backgroundColor: "#DB4D4C",
         borderRadius: 2,
-        barThickness: 20,
+        barThickness: isMobile ? 15 : 20,
       },
     ],
   };
@@ -52,7 +56,7 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
       <Title as="h6" color="$secondary">
         Receitas e Despesas
       </Title>
-      <Bar data={chartData} options={options} />
+      <Bar data={chartData} options={options(darkMode)} />
     </Box>
   );
 };
