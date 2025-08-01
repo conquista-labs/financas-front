@@ -6,6 +6,7 @@ import { TableFooterProps } from "./tableFooter.types";
 const TableFooter: React.FC<TableFooterProps> = ({
   despesasAno,
   receitasAno,
+  saldosMesAno,
 }) => {
   const saldo = receitasAno - despesasAno;
   return (
@@ -69,8 +70,11 @@ const TableFooter: React.FC<TableFooterProps> = ({
           fontFamily="$body"
           fontWeight="$bold"
           fontSize="$body-s"
-          color="$error"
-        />
+          color="$success"
+          textAlign="center"
+        >
+          {formatCurrency(saldosMesAno)}
+        </Box>
         <Box
           as="td"
           padding="$2xs"

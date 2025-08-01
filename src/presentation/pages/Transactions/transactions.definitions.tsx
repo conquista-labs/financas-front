@@ -1,5 +1,6 @@
 import { IconButton, Text, Box, Tooltip } from "@rarui-react/components";
 import { EditFilledIcon, TrashFilledIcon } from "@rarui/icons";
+import { differenceInCalendarDays } from "date-fns";
 import type { UseMutateFunction } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type {
@@ -11,6 +12,14 @@ import { urlRouters } from "@/presentation/router/router.definitions";
 import { ColumnsDefinitions } from "@/presentation/components";
 import { Categoria, MeioPagamento, Pessoa } from "@/domain/models";
 import "./transactions.css";
+
+export const isTwoDaysBeforeMonthEnd = (
+  date: null | undefined | Date,
+): boolean => {
+  const diff = differenceInCalendarDays(date ?? new Date(), new Date());
+  return false;
+  return diff === 0 || diff === 1 || diff === 2;
+};
 
 export const getColumns = (
   navigate: (path: string) => void,

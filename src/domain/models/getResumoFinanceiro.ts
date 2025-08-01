@@ -27,6 +27,7 @@ export interface GetResumoFinanceiro {
   receitasMes: Array<ReceitaPorMes>;
   despesasMes: Array<DespesaPorMes>;
   saldosMes: Array<SaldosPorMes>;
+  saldosMesAno: number;
   despesasPorCategoriaAno: Array<DespesaPorCategoriaAno>;
   despesasPorCategoriaMes: Array<DespesaPorCategoriaMes>;
   /**

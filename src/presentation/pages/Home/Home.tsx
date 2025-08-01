@@ -58,6 +58,7 @@ const Home: React.FC = () => {
   const despesasAno = resumo?.despesasAno ?? 0;
   const despesasPorCategoriaAno = resumo?.despesasPorCategoriaAno ?? [];
   const despesasPorCategoriaMes = resumo?.despesasPorCategoriaMes ?? [];
+  const saldosMesAno = resumo?.saldosMesAno ?? 0;
 
   const handleAtualizar = () =>
     mutate({ year: Number(year) }, { onSuccess: () => refetch() });
@@ -183,6 +184,7 @@ const Home: React.FC = () => {
             receitasAno={receitasAno}
             despesasAno={despesasAno}
             saldosMes={saldosMes}
+            saldosMesAno={saldosMesAno}
           />
         </Card>
       </Box>

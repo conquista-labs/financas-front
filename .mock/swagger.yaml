@@ -1668,6 +1668,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SaldosPorMes'
+        saldosMesAno:
+          type: number
+          example: 3520.65
         despesasPorCategoriaAno:
           type: array
           items:
@@ -1689,6 +1692,7 @@ components:
         - receitasMes
         - despesasMes
         - saldosMes
+        - saldosMesAno
         - despesasPorCategoriaAno
         - despesasPorCategoriaMes
         - atualizadoEm

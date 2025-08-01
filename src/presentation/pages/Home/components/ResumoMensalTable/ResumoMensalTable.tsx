@@ -12,6 +12,7 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
   receitasAno,
   despesasAno,
   saldosMes,
+  saldosMesAno,
 }) => {
   const rows = useMemo(() => {
     const mesesSet = new Set([
@@ -59,7 +60,11 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
         showPagination={false}
         tableContainerStyles={{ minHeight: "auto" }}
       >
-        <TableFooter receitasAno={receitasAno} despesasAno={despesasAno} />
+        <TableFooter
+          receitasAno={receitasAno}
+          despesasAno={despesasAno}
+          saldosMesAno={saldosMesAno}
+        />
       </Table>
     </Box>
   );
