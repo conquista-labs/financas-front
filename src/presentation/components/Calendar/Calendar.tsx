@@ -33,7 +33,7 @@ const Calendar: React.FC<CalendarProps> = ({
 }) => {
   const { isMobile } = useIsMobile();
   const { cellHeight, maxTransactionsPerCell } = useCalendarHeight({
-    baseOffset: isMobile ? 200 : 500,
+    baseOffset: isMobile ? 200 : 550,
     headerHeight: isMobile ? 120 : 120,
     transactionItemHeight: isMobile ? 20 : 20,
     reservedCellHeight: isMobile ? 30 : 45,
