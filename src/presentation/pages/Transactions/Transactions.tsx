@@ -206,6 +206,7 @@ const Transactions: React.FC = () => {
         rows={data?.data.rows ?? []}
         total={data?.data.meta.total ?? 0}
         isLoading={isLoading}
+        enableDynamicHeight
       >
         <TableFooter
           total={data?.data.resume.total ?? "R$ 0.00"}

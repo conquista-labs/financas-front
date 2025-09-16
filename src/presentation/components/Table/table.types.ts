@@ -30,4 +30,13 @@ export interface TableProps<T> {
   children?: ReactNode;
   showPagination?: boolean;
   tableContainerStyles?: React.CSSProperties;
+  enableDynamicHeight?: boolean;
+  dynamicHeightOptions?: {
+    baseOffset?: number;
+    headerHeight?: number;
+    footerHeight?: number;
+    paginationHeight?: number;
+    rowHeight?: number;
+    minTableHeight?: number;
+  };
 }

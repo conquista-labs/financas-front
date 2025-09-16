@@ -6,7 +6,7 @@ import { UsePaginationProps } from "./usePagination.types";
 const usePagination = (totalItems = 0): UsePaginationProps => {
   const [param, setParam] = useQueryParams({
     page: withDefault(NumberParam, 1),
-    pageSize: withDefault(NumberParam, 10),
+    pageSize: withDefault(NumberParam, 25),
   });
 
   const getTotalPages = useCallback(

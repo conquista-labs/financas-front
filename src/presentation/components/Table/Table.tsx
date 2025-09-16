@@ -7,7 +7,11 @@ import {
   Skeleton,
 } from "@rarui-react/components";
 
-import { usePagination } from "@/presentation/hooks/core";
+import {
+  usePagination,
+  useTableHeight,
+  useIsMobile,
+} from "@/presentation/hooks/core";
 import type { TableProps } from "./table.types";
 import { pageSizeOptions } from "./table.definitions";
 import { Loading } from "../Loading";
@@ -21,7 +25,25 @@ function Table<T>({
   children,
   tableContainerStyles,
   showPagination = true,
+  enableDynamicHeight = false,
+  dynamicHeightOptions = {},
 }: TableProps<T>): JSX.Element {
+  const { isMobile } = useIsMobile();
+
+  const defaultDynamicOptions = {
+    baseOffset: isMobile ? 120 : 200,
+    headerHeight: isMobile ? 180 : 120,
+    footerHeight: 60,
+    paginationHeight: isMobile ? 120 : 80,
+    rowHeight: 45,
+    minTableHeight: isMobile ? 250 : 300,
+    ...dynamicHeightOptions,
+  };
+
+  const { tableHeight, maxVisibleRows } = useTableHeight(
+    enableDynamicHeight ? defaultDynamicOptions : { minTableHeight: 300 },
+  );
+
   const { page, totalPages, pageSize, onChangePage, onChangePageSize } =
     usePagination(total);
 
@@ -56,11 +78,13 @@ function Table<T>({
   };
 
   const rows = useMemo(() => {
+    const targetRowCount = enableDynamicHeight ? maxVisibleRows : 8;
+
     if (isLoading) {
-      return Array.from({ length: 10 }) as T[];
+      return Array.from({ length: targetRowCount }) as T[];
     }
 
-    const emptyCount = 8 - lines.length;
+    const emptyCount = Math.max(0, targetRowCount - lines.length);
     const filledRows = lines;
 
     // Garante que cada linha vazia tenha um ID único se necessário
@@ -69,13 +93,28 @@ function Table<T>({
     ) as T[];
 
     return [...filledRows, ...emptyRows];
-  }, [lines, isLoading, allColumns]);
+  }, [lines, isLoading, allColumns, maxVisibleRows, enableDynamicHeight]);
 
   return (
     <>
       <Box display="flex" flexDirection="column" gap="$xs" width="100%">
-        <div className="table-container" style={tableContainerStyles}>
-          <Box as="table" width="100%" maxHeight="300px">
+        <div
+          className="table-container"
+          style={{
+            ...tableContainerStyles,
+            ...(enableDynamicHeight && {
+              height: `${tableHeight}px`,
+              overflow: "auto",
+            }),
+          }}
+        >
+          <Box
+            as="table"
+            width="100%"
+            {...(enableDynamicHeight
+              ? { height: "100%" }
+              : { maxHeight: "300px" })}
+          >
             <Box
               as="thead"
               position="sticky"

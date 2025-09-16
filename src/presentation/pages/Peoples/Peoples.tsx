@@ -35,6 +35,7 @@ const Peoples: React.FC = () => {
         rows={data?.data.rows ?? []}
         total={data?.data.meta.total ?? 0}
         isLoading={isLoading || isPending}
+        enableDynamicHeight
       />
     </Box>
   );
