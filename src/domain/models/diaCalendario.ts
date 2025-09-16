@@ -21,5 +21,9 @@ export interface DiaCalendario {
    */
   data: string;
   transacoes: Array<TransacaoCalendario>;
+  /**
+   * Total de despesas do dia em centavos
+   */
+  totalDespesas: number;
   quantidadeTransacoes: number;
 }

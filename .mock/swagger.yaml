@@ -2299,6 +2299,10 @@
               "$ref": "#/components/schemas/TransacaoCalendario"
             }
           },
+          "totalDespesas": {
+            "type": "number",
+            "description": "Total de despesas do dia em centavos"
+          },
           "quantidadeTransacoes": {
             "type": "number"
           }
@@ -2307,6 +2311,7 @@
           "dia",
           "data",
           "transacoes",
+          "totalDespesas",
           "quantidadeTransacoes"
         ]
       },

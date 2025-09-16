@@ -39,8 +39,6 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
     });
   }, [receitasMes, receitasMes, saldosMes]);
 
-  console.log(rows);
-
   return (
     <Box
       display="flex"

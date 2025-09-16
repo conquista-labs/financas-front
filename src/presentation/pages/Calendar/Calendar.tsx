@@ -17,7 +17,6 @@ const Calendar: React.FC = () => {
     ano: currentYear,
     mes: currentMonth,
   });
-  console.log(data);
 
   const handleNavigateMonth = useCallback((month: number, year: number) => {
     setCurrentMonth(month);
