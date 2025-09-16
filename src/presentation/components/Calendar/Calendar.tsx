@@ -16,7 +16,7 @@ import { ptBR } from "date-fns/locale";
 
 import type { DiaCalendario } from "@/domain/models";
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
-import { useIsMobile } from "@/presentation/hooks/core";
+import { useIsMobile, useCalendarHeight } from "@/presentation/hooks/core";
 
 import type { CalendarProps } from "./calendar.types";
 import { DAYS_OF_WEEK } from "./calendar.definitions";
@@ -31,6 +31,14 @@ const Calendar: React.FC<CalendarProps> = ({
   isLoading = false,
 }) => {
   const { isMobile } = useIsMobile();
+  const { cellHeight, maxTransactionsPerCell } = useCalendarHeight({
+    baseOffset: isMobile ? 200 : 500,
+    headerHeight: isMobile ? 120 : 120,
+    transactionItemHeight: isMobile ? 20 : 20,
+    reservedCellHeight: isMobile ? 30 : 45,
+    minCellHeight: isMobile ? 80 : 100,
+  });
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDayData, setSelectedDayData] = useState<DiaCalendario | null>(
     null,
@@ -40,7 +48,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const startDate = startOfWeek(firstDay, { weekStartsOn: 0 });
     const days = [];
 
-    for (let i = 0; i < 35; i++) {
+    for (let i = 0; i < 42; i++) {
       const current = addDays(startDate, i);
       const dayKey = format(current, "yyyy-MM-dd");
       const isCurrentMonth = getMonth(current) === currentMonth - 1;
@@ -136,9 +144,13 @@ const Calendar: React.FC<CalendarProps> = ({
           </Box>
         </Box>
 
-        <Box pt="$none" padding="$2xs">
+        <Box pt="$none" margin="$2xs" overflowY="auto">
           {/* Days of week header */}
-          <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap="$3xs">
+          <Box
+            display="grid"
+            gridTemplateColumns="repeat(7, minmax(200px, 1fr))"
+            gap={{ xs: "$4xs", md: "$3xs" }}
+          >
             {DAYS_OF_WEEK.map((day) => (
               <Box
                 key={day}
@@ -160,13 +172,12 @@ const Calendar: React.FC<CalendarProps> = ({
               </Box>
             ))}
           </Box>
-
           {/* Calendar days */}
           <Box
             display="grid"
-            gridTemplateColumns="repeat(7, 1fr)"
+            gridTemplateColumns="repeat(7, minmax(200px, 1fr))"
             marginBottom="$xs"
-            gap="$3xs"
+            gap={{ xs: "$4xs", md: "$3xs" }}
           >
             {calendarDays.map(({ dayKey, isCurrentMonth, dayData, day }) => (
               <Box
@@ -176,10 +187,10 @@ const Calendar: React.FC<CalendarProps> = ({
                 borderWidth="$1"
                 borderStyle="solid"
                 borderColor="$divider"
-                minHeight={{ xs: "80px", md: "100px" }}
                 display="flex"
                 flexDirection="column"
                 position="relative"
+                minHeight={`${cellHeight}px`}
                 cursor={
                   isCurrentMonth && dayData?.quantidadeTransacoes
                     ? "pointer"
@@ -212,7 +223,7 @@ const Calendar: React.FC<CalendarProps> = ({
                     mt="$4xs"
                   >
                     {dayData.transacoes
-                      .slice(0, isMobile ? 2 : 3)
+                      .slice(0, maxTransactionsPerCell)
                       .map((transacao, index) => (
                         <Box
                           key={`${dayKey}-${index}`}
@@ -220,34 +231,42 @@ const Calendar: React.FC<CalendarProps> = ({
                           borderStyle="solid"
                           display="flex"
                           justifyContent="space-between"
+                          alignItems="center"
+                          width="100%"
                         >
-                          <Box display="flex" alignItems="center" gap="$4xs">
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            gap="$4xs"
+                            flex="1"
+                            minWidth="0"
+                          >
                             <div
                               style={{
-                                height: "100%",
-                                width: "6px",
+                                height: "12px",
+                                width: "4px",
                                 borderRadius: "2px",
                                 backgroundColor: `${transacao.categoria?.cor}`,
+                                flexShrink: 0,
                               }}
                             />
                             <Text
                               fontSize="$xxs"
                               color="$primary"
                               fontWeight="$semiBold"
-                              overflow="hidden"
-                              textOverflow="ellipsis"
-                              whiteSpace="nowrap"
                             >
                               {transacao.descricao}
                             </Text>
                           </Box>
-                          <Text fontSize="$xxs" color="$error">
-                            {formatCurrency(transacao.valor)}
-                          </Text>
+                          <Box flexShrink="0">
+                            <Text fontSize="$xxs" color="$error">
+                              {formatCurrency(transacao.valor)}
+                            </Text>
+                          </Box>
                         </Box>
                       ))}
 
-                    {dayData.quantidadeTransacoes > (isMobile ? 2 : 3) && (
+                    {dayData.quantidadeTransacoes > maxTransactionsPerCell && (
                       <Box
                         as="button"
                         width="fit-content"
@@ -271,7 +290,9 @@ const Calendar: React.FC<CalendarProps> = ({
                           color="$secondary"
                           textAlign="center"
                         >
-                          +{dayData.quantidadeTransacoes - (isMobile ? 2 : 3)}{" "}
+                          +
+                          {dayData.quantidadeTransacoes -
+                            maxTransactionsPerCell}{" "}
                           mais
                         </Text>
                       </Box>

@@ -30,13 +30,7 @@ const Calendar: React.FC = () => {
   }, []);
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      gap="$md"
-      padding="$md"
-      overflow="auto"
-    >
+    <Box display="flex" flexDirection="column">
       <Breadcrumb crumbs={["calendar"]} />
 
       <Box
@@ -44,7 +38,8 @@ const Calendar: React.FC = () => {
         display="flex"
         justifyContent="center"
         alignItems="flex-start"
-        paddingTop="$md"
+        padding={{ xs: "$xs", md: "$md" }}
+        paddingTop="$xs"
       >
         <CalendarComponent
           data={data?.data}
