@@ -21,6 +21,10 @@ export interface RelatorioTransacoesResponse {
   valor: number;
   data: string;
   observacoes?: string;
+  /**
+   * Flag para mostrar transação no calendário como lembrete
+   */
+  lembrarMe?: boolean;
   meioPagamentoId?: string;
   formaPagamento?: RelatorioTransacoesResponse.FormaPagamentoEnum;
   createdAt: string;

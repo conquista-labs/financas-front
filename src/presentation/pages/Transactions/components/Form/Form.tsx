@@ -12,6 +12,7 @@ import {
   Loading,
   Select,
   Textarea,
+  Toggle,
 } from "@/presentation/components";
 
 import { buildOptions, defaultForm, schema } from "./form.definitions";
@@ -165,6 +166,14 @@ const Form: React.FC<FormProps> = ({ defaultValues, onSubmit, isPending }) => {
               lines={8}
               control={control}
             />
+            <Box width="100%">
+              <Toggle
+                id="lembrarMe"
+                name="lembrarMe"
+                label="Lembrar-me no calendário"
+                control={control}
+              />
+            </Box>
           </Box>
         </Card>
         <Box

@@ -1,4 +1,4 @@
-import { object, string } from "yup";
+import { boolean, object, string } from "yup";
 
 export const schema = object({
   categoriaId: string().required("Categoria é obrigatória"),
@@ -9,6 +9,7 @@ export const schema = object({
   descricao: string().required("Descrição é obrigatória"),
   valor: string().required("Valor é obrigatório"),
   observacoes: string().optional(),
+  lembrarMe: boolean().optional(),
 }).required();
 
 export const defaultForm = {
@@ -20,6 +21,7 @@ export const defaultForm = {
   descricao: "",
   valor: "",
   observacoes: "",
+  lembrarMe: false,
 };
 
 export const buildOptions = (data: { id: string; nome: string }[]) =>

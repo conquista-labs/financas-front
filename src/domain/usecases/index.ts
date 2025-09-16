@@ -1,4 +1,5 @@
 export * from "./auth";
+export * from "./calendario";
 export * from "./categorias";
 export * from "./enums";
 export * from "./meiosPagamento";

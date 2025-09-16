@@ -19,6 +19,10 @@ export interface EditTransacaoRequest {
   data?: string;
   formaPagamento?: EditTransacaoRequest.FormaPagamentoEnum;
   observacoes?: string;
+  /**
+   * Flag para mostrar transação no calendário como lembrete
+   */
+  lembrarMe?: boolean;
   meioPagamentoId?: string;
 }
 export namespace EditTransacaoRequest {

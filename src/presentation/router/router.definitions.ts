@@ -14,7 +14,9 @@ export const navigateTo = (path: string) => {
 
 export const urlRouters = {
   root: "/",
+  home: "/",
   login: "/login",
+  calendar: "/calendar",
   transactions: "/transactions",
   createTransactions: "/transactions/create",
   editTransactions: "/transactions/edit/:id",

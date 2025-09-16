@@ -1,6 +1,6 @@
 import { IconButton, Text, Box, Tooltip } from "@rarui-react/components";
 import { EditFilledIcon, TrashFilledIcon } from "@rarui/icons";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, endOfMonth } from "date-fns";
 import type { UseMutateFunction } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type {
@@ -16,8 +16,10 @@ import "./transactions.css";
 export const isTwoDaysBeforeMonthEnd = (
   date: null | undefined | Date,
 ): boolean => {
-  const diff = differenceInCalendarDays(date ?? new Date(), new Date());
-  return false;
+  const diff = differenceInCalendarDays(
+    endOfMonth(date ?? new Date()),
+    date ?? new Date(),
+  );
   return diff === 0 || diff === 1 || diff === 2;
 };
 

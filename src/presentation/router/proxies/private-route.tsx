@@ -6,6 +6,7 @@ import { Suspense, Template } from "@/presentation/components";
 import {
   Home,
   NotFound,
+  Calendar,
   Transactions,
   CreateTransactions,
   EditTransactions,
@@ -37,6 +38,14 @@ const PrivateRoute: React.FC = () => (
         element={
           <Suspense>
             <Home />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.calendar}
+        element={
+          <Suspense>
+            <Calendar />
           </Suspense>
         }
       />
