@@ -14,7 +14,9 @@ describe("GIVEN a Banner component", () => {
     it("THEN should display the correct children text", () => {
       render(<Banner />);
 
-      expect(screen.getByText("Essencial é viver bem")).toBeDefined();
+      expect(
+        screen.getByText("Cuidar do que é nosso, todos os dias!"),
+      ).toBeDefined();
     });
   });
 });

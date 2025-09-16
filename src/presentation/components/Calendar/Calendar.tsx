@@ -21,6 +21,7 @@ import { useIsMobile, useCalendarHeight } from "@/presentation/hooks/core";
 import type { CalendarProps } from "./calendar.types";
 import { DAYS_OF_WEEK } from "./calendar.definitions";
 import { DailyTransactionsModal } from "./components";
+import { Loading } from "../Loading";
 
 const Calendar: React.FC<CalendarProps> = ({
   data,
@@ -310,6 +311,7 @@ const Calendar: React.FC<CalendarProps> = ({
         onClose={handleCloseModal}
         dayData={selectedDayData}
       />
+      <Loading isLoading={isLoading} />
     </Box>
   );
 };
