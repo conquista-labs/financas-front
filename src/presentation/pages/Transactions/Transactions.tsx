@@ -17,7 +17,6 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   FilterAltOutlinedIcon,
-  CalendarDateRangeOutlinedIcon,
 } from "@rarui/icons";
 import { addMonths, format, startOfMonth, endOfMonth } from "date-fns";
 
@@ -29,10 +28,7 @@ import {
 } from "@/presentation/hooks/api";
 import { Breadcrumb, Table } from "@/presentation/components";
 import { useIsMobile, usePagination } from "@/presentation/hooks/core";
-import {
-  getColumns,
-  isTwoDaysBeforeMonthEnd,
-} from "./transactions.definitions";
+import { getColumns } from "./transactions.definitions";
 import { Filters, TableFooter } from "./components";
 
 const Transactions: React.FC = () => {
@@ -140,8 +136,6 @@ const Transactions: React.FC = () => {
     [isLoadingGetTransacoes, isLoadingGetRelatorioTransacoes, isPending],
   );
 
-  const showCloseButtonMonth = isTwoDaysBeforeMonthEnd(queryParams.endDate);
-
   return (
     <Box display="flex" height="100%" flexDirection="column" gap="$s">
       <Breadcrumb crumbs={["transactions"]} />
@@ -178,11 +172,6 @@ const Transactions: React.FC = () => {
           gap="$2xs"
           flexDirection={{ xs: "column", md: "row" }}
         >
-          {showCloseButtonMonth && (
-            <Button appearance="neutral" variant="text">
-              Fechar mês <Icon source={<CalendarDateRangeOutlinedIcon />} />
-            </Button>
-          )}
           <Button
             variant="outlined"
             onClick={() => setOpenFilters(!openFilters)}

@@ -1,12 +1,5 @@
 import React, { useMemo } from "react";
-import {
-  Box,
-  Title,
-  Text,
-  Datepicker,
-  IconButton,
-  Icon,
-} from "@rarui-react/components";
+import { Box, Datepicker, IconButton } from "@rarui-react/components";
 import {
   useGetResumoFinanceiro,
   usePostResumoFinanceiro,
@@ -18,6 +11,7 @@ import {
   ResumoFinanceiroChart,
   ResumoPorCategoriaTable,
   Card,
+  CompactCard,
   Header,
 } from "./components";
 import { formatCurrency } from "./home.definitions";
@@ -56,6 +50,9 @@ const Home: React.FC = () => {
   const saldosMes = resumo?.saldosMes ?? [];
   const receitasAno = resumo?.receitasAno ?? 0;
   const despesasAno = resumo?.despesasAno ?? 0;
+  const saldoAno = resumo?.saldoAno ?? 0;
+  const metaEconomiaAno = resumo?.metaEconomiaAno;
+  const percentualMetaAtingida = resumo?.percentualMetaAtingida;
   const despesasPorCategoriaAno = resumo?.despesasPorCategoriaAno ?? [];
   const despesasPorCategoriaMes = resumo?.despesasPorCategoriaMes ?? [];
   const saldosMesAno = resumo?.saldosMesAno ?? 0;
@@ -108,62 +105,56 @@ const Home: React.FC = () => {
 
       <Box
         display="grid"
-        gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
-        gap="$s"
+        gridTemplateColumns={{ xs: "1fr", md: "repeat(3, 1fr)" }}
+        gap="$2xs"
       >
-        <Card>
-          <Box display="flex" justifyContent="space-between" padding="$xs">
-            <Box display="flex" flexDirection="column" gap="$3xs">
-              <Text color="$secondary">Total de receitas do ano</Text>
-              <Title as="h6" color="$success">
-                {formatCurrency(receitasAno)}
-              </Title>
-            </Box>
-            <Box
-              backgroundColor="$secondary"
-              width="44px"
-              height="44px"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              borderRadius="$pill"
-            >
-              <Icon
-                color="$success"
-                source={<DocumentOutlinedIcon size={24} />}
-              />
-            </Box>
-          </Box>
-        </Card>
-        <Card>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            padding="$xs"
-          >
-            <Box display="flex" flexDirection="column" gap="$3xs">
-              <Text color="$secondary">Total de despesas do ano</Text>
-              <Title as="h6" color="$error">
-                {formatCurrency(despesasAno)}
-              </Title>
-            </Box>
-            <Box
-              backgroundColor="$secondary"
-              width="44px"
-              height="44px"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              borderRadius="$pill"
-            >
-              <Icon
-                color="$error"
-                source={<CreditCardOutlinedIcon size={24} />}
-              />
-            </Box>
-          </Box>
-        </Card>
+        <CompactCard
+          title="Total de receitas do ano"
+          value={formatCurrency(receitasAno)}
+          color="$success"
+          icon={<DocumentOutlinedIcon size={20} />}
+          iconColor="$success"
+        />
+
+        <CompactCard
+          title="Total de despesas do ano"
+          value={formatCurrency(despesasAno)}
+          color="$error"
+          icon={<CreditCardOutlinedIcon size={20} />}
+          iconColor="$error"
+        />
+
+        <CompactCard
+          title="Saldo do ano"
+          value={formatCurrency(saldoAno)}
+          color={saldoAno >= 0 ? "$success" : "$error"}
+          icon={<CreditCardOutlinedIcon size={20} />}
+          iconColor={saldoAno >= 0 ? "$success" : "$error"}
+          subtitle={
+            metaEconomiaAno
+              ? `Meta: ${formatCurrency(metaEconomiaAno)}`
+              : undefined
+          }
+          trend={
+            percentualMetaAtingida
+              ? {
+                  type:
+                    percentualMetaAtingida >= 100
+                      ? "positive"
+                      : percentualMetaAtingida >= 50
+                        ? "neutral"
+                        : "negative",
+                  value: `${percentualMetaAtingida.toFixed(0)}%`,
+                  icon:
+                    percentualMetaAtingida >= 100
+                      ? "🎯"
+                      : percentualMetaAtingida >= 50
+                        ? "📈"
+                        : "📉",
+                }
+              : undefined
+          }
+        />
       </Box>
 
       <Box

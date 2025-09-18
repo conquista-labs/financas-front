@@ -12,5 +12,50 @@
 
 export interface SaldosPorMes {
   mes: string;
+  /**
+   * Saldo final do mês (receitas + saldoMesAnterior - despesas)
+   */
   valor: number;
+  /**
+   * Saldo do mês anterior (base para cálculo acumulativo)
+   */
+  saldoMesAnterior: number;
+  /**
+   * Total de receitas do mês
+   */
+  receita: number;
+  /**
+   * Total de despesas do mês
+   */
+  despesa: number;
+  /**
+   * Percentual gasto (despesa/receita * 100)
+   */
+  percentualGasto?: number;
+  /**
+   * Status financeiro do mês
+   */
+  statusFinanceiro?: SaldosPorMes.StatusFinanceiroEnum;
+  /**
+   * Diferença para o mês anterior
+   */
+  deltaMesAnterior?: number;
+  /**
+   * Tendência em relação ao mês anterior
+   */
+  tendencia?: SaldosPorMes.TendenciaEnum;
+}
+export namespace SaldosPorMes {
+  export type StatusFinanceiroEnum = "controlado" | "atencao" | "alerta";
+  export const StatusFinanceiroEnum = {
+    Controlado: "controlado" as StatusFinanceiroEnum,
+    Atencao: "atencao" as StatusFinanceiroEnum,
+    Alerta: "alerta" as StatusFinanceiroEnum,
+  };
+  export type TendenciaEnum = "alta" | "baixa" | "estavel";
+  export const TendenciaEnum = {
+    Alta: "alta" as TendenciaEnum,
+    Baixa: "baixa" as TendenciaEnum,
+    Estavel: "estavel" as TendenciaEnum,
+  };
 }

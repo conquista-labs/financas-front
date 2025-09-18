@@ -63,6 +63,10 @@ const TableFooter: React.FC<TableFooterProps> = ({
         >
           {formatCurrency(receitasAno)}
         </Box>
+        {/* % Gasto - Coluna vazia no footer */}
+        <Box as="td" padding="$2xs" verticalAlign="middle" textAlign="center">
+          —
+        </Box>
         <Box
           as="td"
           padding="$2xs"
@@ -86,6 +90,10 @@ const TableFooter: React.FC<TableFooterProps> = ({
           textAlign="right"
         >
           {formatCurrency(saldo)}
+        </Box>
+        {/* Δ Anterior - Coluna vazia no footer */}
+        <Box as="td" padding="$2xs" verticalAlign="middle" textAlign="center">
+          —
         </Box>
       </Box>
     </Box>

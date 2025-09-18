@@ -1,10 +1,12 @@
 import React, { useMemo } from "react";
 
-import { ResumoMensalTableProps } from "./resumoMensalTable.types";
-import { formatMonth, getColumns } from "./resumoMensalTable.definitions";
-import { Table } from "@/presentation/components";
 import { Box, Title } from "@rarui-react/components";
+
+import { Table } from "@/presentation/components";
+
 import { TableFooter } from "./components";
+import { formatMonth, getColumns } from "./resumoMensalTable.definitions";
+import type { ResumoMensalTableProps } from "./resumoMensalTable.types";
 
 export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
   receitasMes,
@@ -26,18 +28,21 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
     return mesesOrdenados.map((mes) => {
       const receitaMes = receitasMes.find((r) => r.mes === mes)?.valor || 0;
       const despesaMes = despesasMes.find((d) => d.mes === mes)?.valor || 0;
-      const saldoMesAnterior = saldosMes.find((s) => s.mes === mes)?.valor || 0;
-      const saldo = receitaMes + saldoMesAnterior - despesaMes;
+      const saldoItem = saldosMes.find((s) => s.mes === mes);
 
       return {
-        mes: formatMonth(mes), // ex: "jan/2025"
+        mes: formatMonth(mes),
         receita: receitaMes,
         despesa: despesaMes,
-        saldo,
-        saldoMesAnterior,
+        saldo: saldoItem?.valor || 0,
+        saldoMesAnterior: saldoItem?.saldoMesAnterior || 0,
+        percentualGasto: saldoItem?.percentualGasto,
+        statusFinanceiro: saldoItem?.statusFinanceiro,
+        deltaMesAnterior: saldoItem?.deltaMesAnterior,
+        tendencia: saldoItem?.tendencia,
       };
     });
-  }, [receitasMes, receitasMes, saldosMes]);
+  }, [receitasMes, despesasMes, saldosMes]);
 
   return (
     <Box

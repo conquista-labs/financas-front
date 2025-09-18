@@ -1185,43 +1185,6 @@
         ]
       }
     },
-    "/resumo-financeiro/fechar-mes/{mes}/{ano}": {
-      "post": {
-        "operationId": "ResumoFinanceiroController_closeMonth",
-        "parameters": [
-          {
-            "name": "mes",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "ano",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Fechamento financeiro do mês realizado com sucesso."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Realiza o fechamento financeiro do mês solicitado",
-        "tags": [
-          "Resumo Financeiro"
-        ]
-      }
-    },
     "/relatorios/transacoes": {
       "get": {
         "operationId": "RelatoriosController_gerarRelatorioTransacoes",
@@ -2665,12 +2628,61 @@
           },
           "valor": {
             "type": "number",
-            "example": 2500
+            "example": 2500,
+            "description": "Saldo final do mês (receitas + saldoMesAnterior - despesas)"
+          },
+          "saldoMesAnterior": {
+            "type": "number",
+            "example": 1800,
+            "description": "Saldo do mês anterior (base para cálculo acumulativo)"
+          },
+          "receita": {
+            "type": "number",
+            "example": 3500,
+            "description": "Total de receitas do mês"
+          },
+          "despesa": {
+            "type": "number",
+            "example": 2800,
+            "description": "Total de despesas do mês"
+          },
+          "percentualGasto": {
+            "type": "number",
+            "example": 71.43,
+            "description": "Percentual gasto (despesa/receita * 100)"
+          },
+          "statusFinanceiro": {
+            "type": "string",
+            "example": "controlado",
+            "enum": [
+              "controlado",
+              "atencao",
+              "alerta"
+            ],
+            "description": "Status financeiro do mês"
+          },
+          "deltaMesAnterior": {
+            "type": "number",
+            "example": 150,
+            "description": "Diferença para o mês anterior"
+          },
+          "tendencia": {
+            "type": "string",
+            "example": "alta",
+            "enum": [
+              "alta",
+              "baixa",
+              "estavel"
+            ],
+            "description": "Tendência em relação ao mês anterior"
           }
         },
         "required": [
           "mes",
-          "valor"
+          "valor",
+          "saldoMesAnterior",
+          "receita",
+          "despesa"
         ]
       },
       "DespesaPorCategoriaAno": {
