@@ -51,11 +51,11 @@ const Home: React.FC = () => {
   const receitasAno = resumo?.receitasAno ?? 0;
   const despesasAno = resumo?.despesasAno ?? 0;
   const saldoAno = resumo?.saldoAno ?? 0;
-  const metaEconomiaAno = resumo?.metaEconomiaAno;
-  const percentualMetaAtingida = resumo?.percentualMetaAtingida;
   const despesasPorCategoriaAno = resumo?.despesasPorCategoriaAno ?? [];
   const despesasPorCategoriaMes = resumo?.despesasPorCategoriaMes ?? [];
   const saldosMesAno = resumo?.saldosMesAno ?? 0;
+
+  console.log(data);
 
   const handleAtualizar = () =>
     mutate({ year: Number(year) }, { onSuccess: () => refetch() });
@@ -130,30 +130,6 @@ const Home: React.FC = () => {
           color={saldoAno >= 0 ? "$success" : "$error"}
           icon={<CreditCardOutlinedIcon size={20} />}
           iconColor={saldoAno >= 0 ? "$success" : "$error"}
-          subtitle={
-            metaEconomiaAno
-              ? `Meta: ${formatCurrency(metaEconomiaAno)}`
-              : undefined
-          }
-          trend={
-            percentualMetaAtingida
-              ? {
-                  type:
-                    percentualMetaAtingida >= 100
-                      ? "positive"
-                      : percentualMetaAtingida >= 50
-                        ? "neutral"
-                        : "negative",
-                  value: `${percentualMetaAtingida.toFixed(0)}%`,
-                  icon:
-                    percentualMetaAtingida >= 100
-                      ? "🎯"
-                      : percentualMetaAtingida >= 50
-                        ? "📈"
-                        : "📉",
-                }
-              : undefined
-          }
         />
       </Box>
 
@@ -166,6 +142,7 @@ const Home: React.FC = () => {
           <ResumoFinanceiroChart
             receitasMes={receitasMes}
             despesasMes={despesasMes}
+            saldosMes={saldosMes}
           />
         </Card>
         <Card>
