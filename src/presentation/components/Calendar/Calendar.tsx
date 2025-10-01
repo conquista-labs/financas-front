@@ -1,22 +1,16 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@rarui/icons";
 import { Box, Button, Card, Text } from "@rarui-react/components";
-import { useMemo, useState } from "react";
-import {
-  startOfMonth,
-  startOfWeek,
-  addDays,
-  format,
-  getMonth,
-  getDate,
-  subMonths,
-  addMonths,
-  getYear,
-} from "date-fns";
+import { useState } from "react";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 import type { DiaCalendario } from "@/domain/models";
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
-import { useIsMobile, useCalendarHeight } from "@/presentation/hooks/core";
+import {
+  useIsMobile,
+  useCalendarHeight,
+  useCalendarLogic,
+} from "@/presentation/hooks/core";
 
 import type { CalendarProps } from "./calendar.types";
 import { DAYS_OF_WEEK } from "./calendar.definitions";
@@ -40,42 +34,17 @@ const Calendar: React.FC<CalendarProps> = ({
     minCellHeight: isMobile ? 80 : 100,
   });
 
+  const { calendarDays, handlePrevMonth, handleNextMonth } = useCalendarLogic({
+    data,
+    currentMonth,
+    currentYear,
+    onNavigateMonth,
+  });
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDayData, setSelectedDayData] = useState<DiaCalendario | null>(
     null,
   );
-  const calendarDays = useMemo(() => {
-    const firstDay = startOfMonth(new Date(currentYear, currentMonth - 1, 1));
-    const startDate = startOfWeek(firstDay, { weekStartsOn: 0 });
-    const days = [];
-
-    for (let i = 0; i < 42; i++) {
-      const current = addDays(startDate, i);
-      const dayKey = format(current, "yyyy-MM-dd");
-      const isCurrentMonth = getMonth(current) === currentMonth - 1;
-      const dayData = data?.diasDoMes?.find((dia) => dia.data === dayKey);
-
-      days.push({
-        date: current,
-        dayKey,
-        isCurrentMonth,
-        dayData,
-        day: getDate(current),
-      });
-    }
-
-    return days;
-  }, [currentYear, currentMonth, data]);
-
-  const handlePrevMonth = () => {
-    const prevMonth = subMonths(new Date(currentYear, currentMonth - 1, 1), 1);
-    onNavigateMonth(getMonth(prevMonth) + 1, getYear(prevMonth));
-  };
-
-  const handleNextMonth = () => {
-    const nextMonth = addMonths(new Date(currentYear, currentMonth - 1, 1), 1);
-    onNavigateMonth(getMonth(nextMonth) + 1, getYear(nextMonth));
-  };
 
   const handleDayClick = (dayData: DiaCalendario) => {
     if (dayData.quantidadeTransacoes > 0) {

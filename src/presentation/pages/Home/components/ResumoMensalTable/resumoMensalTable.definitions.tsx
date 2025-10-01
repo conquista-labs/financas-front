@@ -25,7 +25,7 @@ export const getColumns = () =>
       formatter: (field, row) => {
         if (!field)
           return (
-            <Text fontSize="$s" color="$disabled">
+            <Text fontSize="$s" color="$disabled" textAlign="center">
               —
             </Text>
           );
@@ -51,9 +51,9 @@ export const getColumns = () =>
               paddingY="$4xs"
               paddingX="$3xs"
               borderRadius="$2xs"
-              backgroundColor={backgroundColor}
+              backgroundColor={backgroundColor as any}
             >
-              <Text fontSize="$s" color={color} fontWeight="$semiBold">
+              <Text fontSize="$s" color={color as any} fontWeight="$semiBold">
                 {field.toFixed(1)}%
               </Text>
             </Box>
@@ -97,7 +97,7 @@ export const getColumns = () =>
       formatter: (field, row) => {
         if (!field)
           return (
-            <Text fontSize="$s" color="$disabled">
+            <Text fontSize="$s" color="$disabled" textAlign="center">
               —
             </Text>
           );

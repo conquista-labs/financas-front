@@ -141,7 +141,6 @@ Mobile (< 768px):
 
 #### 2.3 Reorganização da Hierarquia Visual
 
-- **Header mais compacto**: Reduzir altura total
 - **Melhor agrupamento**: Cards relacionados próximos
 - **Breathing room**: Espaçamentos consistentes
 - **Focus na tabela resumo**: Destaque visual maior

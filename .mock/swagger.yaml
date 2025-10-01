@@ -1275,6 +1275,414 @@
           "Relatórios"
         ]
       }
+    },
+    "/analytics/orcamento": {
+      "get": {
+        "operationId": "AnalyticsController_getOrcamento",
+        "parameters": [
+          {
+            "name": "ano",
+            "required": true,
+            "in": "query",
+            "description": "Ano para análise",
+            "schema": {
+              "example": 2024,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mes",
+            "required": true,
+            "in": "query",
+            "description": "Mês para análise",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de resultados para rankings",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mesesHistorico",
+            "required": false,
+            "in": "query",
+            "description": "Número de meses de histórico para tendências",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics de orçamento retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnalyticsOrcamentoResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Analytics de orçamento e metas",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/categorias": {
+      "get": {
+        "operationId": "AnalyticsController_getCategorias",
+        "parameters": [
+          {
+            "name": "ano",
+            "required": true,
+            "in": "query",
+            "description": "Ano para análise",
+            "schema": {
+              "example": 2024,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mes",
+            "required": true,
+            "in": "query",
+            "description": "Mês para análise",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de resultados para rankings",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mesesHistorico",
+            "required": false,
+            "in": "query",
+            "description": "Número de meses de histórico para tendências",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics por categoria retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnalyticsCategoriasResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Analytics por categoria",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/tendencias": {
+      "get": {
+        "operationId": "AnalyticsController_getTendencias",
+        "parameters": [
+          {
+            "name": "ano",
+            "required": true,
+            "in": "query",
+            "description": "Ano para análise",
+            "schema": {
+              "example": 2024,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mes",
+            "required": true,
+            "in": "query",
+            "description": "Mês para análise",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de resultados para rankings",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mesesHistorico",
+            "required": false,
+            "in": "query",
+            "description": "Número de meses de histórico para tendências",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics de tendências retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnalyticsTendenciasResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Analytics de tendências e métricas avançadas",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/quick-stats": {
+      "get": {
+        "operationId": "AnalyticsController_getQuickStats",
+        "parameters": [
+          {
+            "name": "ano",
+            "required": true,
+            "in": "query",
+            "description": "Ano para análise",
+            "schema": {
+              "example": 2024,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mes",
+            "required": true,
+            "in": "query",
+            "description": "Mês para análise",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de resultados para rankings",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mesesHistorico",
+            "required": false,
+            "in": "query",
+            "description": "Número de meses de histórico para tendências",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quick stats retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetQuickStatsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Quick stats para widgets rápidos",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/meios-pagamento": {
+      "get": {
+        "operationId": "AnalyticsController_getMeiosPagamento",
+        "parameters": [
+          {
+            "name": "ano",
+            "required": true,
+            "in": "query",
+            "description": "Ano para análise",
+            "schema": {
+              "example": 2024,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mes",
+            "required": true,
+            "in": "query",
+            "description": "Mês para análise",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de resultados para rankings",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mesesHistorico",
+            "required": false,
+            "in": "query",
+            "description": "Número de meses de histórico para tendências",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics por meio de pagamento retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnalyticsMeiosPagamentoResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Analytics por meio de pagamento",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/padroes-temporais": {
+      "get": {
+        "operationId": "AnalyticsController_getPadroesTemporais",
+        "parameters": [
+          {
+            "name": "ano",
+            "required": true,
+            "in": "query",
+            "description": "Ano para análise",
+            "schema": {
+              "example": 2024,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mes",
+            "required": true,
+            "in": "query",
+            "description": "Mês para análise",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limite de resultados para rankings",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "mesesHistorico",
+            "required": false,
+            "in": "query",
+            "description": "Número de meses de histórico para tendências",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics de padrões temporais retornadas com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnalyticsPadroesTemporaisResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Analytics de padrões temporais e recorrência",
+        "tags": [
+          "Analytics"
+        ]
+      }
     }
   },
   "info": {
@@ -2969,6 +3377,1586 @@
           },
           "data": {
             "$ref": "#/components/schemas/RelatorioTrasacoesPaginatedData"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "SaudeFinanceiraDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status da saúde financeira",
+            "enum": [
+              "saudavel",
+              "atencao",
+              "critico",
+              "excelente"
+            ],
+            "example": "saudavel"
+          },
+          "pontuacao": {
+            "type": "number",
+            "description": "Pontuação de 0-100",
+            "example": 75
+          },
+          "fatores": {
+            "type": "object",
+            "description": "Fatores que influenciam a pontuação"
+          }
+        },
+        "required": [
+          "status",
+          "pontuacao",
+          "fatores"
+        ]
+      },
+      "OrcamentoGeralDto": {
+        "type": "object",
+        "properties": {
+          "valorOrcado": {
+            "type": "number",
+            "description": "Valor orçado para o mês",
+            "example": 5000
+          },
+          "valorRealizado": {
+            "type": "number",
+            "description": "Valor realizado até o momento",
+            "example": 3200
+          },
+          "percentualUtilizado": {
+            "type": "number",
+            "description": "Percentual utilizado do orçamento",
+            "example": 64
+          },
+          "saldoRestante": {
+            "type": "number",
+            "description": "Saldo restante",
+            "example": 1800
+          },
+          "diasRestantes": {
+            "type": "number",
+            "description": "Dias restantes no mês",
+            "example": 10
+          },
+          "mediaGastoDiario": {
+            "type": "number",
+            "description": "Média de gasto diário atual",
+            "example": 106.67
+          },
+          "mediaPermitidaDiaria": {
+            "type": "number",
+            "description": "Média permitida diária para não ultrapassar",
+            "example": 180
+          },
+          "projecaoFinal": {
+            "type": "number",
+            "description": "Projeção final do mês",
+            "example": 5200
+          }
+        },
+        "required": [
+          "valorOrcado",
+          "valorRealizado",
+          "percentualUtilizado",
+          "saldoRestante",
+          "diasRestantes",
+          "mediaGastoDiario",
+          "mediaPermitidaDiaria",
+          "projecaoFinal"
+        ]
+      },
+      "UltimaTransacaoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da transação",
+            "example": "uuid-123"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição da transação",
+            "example": "Compras no supermercado"
+          },
+          "valor": {
+            "type": "number",
+            "description": "Valor da transação",
+            "example": 250.5
+          },
+          "data": {
+            "type": "string",
+            "description": "Data da transação",
+            "example": "2024-12-15T10:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "valor",
+          "data"
+        ]
+      },
+      "OrcamentoCategoriaDto": {
+        "type": "object",
+        "properties": {
+          "categoriaId": {
+            "type": "string",
+            "description": "ID da categoria",
+            "example": "uuid-cat-123"
+          },
+          "categoriaNome": {
+            "type": "string",
+            "description": "Nome da categoria",
+            "example": "Alimentação"
+          },
+          "categoriaIcone": {
+            "type": "string",
+            "description": "Ícone da categoria",
+            "example": "utensils"
+          },
+          "categoriaCor": {
+            "type": "string",
+            "description": "Cor da categoria",
+            "example": "#ff6b6b"
+          },
+          "valorOrcado": {
+            "type": "number",
+            "description": "Valor orçado (baseado no teto)",
+            "example": 1500
+          },
+          "valorRealizado": {
+            "type": "number",
+            "description": "Valor realizado",
+            "example": 1200
+          },
+          "percentualUtilizado": {
+            "type": "number",
+            "description": "Percentual utilizado",
+            "example": 80
+          },
+          "status": {
+            "type": "string",
+            "description": "Status do orçamento",
+            "enum": [
+              "dentro",
+              "atencao",
+              "ultrapassado"
+            ],
+            "example": "dentro"
+          },
+          "saldoRestante": {
+            "type": "number",
+            "description": "Saldo restante",
+            "example": 300
+          },
+          "projecaoMes": {
+            "type": "number",
+            "description": "Projeção para o final do mês",
+            "example": 1450
+          },
+          "ultimasTransacoes": {
+            "description": "Últimas transações da categoria",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UltimaTransacaoDto"
+            }
+          }
+        },
+        "required": [
+          "categoriaId",
+          "categoriaNome",
+          "categoriaIcone",
+          "categoriaCor",
+          "valorOrcado",
+          "valorRealizado",
+          "percentualUtilizado",
+          "status",
+          "saldoRestante",
+          "projecaoMes",
+          "ultimasTransacoes"
+        ]
+      },
+      "AlertaOrcamentoDto": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "description": "Tipo do alerta",
+            "enum": [
+              "info",
+              "warning",
+              "error",
+              "success"
+            ],
+            "example": "warning"
+          },
+          "categoria": {
+            "type": "string",
+            "description": "Categoria relacionada",
+            "example": "Alimentação"
+          },
+          "titulo": {
+            "type": "string",
+            "description": "Título do alerta",
+            "example": "Meta próxima do limite"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição detalhada",
+            "example": "Você já gastou 80% do orçamento em Alimentação"
+          },
+          "valorEnvolvido": {
+            "type": "number",
+            "description": "Valor envolvido no alerta",
+            "example": 1200
+          },
+          "acao": {
+            "type": "string",
+            "description": "Ação recomendada",
+            "example": "Considere reduzir gastos nesta categoria"
+          }
+        },
+        "required": [
+          "tipo",
+          "titulo",
+          "descricao"
+        ]
+      },
+      "AnalyticsOrcamentoDataDto": {
+        "type": "object",
+        "properties": {
+          "saudeFinanceira": {
+            "description": "Saúde financeira geral",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SaudeFinanceiraDto"
+              }
+            ]
+          },
+          "orcamentoGeral": {
+            "description": "Orçamento geral do mês",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrcamentoGeralDto"
+              }
+            ]
+          },
+          "orcamentoCategorias": {
+            "description": "Orçamento por categoria",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrcamentoCategoriaDto"
+            }
+          },
+          "alertas": {
+            "description": "Alertas de orçamento",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AlertaOrcamentoDto"
+            }
+          }
+        },
+        "required": [
+          "saudeFinanceira",
+          "orcamentoGeral",
+          "orcamentoCategorias",
+          "alertas"
+        ]
+      },
+      "GetAnalyticsOrcamentoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de resposta",
+            "example": "Analytics de orçamento retornadas com sucesso"
+          },
+          "data": {
+            "description": "Dados de analytics de orçamento",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AnalyticsOrcamentoDataDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "MesAnteriorDto": {
+        "type": "object",
+        "properties": {
+          "valorTotal": {
+            "type": "number",
+            "description": "Valor total do mês anterior",
+            "example": 1200.5
+          },
+          "variacao": {
+            "type": "number",
+            "description": "Variação percentual em relação ao mês anterior",
+            "example": 15.5
+          }
+        },
+        "required": [
+          "valorTotal",
+          "variacao"
+        ]
+      },
+      "MaiorTransacaoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da transação",
+            "example": "uuid-123"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição da transação",
+            "example": "Compra eletrônicos"
+          },
+          "valor": {
+            "type": "number",
+            "description": "Valor da transação",
+            "example": 1500
+          },
+          "data": {
+            "type": "string",
+            "description": "Data da transação",
+            "example": "2024-12-15T10:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "valor",
+          "data"
+        ]
+      },
+      "CategoriaAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da categoria",
+            "example": "uuid-cat-123"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome da categoria",
+            "example": "Alimentação"
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Tipo da categoria",
+            "enum": [
+              "receita",
+              "despesa"
+            ],
+            "example": "despesa"
+          },
+          "icone": {
+            "type": "string",
+            "description": "Ícone da categoria",
+            "example": "utensils"
+          },
+          "cor": {
+            "type": "string",
+            "description": "Cor da categoria",
+            "example": "#ff6b6b"
+          },
+          "valorTotal": {
+            "type": "number",
+            "description": "Valor total movimentado na categoria",
+            "example": 1350.75
+          },
+          "numeroTransacoes": {
+            "type": "number",
+            "description": "Número de transações",
+            "example": 25
+          },
+          "percentualDoTotal": {
+            "type": "number",
+            "description": "Percentual do total geral",
+            "example": 27.5
+          },
+          "tetoGasto": {
+            "type": "number",
+            "description": "Teto de gasto configurado",
+            "example": 1500
+          },
+          "percentualTeto": {
+            "type": "number",
+            "description": "Percentual do teto utilizado",
+            "example": 90.05
+          },
+          "tetoUltrapassado": {
+            "type": "boolean",
+            "description": "Se o teto foi ultrapassado",
+            "example": false
+          },
+          "mesAnterior": {
+            "description": "Dados do mês anterior",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MesAnteriorDto"
+              }
+            ]
+          },
+          "maiorTransacao": {
+            "description": "Maior transação da categoria",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MaiorTransacaoDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "tipo",
+          "icone",
+          "cor",
+          "valorTotal",
+          "numeroTransacoes",
+          "percentualDoTotal",
+          "tetoGasto",
+          "percentualTeto",
+          "tetoUltrapassado",
+          "mesAnterior",
+          "maiorTransacao"
+        ]
+      },
+      "TotalMesAnteriorDto": {
+        "type": "object",
+        "properties": {
+          "totalGeral": {
+            "type": "number",
+            "description": "Total geral do mês anterior",
+            "example": 4500.25
+          },
+          "variacao": {
+            "type": "number",
+            "description": "Variação percentual",
+            "example": 8.5
+          }
+        },
+        "required": [
+          "totalGeral",
+          "variacao"
+        ]
+      },
+      "AnalyticsCategoriasDataDto": {
+        "type": "object",
+        "properties": {
+          "categorias": {
+            "description": "Lista de categorias com analytics",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoriaAnalyticsDto"
+            }
+          },
+          "totalGeral": {
+            "type": "number",
+            "description": "Total geral do período",
+            "example": 4900.5
+          },
+          "mesAnterior": {
+            "description": "Comparação com mês anterior",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TotalMesAnteriorDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "categorias",
+          "totalGeral",
+          "mesAnterior"
+        ]
+      },
+      "GetAnalyticsCategoriasResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de resposta",
+            "example": "Analytics por categoria retornadas com sucesso"
+          },
+          "data": {
+            "description": "Dados de analytics por categoria",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AnalyticsCategoriasDataDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EvolucaoMensalDto": {
+        "type": "object",
+        "properties": {
+          "ano": {
+            "type": "number",
+            "description": "Ano",
+            "example": 2024
+          },
+          "mes": {
+            "type": "number",
+            "description": "Mês",
+            "example": 12
+          },
+          "receitas": {
+            "type": "number",
+            "description": "Total de receitas",
+            "example": 5000
+          },
+          "despesas": {
+            "type": "number",
+            "description": "Total de despesas",
+            "example": 3500.5
+          },
+          "saldo": {
+            "type": "number",
+            "description": "Saldo do mês",
+            "example": 1499.5
+          },
+          "numeroTransacoes": {
+            "type": "number",
+            "description": "Número de transações",
+            "example": 45
+          }
+        },
+        "required": [
+          "ano",
+          "mes",
+          "receitas",
+          "despesas",
+          "saldo",
+          "numeroTransacoes"
+        ]
+      },
+      "MesAtualDto": {
+        "type": "object",
+        "properties": {
+          "diaAtual": {
+            "type": "number",
+            "description": "Dia atual do mês",
+            "example": 15
+          },
+          "totalDias": {
+            "type": "number",
+            "description": "Total de dias no mês",
+            "example": 31
+          },
+          "percentualMesDecorrido": {
+            "type": "number",
+            "description": "Percentual do mês decorrido",
+            "example": 48.4
+          }
+        },
+        "required": [
+          "diaAtual",
+          "totalDias",
+          "percentualMesDecorrido"
+        ]
+      },
+      "ValoresProjecaoDto": {
+        "type": "object",
+        "properties": {
+          "receitasRealizadas": {
+            "type": "number",
+            "description": "Receitas realizadas até agora",
+            "example": 2400
+          },
+          "despesasRealizadas": {
+            "type": "number",
+            "description": "Despesas realizadas até agora",
+            "example": 1750.25
+          },
+          "receitasProjetadas": {
+            "type": "number",
+            "description": "Projeção de receitas para o mês",
+            "example": 4950
+          },
+          "despesasProjetadas": {
+            "type": "number",
+            "description": "Projeção de despesas para o mês",
+            "example": 3617.85
+          },
+          "saldoProjetado": {
+            "type": "number",
+            "description": "Saldo projetado para o mês",
+            "example": 1332.15
+          }
+        },
+        "required": [
+          "receitasRealizadas",
+          "despesasRealizadas",
+          "receitasProjetadas",
+          "despesasProjetadas",
+          "saldoProjetado"
+        ]
+      },
+      "ProjecaoMesDto": {
+        "type": "object",
+        "properties": {
+          "mesAtual": {
+            "description": "Dados do mês atual",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MesAtualDto"
+              }
+            ]
+          },
+          "valores": {
+            "description": "Valores e projeções",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ValoresProjecaoDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "mesAtual",
+          "valores"
+        ]
+      },
+      "MaiorGastoMesDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da transação",
+            "example": "uuid-123"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição da transação",
+            "example": "Pagamento cartão de crédito"
+          },
+          "valor": {
+            "type": "number",
+            "description": "Valor da transação",
+            "example": 2500
+          },
+          "data": {
+            "type": "string",
+            "description": "Data da transação",
+            "example": "2024-12-10T14:30:00Z"
+          },
+          "categoria": {
+            "type": "string",
+            "description": "Categoria da transação",
+            "example": "Cartão de Crédito"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "valor",
+          "data",
+          "categoria"
+        ]
+      },
+      "DiasSemGastosDto": {
+        "type": "object",
+        "properties": {
+          "ultimoPeriodo": {
+            "type": "number",
+            "description": "Dias sem gastos no período atual",
+            "example": 3
+          },
+          "recordeAno": {
+            "type": "number",
+            "description": "Recorde de dias sem gastos no ano",
+            "example": 7
+          }
+        },
+        "required": [
+          "ultimoPeriodo",
+          "recordeAno"
+        ]
+      },
+      "MetricasAvancadasDto": {
+        "type": "object",
+        "properties": {
+          "mediaDespesasDiarias": {
+            "type": "number",
+            "description": "Média de despesas diárias",
+            "example": 116.68
+          },
+          "mediaMensalUltimos6Meses": {
+            "type": "number",
+            "description": "Média mensal dos últimos 6 meses",
+            "example": 3650.25
+          },
+          "variacao6Meses": {
+            "type": "number",
+            "description": "Variação percentual dos últimos 6 meses",
+            "example": -4.2
+          },
+          "maiorGastoMes": {
+            "description": "Maior gasto do mês",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MaiorGastoMesDto"
+              }
+            ]
+          },
+          "diasSemGastos": {
+            "description": "Estatísticas de dias sem gastos",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DiasSemGastosDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "mediaDespesasDiarias",
+          "mediaMensalUltimos6Meses",
+          "variacao6Meses",
+          "maiorGastoMes",
+          "diasSemGastos"
+        ]
+      },
+      "InsightFinanceiroDto": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "description": "Tipo do insight",
+            "enum": [
+              "positivo",
+              "neutro",
+              "atencao",
+              "critico"
+            ],
+            "example": "positivo"
+          },
+          "titulo": {
+            "type": "string",
+            "description": "Título do insight",
+            "example": "Gastos controlados em Dezembro"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição detalhada",
+            "example": "Você está gastando 15% menos que a média dos últimos 6 meses"
+          },
+          "valor": {
+            "type": "number",
+            "description": "Valor relacionado ao insight",
+            "example": 547.5
+          },
+          "acao": {
+            "type": "string",
+            "description": "Ação recomendada",
+            "example": "Continue mantendo esse padrão de gastos"
+          }
+        },
+        "required": [
+          "tipo",
+          "titulo",
+          "descricao"
+        ]
+      },
+      "AnalyticsTendenciasDataDto": {
+        "type": "object",
+        "properties": {
+          "evolucaoMensal": {
+            "description": "Evolução mensal histórica",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EvolucaoMensalDto"
+            }
+          },
+          "projecaoMesAtual": {
+            "description": "Projeção para o mês atual",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProjecaoMesDto"
+              }
+            ]
+          },
+          "metricas": {
+            "description": "Métricas avançadas",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MetricasAvancadasDto"
+              }
+            ]
+          },
+          "insights": {
+            "description": "Insights financeiros automatizados",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InsightFinanceiroDto"
+            }
+          }
+        },
+        "required": [
+          "evolucaoMensal",
+          "projecaoMesAtual",
+          "metricas",
+          "insights"
+        ]
+      },
+      "GetAnalyticsTendenciasResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de resposta",
+            "example": "Analytics de tendências retornadas com sucesso"
+          },
+          "data": {
+            "description": "Dados de analytics de tendências",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AnalyticsTendenciasDataDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "VariacaoQuickStatDto": {
+        "type": "object",
+        "properties": {
+          "valor": {
+            "type": "number",
+            "description": "Valor da variação",
+            "example": 15.5
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Tipo da variação",
+            "enum": [
+              "positiva",
+              "negativa",
+              "neutra"
+            ],
+            "example": "positiva"
+          },
+          "periodo": {
+            "type": "string",
+            "description": "Período de comparação",
+            "example": "vs. mês anterior"
+          }
+        },
+        "required": [
+          "valor",
+          "tipo",
+          "periodo"
+        ]
+      },
+      "QuickStatDto": {
+        "type": "object",
+        "properties": {
+          "titulo": {
+            "type": "string",
+            "description": "Título do stat",
+            "example": "Gasto da Semana"
+          },
+          "valor": {
+            "description": "Valor principal",
+            "oneOf": [
+              {
+                "type": "number",
+                "example": 450.75
+              },
+              {
+                "type": "string",
+                "example": "R$ 450,75"
+              }
+            ]
+          },
+          "subtitulo": {
+            "type": "string",
+            "description": "Subtítulo ou informação adicional",
+            "example": "Últimos 7 dias"
+          },
+          "variacao": {
+            "description": "Variação em relação ao período anterior",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VariacaoQuickStatDto"
+              }
+            ]
+          },
+          "icone": {
+            "type": "string",
+            "description": "Ícone para o stat",
+            "example": "calendar-week"
+          },
+          "cor": {
+            "type": "string",
+            "description": "Cor para destacar o stat",
+            "example": "#28a745"
+          }
+        },
+        "required": [
+          "titulo",
+          "valor"
+        ]
+      },
+      "QuickStatsDataDto": {
+        "type": "object",
+        "properties": {
+          "gastoSemana": {
+            "description": "Gasto da semana atual",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuickStatDto"
+              }
+            ]
+          },
+          "economiaMes": {
+            "description": "Economia do mês",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuickStatDto"
+              }
+            ]
+          },
+          "maiorCategoria": {
+            "description": "Maior categoria do mês",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuickStatDto"
+              }
+            ]
+          },
+          "diasSemGastos": {
+            "description": "Dias sem gastos",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuickStatDto"
+              }
+            ]
+          },
+          "transacaoMaior": {
+            "description": "Maior transação do mês",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuickStatDto"
+              }
+            ]
+          },
+          "comparativoAno": {
+            "description": "Comparativo com o ano",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuickStatDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "gastoSemana",
+          "economiaMes",
+          "maiorCategoria",
+          "diasSemGastos",
+          "transacaoMaior",
+          "comparativoAno"
+        ]
+      },
+      "GetQuickStatsResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de resposta",
+            "example": "Quick stats retornadas com sucesso"
+          },
+          "data": {
+            "description": "Dados dos quick stats",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuickStatsDataDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "MeioPagamentoAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do meio de pagamento",
+            "example": "uuid-meio-123"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome do meio de pagamento",
+            "example": "Cartão de Crédito"
+          },
+          "valorTotal": {
+            "type": "number",
+            "description": "Valor total movimentado",
+            "example": 2500.75
+          },
+          "numeroTransacoes": {
+            "type": "number",
+            "description": "Número de transações",
+            "example": 18
+          },
+          "percentualDoTotal": {
+            "type": "number",
+            "description": "Percentual do total",
+            "example": 45.8
+          },
+          "valorMedio": {
+            "type": "number",
+            "description": "Valor médio por transação",
+            "example": 138.93
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "valorTotal",
+          "numeroTransacoes",
+          "percentualDoTotal",
+          "valorMedio"
+        ]
+      },
+      "FormaPagamentoAvistaDto": {
+        "type": "object",
+        "properties": {
+          "numeroTransacoes": {
+            "type": "number",
+            "description": "Número de transações à vista",
+            "example": 25
+          },
+          "valorTotal": {
+            "type": "number",
+            "description": "Valor total à vista",
+            "example": 1850.5
+          },
+          "percentual": {
+            "type": "number",
+            "description": "Percentual das transações à vista",
+            "example": 62.5
+          }
+        },
+        "required": [
+          "numeroTransacoes",
+          "valorTotal",
+          "percentual"
+        ]
+      },
+      "FormaPagamentoParceladoDto": {
+        "type": "object",
+        "properties": {
+          "numeroTransacoes": {
+            "type": "number",
+            "description": "Número de transações parceladas",
+            "example": 15
+          },
+          "valorTotal": {
+            "type": "number",
+            "description": "Valor total parcelado",
+            "example": 3200.25
+          },
+          "percentual": {
+            "type": "number",
+            "description": "Percentual das transações parceladas",
+            "example": 37.5
+          },
+          "mediaParcelamento": {
+            "type": "number",
+            "description": "Média de parcelamento",
+            "example": 4.2
+          }
+        },
+        "required": [
+          "numeroTransacoes",
+          "valorTotal",
+          "percentual",
+          "mediaParcelamento"
+        ]
+      },
+      "DistribuicaoParcelasDto": {
+        "type": "object",
+        "properties": {
+          "parcela1x": {
+            "type": "number",
+            "description": "Transações em 1x",
+            "example": 25
+          },
+          "parcela2x": {
+            "type": "number",
+            "description": "Transações em 2x",
+            "example": 8
+          },
+          "parcela3x": {
+            "type": "number",
+            "description": "Transações em 3x",
+            "example": 5
+          },
+          "parcela4x": {
+            "type": "number",
+            "description": "Transações em 4x",
+            "example": 3
+          },
+          "parcela5x": {
+            "type": "number",
+            "description": "Transações em 5x",
+            "example": 2
+          },
+          "parcela6x": {
+            "type": "number",
+            "description": "Transações em 6x",
+            "example": 4
+          },
+          "parcela7x": {
+            "type": "number",
+            "description": "Transações em 7x",
+            "example": 1
+          },
+          "parcela8x": {
+            "type": "number",
+            "description": "Transações em 8x",
+            "example": 0
+          },
+          "parcela9x": {
+            "type": "number",
+            "description": "Transações em 9x",
+            "example": 1
+          },
+          "parcela10x": {
+            "type": "number",
+            "description": "Transações em 10x",
+            "example": 2
+          },
+          "parcela11x": {
+            "type": "number",
+            "description": "Transações em 11x",
+            "example": 0
+          },
+          "parcela12x": {
+            "type": "number",
+            "description": "Transações em 12x",
+            "example": 3
+          }
+        },
+        "required": [
+          "parcela1x",
+          "parcela2x",
+          "parcela3x",
+          "parcela4x",
+          "parcela5x",
+          "parcela6x",
+          "parcela7x",
+          "parcela8x",
+          "parcela9x",
+          "parcela10x",
+          "parcela11x",
+          "parcela12x"
+        ]
+      },
+      "FormaPagamentoAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "avista": {
+            "description": "Dados de transações à vista",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FormaPagamentoAvistaDto"
+              }
+            ]
+          },
+          "parcelado": {
+            "description": "Dados de transações parceladas",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FormaPagamentoParceladoDto"
+              }
+            ]
+          },
+          "distribuicaoParcelas": {
+            "description": "Distribuição por número de parcelas",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DistribuicaoParcelasDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "avista",
+          "parcelado",
+          "distribuicaoParcelas"
+        ]
+      },
+      "ResumoMeiosPagamentoDto": {
+        "type": "object",
+        "properties": {
+          "totalTransacoes": {
+            "type": "number",
+            "description": "Total de transações",
+            "example": 40
+          },
+          "valorMedio": {
+            "type": "number",
+            "description": "Valor médio das transações",
+            "example": 137.51
+          },
+          "meioMaisUsado": {
+            "type": "string",
+            "description": "Meio de pagamento mais usado",
+            "example": "Cartão de Crédito"
+          }
+        },
+        "required": [
+          "totalTransacoes",
+          "valorMedio",
+          "meioMaisUsado"
+        ]
+      },
+      "AnalyticsMeiosPagamentoDataDto": {
+        "type": "object",
+        "properties": {
+          "meiosPagamento": {
+            "description": "Analytics por meio de pagamento",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MeioPagamentoAnalyticsDto"
+            }
+          },
+          "formasPagamento": {
+            "description": "Analytics por forma de pagamento",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FormaPagamentoAnalyticsDto"
+              }
+            ]
+          },
+          "resumo": {
+            "description": "Resumo geral",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ResumoMeiosPagamentoDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "meiosPagamento",
+          "formasPagamento",
+          "resumo"
+        ]
+      },
+      "GetAnalyticsMeiosPagamentoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de resposta",
+            "example": "Analytics por meio de pagamento retornadas com sucesso"
+          },
+          "data": {
+            "description": "Dados de analytics por meio de pagamento",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AnalyticsMeiosPagamentoDataDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "PadraoDiarioDto": {
+        "type": "object",
+        "properties": {
+          "diaSemana": {
+            "type": "string",
+            "description": "Dia da semana",
+            "example": "segunda"
+          },
+          "numeroTransacoes": {
+            "type": "number",
+            "description": "Número de transações",
+            "example": 8
+          },
+          "valorMedio": {
+            "type": "number",
+            "description": "Valor médio das transações",
+            "example": 125.75
+          },
+          "valorTotal": {
+            "type": "number",
+            "description": "Valor total do dia",
+            "example": 1006
+          },
+          "horarioPreferido": {
+            "type": "string",
+            "description": "Horário preferido",
+            "enum": [
+              "manha",
+              "tarde",
+              "noite"
+            ],
+            "example": "tarde"
+          }
+        },
+        "required": [
+          "diaSemana",
+          "numeroTransacoes",
+          "valorMedio",
+          "valorTotal",
+          "horarioPreferido"
+        ]
+      },
+      "TransacaoRecorrenteDto": {
+        "type": "object",
+        "properties": {
+          "padrao": {
+            "type": "string",
+            "description": "Padrão identificado",
+            "example": "Supermercado Extra"
+          },
+          "frequencia": {
+            "type": "string",
+            "description": "Frequência identificada",
+            "enum": [
+              "semanal",
+              "quinzenal",
+              "mensal"
+            ],
+            "example": "semanal"
+          },
+          "ultimaOcorrencia": {
+            "type": "string",
+            "description": "Última ocorrência",
+            "example": "2024-12-15T14:30:00Z"
+          },
+          "proximaPrevisao": {
+            "type": "string",
+            "description": "Próxima previsão",
+            "example": "2024-12-22T14:30:00Z"
+          },
+          "valorMedio": {
+            "type": "number",
+            "description": "Valor médio das ocorrências",
+            "example": 245.5
+          },
+          "categoria": {
+            "type": "string",
+            "description": "Categoria mais comum",
+            "example": "Alimentação"
+          },
+          "confianca": {
+            "type": "number",
+            "description": "Confiança da identificação (0-100%)",
+            "example": 85
+          }
+        },
+        "required": [
+          "padrao",
+          "frequencia",
+          "ultimaOcorrencia",
+          "proximaPrevisao",
+          "valorMedio",
+          "categoria",
+          "confianca"
+        ]
+      },
+      "LembreteTransacaoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do lembrete",
+            "example": "uuid-lembrete-123"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição do lembrete",
+            "example": "Pagamento fatura cartão"
+          },
+          "data": {
+            "type": "string",
+            "description": "Data prevista",
+            "example": "2024-12-25T00:00:00Z"
+          },
+          "valor": {
+            "type": "number",
+            "description": "Valor previsto",
+            "example": 850
+          },
+          "categoria": {
+            "type": "string",
+            "description": "Categoria relacionada",
+            "example": "Cartão de Crédito"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status do lembrete",
+            "enum": [
+              "pendente",
+              "realizado",
+              "atrasado"
+            ],
+            "example": "pendente"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "data",
+          "valor",
+          "categoria",
+          "status"
+        ]
+      },
+      "ParcelaAbertaDto": {
+        "type": "object",
+        "properties": {
+          "transacaoOriginalId": {
+            "type": "string",
+            "description": "ID da transação original",
+            "example": "uuid-transacao-123"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição da compra",
+            "example": "Notebook Dell"
+          },
+          "valorTotal": {
+            "type": "number",
+            "description": "Valor total da compra",
+            "example": 3000
+          },
+          "formaPagamento": {
+            "type": "string",
+            "description": "Forma de pagamento",
+            "example": "parcela12x"
+          },
+          "parcelaAtual": {
+            "type": "number",
+            "description": "Parcela atual",
+            "example": 3
+          },
+          "totalParcelas": {
+            "type": "number",
+            "description": "Total de parcelas",
+            "example": 12
+          },
+          "valorParcela": {
+            "type": "number",
+            "description": "Valor de cada parcela",
+            "example": 250
+          },
+          "proximoVencimento": {
+            "type": "string",
+            "description": "Próximo vencimento",
+            "example": "2024-01-15T00:00:00Z"
+          },
+          "parcelasRestantes": {
+            "type": "number",
+            "description": "Parcelas restantes",
+            "example": 9
+          },
+          "valorRestante": {
+            "type": "number",
+            "description": "Valor restante total",
+            "example": 2250
+          }
+        },
+        "required": [
+          "transacaoOriginalId",
+          "descricao",
+          "valorTotal",
+          "formaPagamento",
+          "parcelaAtual",
+          "totalParcelas",
+          "valorParcela",
+          "parcelasRestantes",
+          "valorRestante"
+        ]
+      },
+      "AnalyticsPadroesTemporaisDataDto": {
+        "type": "object",
+        "properties": {
+          "padroesDiarios": {
+            "description": "Padrões de gastos por dia da semana",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PadraoDiarioDto"
+            }
+          },
+          "transacoesRecorrentes": {
+            "description": "Transações recorrentes identificadas",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransacaoRecorrenteDto"
+            }
+          },
+          "lembretes": {
+            "description": "Lembretes de transações",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LembreteTransacaoDto"
+            }
+          },
+          "parcelasAbertas": {
+            "description": "Parcelas em aberto",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParcelaAbertaDto"
+            }
+          }
+        },
+        "required": [
+          "padroesDiarios",
+          "transacoesRecorrentes",
+          "lembretes",
+          "parcelasAbertas"
+        ]
+      },
+      "GetAnalyticsPadroesTemporaisResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de resposta",
+            "example": "Analytics de padrões temporais retornadas com sucesso"
+          },
+          "data": {
+            "description": "Dados de analytics de padrões temporais",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AnalyticsPadroesTemporaisDataDto"
+              }
+            ]
           }
         },
         "required": [

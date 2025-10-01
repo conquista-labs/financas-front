@@ -5,3 +5,8 @@ export { DespesasPorCategoria } from "./DespesasPorCategoria";
 export { ResumoFinanceiroChart } from "./ResumoFinanceiroChart";
 export { ResumoMensalTable } from "./ResumoMensalTable";
 export { ResumoPorCategoriaTable } from "./ResumoPorCategoriaTable";
+export { TopCategoriasCard } from "./TopCategoriasCard";
+export { SaudeFinanceiraCard } from "./SaudeFinanceiraCard";
+export { TendenciasChart } from "./TendenciasChart";
+export { MeiosPagamentoChart } from "./MeiosPagamentoChart";
+export { QuickStatCard } from "./QuickStatCard";

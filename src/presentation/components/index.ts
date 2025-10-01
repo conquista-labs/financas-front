@@ -1,5 +1,6 @@
 export { Breadcrumb } from "./Breadcrumb";
 export { Calendar } from "./Calendar";
+export { MiniCalendar } from "./MiniCalendar";
 export { Header } from "./Header";
 export { DatePicker } from "./DatePicker";
 export { Textarea } from "./Textarea";

@@ -1,0 +1,1 @@
+export { useGetAnalyticsCategorias } from "./useGetAnalyticsCategorias";

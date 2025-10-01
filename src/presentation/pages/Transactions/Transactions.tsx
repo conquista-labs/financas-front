@@ -192,13 +192,13 @@ const Transactions: React.FC = () => {
 
       <Table
         columns={columns}
-        rows={data?.data.rows ?? []}
-        total={data?.data.meta.total ?? 0}
+        rows={data?.data?.rows ?? []}
+        total={data?.data?.meta?.total ?? 0}
         isLoading={isLoading}
         enableDynamicHeight
       >
         <TableFooter
-          total={data?.data.resume.total ?? "R$ 0.00"}
+          total={data?.data?.resume?.total ?? "R$ 0.00"}
           handleResume={handleResume}
         />
       </Table>

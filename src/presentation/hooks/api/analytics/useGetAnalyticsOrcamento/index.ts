@@ -1,0 +1,1 @@
+export { useGetAnalyticsOrcamento } from "./useGetAnalyticsOrcamento";

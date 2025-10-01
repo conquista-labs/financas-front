@@ -66,6 +66,7 @@ export const ResumoFinanceiroChart: React.FC<ResumoFinanceiroChartProps> = ({
       display="flex"
       width="100%"
       height="100%"
+      maxHeight="500px"
       flexDirection="column"
       alignItems="center"
       justifyContent="center"

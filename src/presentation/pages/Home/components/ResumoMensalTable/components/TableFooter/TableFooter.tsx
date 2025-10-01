@@ -6,9 +6,7 @@ import { TableFooterProps } from "./tableFooter.types";
 const TableFooter: React.FC<TableFooterProps> = ({
   despesasAno,
   receitasAno,
-  saldosMesAno,
 }) => {
-  const saldo = receitasAno - despesasAno;
   return (
     <Box
       as="tfoot"
@@ -67,29 +65,11 @@ const TableFooter: React.FC<TableFooterProps> = ({
         <Box as="td" padding="$2xs" verticalAlign="middle" textAlign="center">
           —
         </Box>
-        <Box
-          as="td"
-          padding="$2xs"
-          verticalAlign="middle"
-          fontFamily="$body"
-          fontWeight="$bold"
-          fontSize="$body-s"
-          color="$success"
-          textAlign="center"
-        >
-          {formatCurrency(saldosMesAno)}
+        <Box as="td" padding="$2xs" verticalAlign="middle" textAlign="center">
+          —
         </Box>
-        <Box
-          as="td"
-          padding="$2xs"
-          verticalAlign="middle"
-          fontFamily="$body"
-          fontWeight="$bold"
-          fontSize="$body-s"
-          color={saldo > 0 ? "$success" : "$error"}
-          textAlign="right"
-        >
-          {formatCurrency(saldo)}
+        <Box as="td" padding="$2xs" verticalAlign="middle" textAlign="right">
+          —
         </Box>
         {/* Δ Anterior - Coluna vazia no footer */}
         <Box as="td" padding="$2xs" verticalAlign="middle" textAlign="center">
