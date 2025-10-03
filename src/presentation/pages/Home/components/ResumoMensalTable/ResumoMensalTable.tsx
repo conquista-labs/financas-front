@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 
-import { Box, Title } from "@rarui-react/components";
+import { Box, Card, Title } from "@rarui-react/components";
 
-import { Table } from "@/presentation/components";
+import { Table, TableSkeleton } from "@/presentation/components";
 
 import { TableFooter } from "./components";
 import { formatMonth, getColumns } from "./resumoMensalTable.definitions";
@@ -15,6 +15,7 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
   despesasAno,
   saldosMes,
   saldosMesAno,
+  isLoading = false,
 }) => {
   const rows = useMemo(() => {
     const mesesSet = new Set([
@@ -44,32 +45,53 @@ export const ResumoMensalTable: React.FC<ResumoMensalTableProps> = ({
     });
   }, [receitasMes, despesasMes, saldosMes]);
 
-  return (
-    <Box
-      display="flex"
-      alignItems="center"
-      width="100%"
-      height="100%"
-      flexDirection="column"
-      gap="$2xs"
-    >
-      <Title as="h6" color="$secondary">
-        Resumo de Receitas e Despesas
-      </Title>
-      <Table
-        columns={getColumns()}
-        rows={rows ?? []}
-        total={12}
-        showPagination={false}
-        tableContainerStyles={{ minHeight: "auto" }}
+  if (isLoading) {
+    return (
+      <Box
+        display="flex"
+        alignItems="center"
+        width="100%"
+        height="100%"
+        flexDirection="column"
+        gap="$2xs"
       >
-        <TableFooter
-          receitasAno={receitasAno}
-          despesasAno={despesasAno}
-          saldosMesAno={saldosMesAno}
-        />
-      </Table>
-    </Box>
+        <Title as="h6" color="$secondary">
+          Resumo de Receitas e Despesas
+        </Title>
+        <TableSkeleton rows={12} columns={8} />
+      </Box>
+    );
+  }
+
+  return (
+    <Card padding="none">
+      <Box
+        display="flex"
+        alignItems="center"
+        width="100%"
+        height="100%"
+        flexDirection="column"
+        gap="$2xs"
+        padding="$s"
+      >
+        <Title as="h6" color="$secondary">
+          Resumo de Receitas e Despesas
+        </Title>
+        <Table
+          columns={getColumns()}
+          rows={rows ?? []}
+          total={12}
+          showPagination={false}
+          tableContainerStyles={{ minHeight: "auto" }}
+        >
+          <TableFooter
+            receitasAno={receitasAno}
+            despesasAno={despesasAno}
+            saldosMesAno={saldosMesAno}
+          />
+        </Table>
+      </Box>
+    </Card>
   );
 };
 export default ResumoMensalTable;

@@ -61,8 +61,12 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({
   };
 
   return (
-    <Card padding="none">
-      <Box position="relative" height="fit-content" minWidth="280px">
+    <Box
+      position="relative"
+      height="fit-content"
+      minWidth={{ xs: "100%", lg: "600px" }}
+    >
+      <Card padding="none">
         {/* Header de navegação */}
         <Box
           display="flex"
@@ -211,9 +215,10 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({
             },
           )}
         </Box>
-      </Box>
+      </Card>
+
       <Loading isLoading={isLoading} />
-    </Card>
+    </Box>
   );
 };
 

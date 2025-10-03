@@ -1,101 +1,30 @@
-import { Box, Card, Icon, Text } from "@rarui-react/components";
-import { QuickStatDto } from "@/domain/models";
-import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
+import { Box, Card, Icon, Skeleton, Text } from "@rarui-react/components";
 
-interface QuickStatCardProps {
-  data: QuickStatDto;
-  isLoading?: boolean;
-}
+import { QuickStatCardProps } from "./quickStatCard.types";
+import {
+  getVariacaoColor,
+  getVariacaoIcon,
+  icons,
+} from "./quickStatCard.definitions.tsx";
 
-const getVariacaoColor = (tipo: string) => {
-  switch (tipo) {
-    case "positiva":
-      return "$success";
-    case "negativa":
-      return "$error";
-    default:
-      return "$warning";
-  }
-};
-
-const getVariacaoIcon = (tipo: string) => {
-  switch (tipo) {
-    case "positiva":
-      return "↗️";
-    case "negativa":
-      return "↘️";
-    default:
-      return "→";
-  }
-};
-
-const formatValue = (value: string | number): string => {
-  if (typeof value === "number") {
-    return formatCurrency(value);
-  }
-
-  // Se é string, verifica se pode ser convertida em número para formatação
-  const numValue = parseFloat(
-    value
-      .toString()
-      .replace(/[^\d.,]/g, "")
-      .replace(",", "."),
-  );
-  if (!isNaN(numValue)) {
-    return formatCurrency(numValue);
-  }
-
-  return value.toString();
-};
-
-export const QuickStatCard = ({
+export const QuickStatCard: React.FC<QuickStatCardProps> = ({
   data,
   isLoading = false,
-}: QuickStatCardProps) => {
+}) => {
   if (isLoading) {
     return (
-      <Card
-        borderColor="$secondary"
-        backgroundColor="$background"
-        padding="$m"
-        minHeight="120px"
-      >
+      <Card>
         <Box display="flex" flexDirection="column" gap="$xs">
-          <Box
-            height="16px"
-            backgroundColor="$surface"
-            borderRadius="$xs"
-            width="70%"
-          />
-          <Box
-            height="24px"
-            backgroundColor="$surface"
-            borderRadius="$xs"
-            width="50%"
-          />
-          <Box
-            height="14px"
-            backgroundColor="$surface"
-            borderRadius="$xs"
-            width="60%"
-          />
+          <Skeleton width="70%" height="16px" />
+          <Skeleton width="50%" height="42px" />
+          <Skeleton width="60%" height="14px" />
         </Box>
       </Card>
     );
   }
 
   return (
-    <Card
-      borderColor="$secondary"
-      backgroundColor="$background"
-      padding="$m"
-      minHeight="120px"
-      _hover={{
-        borderColor: "$primary",
-        transform: "translateY(-2px)",
-        transition: "all 0.2s ease",
-      }}
-    >
+    <Card>
       <Box
         display="flex"
         flexDirection="column"
@@ -103,40 +32,45 @@ export const QuickStatCard = ({
         height="100%"
       >
         {/* Header com ícone e título */}
-        <Box display="flex" alignItems="center" gap="$xs" marginBottom="$xs">
-          {data.icone && <Text fontSize="$m">{data.icone}</Text>}
+        <Box display="flex" alignItems="center" gap="$4xs" marginBottom="$xs">
+          {data?.icone && (
+            <Icon
+              color={data.cor as any}
+              source={icons[data.icone as keyof typeof icons]}
+            />
+          )}
           <Text
             fontSize="$s"
             fontWeight="$medium"
             color="$secondary"
             lineHeight="$s"
           >
-            {data.titulo}
+            {data?.titulo ?? ""}
           </Text>
         </Box>
 
         {/* Valor principal */}
-        <Box marginBottom="$xs">
+        <Box marginBottom="$3xs">
           <Text
             fontSize="$xl"
             fontWeight="$bold"
-            color="$primary"
+            color={data?.cor as any}
             lineHeight="$m"
           >
-            {formatValue(data.valor)}
+            {data?.valor ?? "R$ 0,00"}
           </Text>
         </Box>
 
         {/* Footer com subtítulo e variação */}
-        <Box display="flex" flexDirection="column" gap="$xxs">
-          {data.subtitulo && (
-            <Text fontSize="$xs" color="$tertiary" lineHeight="$xs">
+        <Box display="flex" flexDirection="column" gap="$3xs">
+          {data?.subtitulo && (
+            <Text fontSize="$xs" color="$secondary" lineHeight="$xs">
               {data.subtitulo}
             </Text>
           )}
 
-          {data.variacao && (
-            <Box display="flex" alignItems="center" gap="$xxs">
+          {data?.variacao && (
+            <Box display="flex" alignItems="center" gap="$4xs">
               <Text fontSize="$xs">{getVariacaoIcon(data.variacao.tipo)}</Text>
               <Text
                 fontSize="$xs"
@@ -146,7 +80,7 @@ export const QuickStatCard = ({
                 {data.variacao.valor > 0 ? "+" : ""}
                 {data.variacao.valor.toFixed(1)}%
               </Text>
-              <Text fontSize="$xs" color="$tertiary">
+              <Text fontSize="$xs" color="$secondary">
                 vs {data.variacao.periodo}
               </Text>
             </Box>

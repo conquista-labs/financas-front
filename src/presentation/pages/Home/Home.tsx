@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { Box, Datepicker, IconButton, Text } from "@rarui-react/components";
+import { Box, Datepicker, IconButton, Title } from "@rarui-react/components";
 import {
   useGetResumoFinanceiro,
   usePostResumoFinanceiro,
   useGetCalendario,
   useGetAnalyticsCategorias,
   useGetAnalyticsOrcamento,
-  useGetAnalyticsTendencias,
   useGetAnalyticsMeiosPagamento,
   useGetQuickStats,
+  useGetAnalyticsPadroesTemporais,
 } from "@/presentation/hooks/api";
 
 import { useAuthStore } from "@/presentation/store";
@@ -20,9 +20,9 @@ import {
   Header,
   TopCategoriasCard,
   SaudeFinanceiraCard,
-  TendenciasChart,
   MeiosPagamentoChart,
   QuickStatCard,
+  PadroesTemporaisCard,
 } from "./components";
 import { Loading, MiniCalendar } from "@/presentation/components";
 import { ArrowLeftIcon, ArrowRightIcon } from "@rarui/icons";
@@ -72,16 +72,6 @@ const Home: React.FC = () => {
       mes: new Date().getMonth() + 1, // Mês atual
     });
 
-  // Analytics de Tendências
-  const {
-    data: analyticsTendenciasData,
-    isLoading: loadingAnalyticsTendencias,
-  } = useGetAnalyticsTendencias({
-    ano: Number(year),
-    mes: new Date().getMonth() + 1, // Mês atual
-    mesesHistorico: 12,
-  });
-
   // Analytics de Meios de Pagamento
   const {
     data: analyticsMeiosPagamentoData,
@@ -98,6 +88,15 @@ const Home: React.FC = () => {
       mes: new Date().getMonth() + 1, // Mês atual
     });
 
+  // Analytics de Padrões Temporais
+  const {
+    data: analyticsPadroesTemporaisData,
+    isLoading: loadingAnalyticsPadroesTemporais,
+  } = useGetAnalyticsPadroesTemporais({
+    ano: Number(year),
+    mes: new Date().getMonth() + 1, // Mês atual
+  });
+
   const isLoading = useMemo(
     () => loadingResumo || isPending,
     [loadingResumo, isPending],
@@ -109,7 +108,6 @@ const Home: React.FC = () => {
   const saldosMes = resumo?.saldosMes ?? [];
   const receitasAno = resumo?.receitasAno ?? 0;
   const despesasAno = resumo?.despesasAno ?? 0;
-  const saldoAno = resumo?.saldoAno ?? 0;
   const despesasPorCategoriaAno = resumo?.despesasPorCategoriaAno ?? [];
   const despesasPorCategoriaMes = resumo?.despesasPorCategoriaMes ?? [];
   const saldosMesAno = resumo?.saldosMesAno ?? 0;
@@ -181,109 +179,64 @@ const Home: React.FC = () => {
         borderStyle="solid"
         borderColor="$secondary"
         position="relative"
+        className="dashboard-section"
       >
         {/* Título da seção principal */}
-        <Text
-          fontSize="$l"
-          fontWeight="$bold"
-          color="$primary"
-          textAlign="center"
-        >
+        <Title as="h6" color="$secondary" textAlign="center">
           ⚡ Insights Financeiros {year}
-        </Text>
+        </Title>
 
-        {/* Grid dos Quick Stats - 2x3 em desktop, 1 coluna em mobile */}
         <Box
-          display="grid"
-          gridTemplateColumns={{
-            xs: "1fr",
-            md: "repeat(2, 1fr)",
-            lg: "repeat(3, 1fr)",
-          }}
-          gap="$md"
+          display="flex"
+          gap="$s"
+          flexDirection={{ xs: "column", lg: "row" }}
         >
-          {loadingQuickStats ? (
-            // Loading skeleton para 6 cards
-            <>
-              {Array.from({ length: 6 }).map((_, index) => (
-                <QuickStatCard key={index} data={{} as any} isLoading />
-              ))}
-            </>
-          ) : quickStatsData?.data ? (
-            // Quick Stats cards
-            <>
-              <QuickStatCard data={quickStatsData.data.gastoSemana} />
-              <QuickStatCard data={quickStatsData.data.economiaMes} />
-              <QuickStatCard data={quickStatsData.data.maiorCategoria} />
-              <QuickStatCard data={quickStatsData.data.diasSemGastos} />
-              <QuickStatCard data={quickStatsData.data.transacaoMaior} />
-              <QuickStatCard data={quickStatsData.data.comparativoAno} />
-            </>
-          ) : (
-            // Fallback - mostra cards básicos se Quick Stats falhar
-            <>
-              <QuickStatCard
-                data={
-                  {
-                    titulo: "Receitas do Ano",
-                    valor: receitasAno,
-                    icone: "💰",
-                    cor: "$success",
-                  } as any
-                }
-              />
-              <QuickStatCard
-                data={
-                  {
-                    titulo: "Despesas do Ano",
-                    valor: despesasAno,
-                    icone: "💳",
-                    cor: "$error",
-                  } as any
-                }
-              />
-              <QuickStatCard
-                data={
-                  {
-                    titulo: "Saldo do Ano",
-                    valor: saldoAno,
-                    icone: "📊",
-                    cor: saldoAno >= 0 ? "$success" : "$error",
-                  } as any
-                }
-              />
-              <QuickStatCard
-                data={
-                  {
-                    titulo: "Em Breve",
-                    valor: "...",
-                    icone: "🔄",
-                    subtitulo: "Carregando dados",
-                  } as any
-                }
-              />
-              <QuickStatCard
-                data={
-                  {
-                    titulo: "Em Breve",
-                    valor: "...",
-                    icone: "🔄",
-                    subtitulo: "Carregando dados",
-                  } as any
-                }
-              />
-              <QuickStatCard
-                data={
-                  {
-                    titulo: "Em Breve",
-                    valor: "...",
-                    icone: "🔄",
-                    subtitulo: "Carregando dados",
-                  } as any
-                }
-              />
-            </>
-          )}
+          {/* Grid dos Quick Stats - 2x3 em desktop, 1 coluna em mobile */}
+          <Box
+            display="grid"
+            flex="1"
+            gridTemplateColumns={{
+              xs: "1fr",
+              md: "repeat(2, 1fr)",
+              lg: "repeat(3, 1fr)",
+            }}
+            gap="$s"
+            order={{ xs: 2, lg: 1 }}
+          >
+            <QuickStatCard
+              data={quickStatsData?.data?.gastoSemana}
+              isLoading={loadingQuickStats}
+            />
+            <QuickStatCard
+              data={quickStatsData?.data?.economiaMes}
+              isLoading={loadingQuickStats}
+            />
+            <QuickStatCard
+              data={quickStatsData?.data?.maiorCategoria}
+              isLoading={loadingQuickStats}
+            />
+            <QuickStatCard
+              data={quickStatsData?.data?.diasSemGastos}
+              isLoading={loadingQuickStats}
+            />
+            <QuickStatCard
+              data={quickStatsData?.data?.transacaoMaior}
+              isLoading={loadingQuickStats}
+            />
+            <QuickStatCard
+              data={quickStatsData?.data?.comparativoAno}
+              isLoading={loadingQuickStats}
+            />
+          </Box>
+          <Box order={{ xs: 1, lg: 2 }}>
+            <MiniCalendar
+              data={calendarioData?.data}
+              currentMonth={miniCalendarMonth}
+              currentYear={miniCalendarYear}
+              onNavigateMonth={handleMiniCalendarNavigate}
+              isLoading={loadingCalendario}
+            />
+          </Box>
         </Box>
       </Box>
 
@@ -291,9 +244,9 @@ const Home: React.FC = () => {
       <Box
         display="grid"
         gridTemplateColumns={{
-          xs: "1fr",
-          lg: "1fr 1fr",
-          xl: "2fr 1fr",
+          md: "1fr",
+          lg: "2fr 1fr",
+          xl: "3fr 1fr",
         }}
         gap="$s"
         padding="$s"
@@ -303,25 +256,21 @@ const Home: React.FC = () => {
         borderStyle="solid"
         borderColor="$secondary"
       >
-        {/* Gráfico de Receitas/Despesas */}
-        <Card>
-          <ResumoFinanceiroChart
-            receitasMes={receitasMes}
-            despesasMes={despesasMes}
-            saldosMes={saldosMes}
-          />
-        </Card>
+        <ResumoMensalTable
+          receitasMes={receitasMes}
+          despesasMes={despesasMes}
+          receitasAno={receitasAno}
+          despesasAno={despesasAno}
+          saldosMes={saldosMes}
+          saldosMesAno={saldosMesAno}
+        />
 
-        {/* Mini Calendário - Desktop e Tablet */}
-        <Box display={{ xs: "none", lg: "block" }}>
-          <MiniCalendar
-            data={calendarioData?.data}
-            currentMonth={miniCalendarMonth}
-            currentYear={miniCalendarYear}
-            onNavigateMonth={handleMiniCalendarNavigate}
-            isLoading={loadingCalendario}
-          />
-        </Box>
+        <TopCategoriasCard
+          categorias={analyticsCategoriasData?.data?.categorias}
+          totalGeral={analyticsCategoriasData?.data?.totalGeral}
+          isLoading={loadingAnalyticsCategorias}
+          title="🏆 Top Categorias do Mês"
+        />
       </Box>
 
       {/* 🎯 SEÇÃO 4: Analytics e Insights */}
@@ -329,8 +278,9 @@ const Home: React.FC = () => {
         display="grid"
         gridTemplateColumns={{
           xs: "1fr",
-          lg: "1fr 1fr",
-          xl: "1fr 1fr",
+          md: "1fr",
+          lg: "1fr 1fr 1fr",
+          xl: "2fr 1fr 1fr",
         }}
         gap="$s"
         padding="$s"
@@ -340,31 +290,47 @@ const Home: React.FC = () => {
         borderStyle="solid"
         borderColor="$secondary"
       >
-        {/* Top Categorias */}
-        <TopCategoriasCard
-          categorias={analyticsCategoriasData?.data?.categorias}
-          totalGeral={analyticsCategoriasData?.data?.totalGeral}
-          isLoading={loadingAnalyticsCategorias}
-          title="🏆 Top Categorias do Mês"
-        />
-
-        {/* Saúde Financeira */}
+        <Box display={{ xs: "none", md: "flex" }}>
+          <Card>
+            <ResumoFinanceiroChart
+              receitasMes={receitasMes}
+              despesasMes={despesasMes}
+              saldosMes={saldosMes}
+            />
+          </Card>
+        </Box>
         <SaudeFinanceiraCard
           saudeFinanceira={analyticsOrcamentoData?.data?.saudeFinanceira}
           isLoading={loadingAnalyticsOrcamento}
           title="💚 Saúde Financeira"
         />
-
-        {/* Tendências e Projeções */}
-        <TendenciasChart
-          evolucaoMensal={analyticsTendenciasData?.data?.evolucaoMensal}
-          projecaoMesAtual={analyticsTendenciasData?.data?.projecaoMesAtual}
-          insights={analyticsTendenciasData?.data?.insights}
-          isLoading={loadingAnalyticsTendencias}
-          title="Tendências Financeiras"
+        <PadroesTemporaisCard
+          data={analyticsPadroesTemporaisData?.data}
+          isLoading={loadingAnalyticsPadroesTemporais}
         />
+      </Box>
 
-        {/* Meios de Pagamento */}
+      <Box
+        display="grid"
+        gridTemplateColumns={{
+          xs: "1fr",
+          md: "1fr",
+          xl: "3fr 1fr",
+        }}
+        gap="$s"
+        padding="$s"
+        borderRadius="$lg"
+        backgroundColor="$background"
+        borderWidth="$1"
+        borderStyle="solid"
+        borderColor="$secondary"
+      >
+        <Card>
+          <ResumoPorCategoriaTable
+            despesasPorCategoriaAno={despesasPorCategoriaAno}
+            despesasPorCategoriaMes={despesasPorCategoriaMes}
+          />
+        </Card>
         <MeiosPagamentoChart
           meiosPagamento={analyticsMeiosPagamentoData?.data?.meiosPagamento}
           formasPagamento={analyticsMeiosPagamentoData?.data?.formasPagamento}
@@ -374,71 +340,6 @@ const Home: React.FC = () => {
         />
       </Box>
 
-      {/* Mobile: Tabs para Gráfico, Calendário e Resumo */}
-      {/* <Box display={{ xs: "block", lg: "none" }}>
-        <Tabs defaultValue="grafico" variant="underlined">
-          <Tabs.List>
-            <Tabs.Tab value="grafico">Gráfico</Tabs.Tab>
-            <Tabs.Tab value="calendario">Calendário</Tabs.Tab>
-            <Tabs.Tab value="resumo">Resumo</Tabs.Tab>
-          </Tabs.List>
-
-          <TabPanel value="grafico">
-            <Card marginTop="$s">
-              <ResumoFinanceiroChart
-                receitasMes={receitasMes}
-                despesasMes={despesasMes}
-                saldosMes={saldosMes}
-              />
-            </Card>
-          </TabPanel>
-
-          <TabPanel value="calendario">
-            <Box marginTop="$s">
-              <MiniCalendar
-                data={calendarioData?.data}
-                currentMonth={miniCalendarMonth}
-                currentYear={miniCalendarYear}
-                onNavigateMonth={handleMiniCalendarNavigate}
-                isLoading={loadingCalendario}
-              />
-            </Box>
-          </TabPanel>
-
-          <TabPanel value="resumo">
-            <Card>
-              <ResumoMensalTable
-                receitasMes={receitasMes}
-                despesasMes={despesasMes}
-                receitasAno={receitasAno}
-                despesasAno={despesasAno}
-                saldosMes={saldosMes}
-                saldosMesAno={saldosMesAno}
-              />
-            </Card>
-          </TabPanel>
-        </Tabs>
-      </Box> */}
-
-      {/* Desktop/Tablet: Tabela Resumo Mensal - Destaque Principal */}
-      <Box display={{ xs: "none", lg: "block" }}>
-        <Card>
-          <ResumoMensalTable
-            receitasMes={receitasMes}
-            despesasMes={despesasMes}
-            receitasAno={receitasAno}
-            despesasAno={despesasAno}
-            saldosMes={saldosMes}
-            saldosMesAno={saldosMesAno}
-          />
-        </Card>
-      </Box>
-      <Card>
-        <ResumoPorCategoriaTable
-          despesasPorCategoriaAno={despesasPorCategoriaAno}
-          despesasPorCategoriaMes={despesasPorCategoriaMes}
-        />
-      </Card>
       <Loading isLoading={isLoading} />
     </Box>
   );

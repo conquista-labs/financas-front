@@ -27,31 +27,11 @@ const TopCategoriasCard: React.FC<TopCategoriasCardProps> = ({
     );
   }
 
-  if (!categorias || categorias.length === 0) {
-    return (
-      <Card>
-        <Card.Body>
-          <Box padding="$s">
-            <Title as="h5">{title}</Title>
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              minHeight="150px"
-            >
-              <Text color="$secondary">Nenhuma categoria encontrada</Text>
-            </Box>
-          </Box>
-        </Card.Body>
-      </Card>
-    );
-  }
-
   return (
     <Card padding="none">
       <Card.Body>
-        <Box padding="$s" display="flex" flexDirection="column" gap="$2xs">
-          <Title as="h5" fontSize="$m" color="$primary">
+        <Box padding="$s" display="flex" flexDirection="column" gap="$s">
+          <Title as="h6" color="$secondary" textAlign="center">
             {title}
           </Title>
 

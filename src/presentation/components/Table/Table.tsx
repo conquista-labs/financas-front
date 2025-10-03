@@ -97,7 +97,7 @@ function Table<T>({
 
   return (
     <>
-      <Box display="flex" flexDirection="column" gap="$xs" width="100%">
+      <Box display="grid" flexDirection="column" gap="$xs" width="100%">
         <div
           className="table-container"
           style={{

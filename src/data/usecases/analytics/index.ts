@@ -3,3 +3,4 @@ export * from "./getAnalyticsOrcamento";
 export * from "./getAnalyticsTendencias";
 export * from "./getAnalyticsMeiosPagamento";
 export * from "./getQuickStats";
+export * from "./getAnalyticsPadroesTemporais";

@@ -10,3 +10,4 @@ export { SaudeFinanceiraCard } from "./SaudeFinanceiraCard";
 export { TendenciasChart } from "./TendenciasChart";
 export { MeiosPagamentoChart } from "./MeiosPagamentoChart";
 export { QuickStatCard } from "./QuickStatCard";
+export { PadroesTemporaisCard } from "./PadroesTemporaisCard";

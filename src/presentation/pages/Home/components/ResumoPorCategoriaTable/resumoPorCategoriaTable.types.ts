@@ -6,4 +6,5 @@ import {
 export interface ResumoPorCategoriaTableProps {
   despesasPorCategoriaMes: DespesaPorCategoriaMes[];
   despesasPorCategoriaAno: DespesaPorCategoriaAno[];
+  isLoading?: boolean;
 }

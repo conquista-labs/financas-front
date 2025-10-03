@@ -2,6 +2,7 @@ import { Box, Card, Text, Title } from "@rarui-react/components";
 import React from "react";
 import { TendenciasChartProps } from "./tendenciasChart.types";
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
+import { ChartSkeleton } from "@/presentation/components";
 
 const TendenciasChart: React.FC<TendenciasChartProps> = ({
   evolucaoMensal = [],
@@ -14,14 +15,11 @@ const TendenciasChart: React.FC<TendenciasChartProps> = ({
     return (
       <Card>
         <Card.Body>
-          <Box
-            padding="$s"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="200px"
-          >
-            <Text color="$secondary">Carregando tendências...</Text>
+          <Box padding="$s" display="flex" flexDirection="column" gap="$s">
+            <Title as="h5" fontSize="$l" color="$primary">
+              📈 {title}
+            </Title>
+            <ChartSkeleton type="bar" height="200px" />
           </Box>
         </Card.Body>
       </Card>

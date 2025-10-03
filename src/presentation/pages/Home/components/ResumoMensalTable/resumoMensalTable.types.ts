@@ -7,4 +7,5 @@ export interface ResumoMensalTableProps {
   saldosMes: SaldosPorMes[];
   receitasMes: ReceitaPorMes[];
   despesasMes: DespesaPorMes[];
+  isLoading?: boolean;
 }

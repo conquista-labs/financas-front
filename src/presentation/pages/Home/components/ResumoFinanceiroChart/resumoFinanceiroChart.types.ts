@@ -4,4 +4,5 @@ export interface ResumoFinanceiroChartProps {
   receitasMes: ReceitaPorMes[];
   despesasMes: DespesaPorMes[];
   saldosMes: SaldosPorMes[];
+  isLoading?: boolean;
 }
