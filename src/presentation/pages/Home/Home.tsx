@@ -26,28 +26,28 @@ import {
 } from "./components";
 import { Loading, MiniCalendar } from "@/presentation/components";
 import { ArrowLeftIcon, ArrowRightIcon } from "@rarui/icons";
-import { StringParam, useQueryParam, withDefault } from "use-query-params";
+import { StringParam, useQueryParams, withDefault } from "use-query-params";
 import { addYears, subYears, format, getMonth, getYear } from "date-fns";
 
 const Home: React.FC = () => {
-  const [year, setYear] = useQueryParam(
-    "year",
-    withDefault(StringParam, format(new Date(), "yyyy")),
-  );
+  const [params, setParams] = useQueryParams({
+    year: withDefault(StringParam, format(new Date(), "yyyy")),
+    month: withDefault(StringParam, format(new Date(), "MM")),
+  });
 
   const { auth } = useAuthStore();
   const {
     data,
     isLoading: loadingResumo,
     refetch,
-  } = useGetResumoFinanceiro({ ano: Number(year) });
+  } = useGetResumoFinanceiro({ ano: Number(params.year) });
   const { mutate, isPending } = usePostResumoFinanceiro();
 
   // Estado para navegação do mini calendário
   const [miniCalendarMonth, setMiniCalendarMonth] = useState(
     getMonth(new Date()) + 1,
   );
-  const [miniCalendarYear, setMiniCalendarYear] = useState(Number(year));
+  const [miniCalendarYear, setMiniCalendarYear] = useState(Number(params.year));
 
   const { data: calendarioData, isLoading: loadingCalendario } =
     useGetCalendario({
@@ -60,16 +60,16 @@ const Home: React.FC = () => {
     data: analyticsCategoriasData,
     isLoading: loadingAnalyticsCategorias,
   } = useGetAnalyticsCategorias({
-    ano: Number(year),
-    mes: new Date().getMonth() + 1, // Mês atual
+    ano: Number(params.year),
+    mes: Number(params.month), // Mês atual
     limit: 5,
   });
 
   // Analytics de Orçamento
   const { data: analyticsOrcamentoData, isLoading: loadingAnalyticsOrcamento } =
     useGetAnalyticsOrcamento({
-      ano: Number(year),
-      mes: new Date().getMonth() + 1, // Mês atual
+      ano: Number(params.year),
+      mes: Number(params.month), // Mês atual
     });
 
   // Analytics de Meios de Pagamento
@@ -77,15 +77,15 @@ const Home: React.FC = () => {
     data: analyticsMeiosPagamentoData,
     isLoading: loadingAnalyticsMeiosPagamento,
   } = useGetAnalyticsMeiosPagamento({
-    ano: Number(year),
-    mes: new Date().getMonth() + 1, // Mês atual
+    ano: Number(params.year),
+    mes: Number(params.month), // Mês atual
   });
 
   // Quick Stats
   const { data: quickStatsData, isLoading: loadingQuickStats } =
     useGetQuickStats({
-      ano: Number(year),
-      mes: new Date().getMonth() + 1, // Mês atual
+      ano: Number(params.year),
+      mes: Number(params.month), // Mês atual
     });
 
   // Analytics de Padrões Temporais
@@ -93,8 +93,8 @@ const Home: React.FC = () => {
     data: analyticsPadroesTemporaisData,
     isLoading: loadingAnalyticsPadroesTemporais,
   } = useGetAnalyticsPadroesTemporais({
-    ano: Number(year),
-    mes: new Date().getMonth() + 1, // Mês atual
+    ano: Number(params.year),
+    mes: Number(params.month), // Mês atual
   });
 
   const isLoading = useMemo(
@@ -113,17 +113,17 @@ const Home: React.FC = () => {
   const saldosMesAno = resumo?.saldosMesAno ?? 0;
 
   const handleAtualizar = () =>
-    mutate({ year: Number(year) }, { onSuccess: () => refetch() });
+    mutate({ year: Number(params.year) }, { onSuccess: () => refetch() });
 
   const navigateYear = (direction: "prev" | "next") => {
     const operator = direction === "next" ? addYears : subYears;
-    const date = new Date(Number(year), 0);
+    const date = new Date(Number(params.year), 0);
     const newYear = format(operator(date!, 1), "yyyy");
-    setYear(newYear);
+    setParams({ year: newYear });
   };
 
-  const handleYearChange = (date: Date) => {
-    setYear(format(date, "yyyy"));
+  const handleDateChange = (date: Date) => {
+    setParams({ year: format(date, "yyyy"), month: format(date, "MM") });
     setMiniCalendarYear(getYear(date));
   };
 
@@ -154,10 +154,10 @@ const Home: React.FC = () => {
               onClick={() => navigateYear("prev")}
             />
             <Datepicker
-              dateFormat="yyyy"
-              showYearPicker
-              selected={new Date(Number(year), 0)}
-              onChange={(date) => handleYearChange(date as Date)}
+              dateFormat="MM/yyyy"
+              showMonthYearPicker
+              selected={new Date(Number(params.year), Number(params.month) - 1)}
+              onChange={(date) => handleDateChange(date as Date)}
             />
             <IconButton
               source={<ArrowRightIcon size="medium" />}
@@ -183,7 +183,7 @@ const Home: React.FC = () => {
       >
         {/* Título da seção principal */}
         <Title as="h6" color="$secondary" textAlign="center">
-          ⚡ Insights Financeiros {year}
+          ⚡ Insights Financeiros {params.year}
         </Title>
 
         <Box

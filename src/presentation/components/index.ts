@@ -13,7 +13,6 @@ export { Toggle } from "./Toggle";
 export { Loading } from "./Loading";
 export { Skeleton } from "./Skeleton";
 export { TableSkeleton } from "./TableSkeleton";
-export { ChartSkeleton } from "./ChartSkeleton";
 export { Logo } from "./Logo";
 export { Sidebar } from "./Sidebar";
 export { Suspense } from "./Suspense";

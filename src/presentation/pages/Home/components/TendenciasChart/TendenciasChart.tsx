@@ -2,30 +2,13 @@ import { Box, Card, Text, Title } from "@rarui-react/components";
 import React from "react";
 import { TendenciasChartProps } from "./tendenciasChart.types";
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
-import { ChartSkeleton } from "@/presentation/components";
 
 const TendenciasChart: React.FC<TendenciasChartProps> = ({
   evolucaoMensal = [],
   projecaoMesAtual,
   insights = [],
-  isLoading = false,
   title = "Tendências Financeiras",
 }) => {
-  if (isLoading) {
-    return (
-      <Card>
-        <Card.Body>
-          <Box padding="$s" display="flex" flexDirection="column" gap="$s">
-            <Title as="h5" fontSize="$l" color="$primary">
-              📈 {title}
-            </Title>
-            <ChartSkeleton type="bar" height="200px" />
-          </Box>
-        </Card.Body>
-      </Card>
-    );
-  }
-
   if (!evolucaoMensal || evolucaoMensal.length === 0) {
     return (
       <Card>
