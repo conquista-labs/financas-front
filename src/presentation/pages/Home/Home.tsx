@@ -1,33 +1,25 @@
-import React, { useMemo, useState } from "react";
+import { ArrowLeftIcon, ArrowRightIcon } from "@rarui/icons";
 import { Box, Datepicker, IconButton, Title } from "@rarui-react/components";
-import {
-  useGetResumoFinanceiro,
-  usePostResumoFinanceiro,
-  useGetCalendario,
-  useGetAnalyticsCategorias,
-  useGetAnalyticsOrcamento,
-  useGetAnalyticsMeiosPagamento,
-  useGetQuickStats,
-  useGetAnalyticsPadroesTemporais,
-} from "@/presentation/hooks/api";
+import { addYears, format, getMonth, getYear, subYears } from "date-fns";
+import React, { useState } from "react";
+import { StringParam, useQueryParams, withDefault } from "use-query-params";
 
+import { Loading, MiniCalendar } from "@/presentation/components";
 import { useAuthStore } from "@/presentation/store";
+
 import {
-  ResumoMensalTable,
-  ResumoFinanceiroChart,
-  ResumoPorCategoriaTable,
   Card,
   Header,
-  TopCategoriasCard,
-  SaudeFinanceiraCard,
   MeiosPagamentoChart,
-  QuickStatCard,
   PadroesTemporaisCard,
+  QuickStatCard,
+  ResumoFinanceiroChart,
+  ResumoMensalTable,
+  ResumoPorCategoriaTable,
+  SaudeFinanceiraCard,
+  TopCategoriasCard,
 } from "./components";
-import { Loading, MiniCalendar } from "@/presentation/components";
-import { ArrowLeftIcon, ArrowRightIcon } from "@rarui/icons";
-import { StringParam, useQueryParams, withDefault } from "use-query-params";
-import { addYears, subYears, format, getMonth, getYear } from "date-fns";
+import { useHomeData } from "./hooks";
 
 const Home: React.FC = () => {
   const [params, setParams] = useQueryParams({
@@ -36,12 +28,6 @@ const Home: React.FC = () => {
   });
 
   const { auth } = useAuthStore();
-  const {
-    data,
-    isLoading: loadingResumo,
-    refetch,
-  } = useGetResumoFinanceiro({ ano: Number(params.year) });
-  const { mutate, isPending } = usePostResumoFinanceiro();
 
   // Estado para navegação do mini calendário
   const [miniCalendarMonth, setMiniCalendarMonth] = useState(
@@ -49,71 +35,37 @@ const Home: React.FC = () => {
   );
   const [miniCalendarYear, setMiniCalendarYear] = useState(Number(params.year));
 
-  const { data: calendarioData, isLoading: loadingCalendario } =
-    useGetCalendario({
-      ano: miniCalendarYear,
-      mes: miniCalendarMonth,
-    });
-
-  // Analytics de Categorias
+  // Hook centralizado para todos os dados da Home
   const {
-    data: analyticsCategoriasData,
-    isLoading: loadingAnalyticsCategorias,
-  } = useGetAnalyticsCategorias({
-    ano: Number(params.year),
-    mes: Number(params.month), // Mês atual
-    limit: 5,
+    // Dados processados
+    receitasMes,
+    despesasMes,
+    saldosMes,
+    receitasAno,
+    despesasAno,
+    despesasPorCategoriaAno,
+    despesasPorCategoriaMes,
+    saldosMesAno,
+    atualizadoEm,
+    calendarioData,
+    analyticsCategoriasData,
+    analyticsOrcamentoData,
+    analyticsMeiosPagamentoData,
+    quickStatsData,
+    analyticsPadroesTemporaisData,
+
+    // Estados de loading
+    isLoading,
+    loadingStates,
+
+    // Ações
+    handleRefreshData,
+  } = useHomeData({
+    year: Number(params.year),
+    month: Number(params.month),
+    miniCalendarMonth,
+    miniCalendarYear,
   });
-
-  // Analytics de Orçamento
-  const { data: analyticsOrcamentoData, isLoading: loadingAnalyticsOrcamento } =
-    useGetAnalyticsOrcamento({
-      ano: Number(params.year),
-      mes: Number(params.month), // Mês atual
-    });
-
-  // Analytics de Meios de Pagamento
-  const {
-    data: analyticsMeiosPagamentoData,
-    isLoading: loadingAnalyticsMeiosPagamento,
-  } = useGetAnalyticsMeiosPagamento({
-    ano: Number(params.year),
-    mes: Number(params.month), // Mês atual
-  });
-
-  // Quick Stats
-  const { data: quickStatsData, isLoading: loadingQuickStats } =
-    useGetQuickStats({
-      ano: Number(params.year),
-      mes: Number(params.month), // Mês atual
-    });
-
-  // Analytics de Padrões Temporais
-  const {
-    data: analyticsPadroesTemporaisData,
-    isLoading: loadingAnalyticsPadroesTemporais,
-  } = useGetAnalyticsPadroesTemporais({
-    ano: Number(params.year),
-    mes: Number(params.month), // Mês atual
-  });
-
-  const isLoading = useMemo(
-    () => loadingResumo || isPending,
-    [loadingResumo, isPending],
-  );
-
-  const resumo = data?.data;
-  const receitasMes = resumo?.receitasMes ?? [];
-  const despesasMes = resumo?.despesasMes ?? [];
-  const saldosMes = resumo?.saldosMes ?? [];
-  const receitasAno = resumo?.receitasAno ?? 0;
-  const despesasAno = resumo?.despesasAno ?? 0;
-  const despesasPorCategoriaAno = resumo?.despesasPorCategoriaAno ?? [];
-  const despesasPorCategoriaMes = resumo?.despesasPorCategoriaMes ?? [];
-  const saldosMesAno = resumo?.saldosMesAno ?? 0;
-
-  const handleAtualizar = () =>
-    mutate({ year: Number(params.year) }, { onSuccess: () => refetch() });
 
   const navigateYear = (direction: "prev" | "next") => {
     const operator = direction === "next" ? addYears : subYears;
@@ -138,8 +90,8 @@ const Home: React.FC = () => {
       <Box display="flex" flexDirection="column" gap="$s">
         <Header
           nome={auth.nome}
-          atualizadoEm={resumo?.atualizadoEm}
-          onAtualizar={handleAtualizar}
+          atualizadoEm={atualizadoEm}
+          onAtualizar={handleRefreshData}
         />
 
         <Box display="flex" justifyContent="flex-end">
@@ -204,37 +156,37 @@ const Home: React.FC = () => {
             order={{ xs: 2, lg: 1 }}
           >
             <QuickStatCard
-              data={quickStatsData?.data?.gastoSemana}
-              isLoading={loadingQuickStats}
+              data={quickStatsData?.gastoSemana}
+              isLoading={loadingStates.quickStats}
             />
             <QuickStatCard
-              data={quickStatsData?.data?.economiaMes}
-              isLoading={loadingQuickStats}
+              data={quickStatsData?.economiaMes}
+              isLoading={loadingStates.quickStats}
             />
             <QuickStatCard
-              data={quickStatsData?.data?.maiorCategoria}
-              isLoading={loadingQuickStats}
+              data={quickStatsData?.maiorCategoria}
+              isLoading={loadingStates.quickStats}
             />
             <QuickStatCard
-              data={quickStatsData?.data?.diasSemGastos}
-              isLoading={loadingQuickStats}
+              data={quickStatsData?.diasSemGastos}
+              isLoading={loadingStates.quickStats}
             />
             <QuickStatCard
-              data={quickStatsData?.data?.transacaoMaior}
-              isLoading={loadingQuickStats}
+              data={quickStatsData?.transacaoMaior}
+              isLoading={loadingStates.quickStats}
             />
             <QuickStatCard
-              data={quickStatsData?.data?.comparativoAno}
-              isLoading={loadingQuickStats}
+              data={quickStatsData?.comparativoAno}
+              isLoading={loadingStates.quickStats}
             />
           </Box>
           <Box order={{ xs: 1, lg: 2 }}>
             <MiniCalendar
-              data={calendarioData?.data}
+              data={calendarioData}
               currentMonth={miniCalendarMonth}
               currentYear={miniCalendarYear}
               onNavigateMonth={handleMiniCalendarNavigate}
-              isLoading={loadingCalendario}
+              isLoading={loadingStates.calendario}
             />
           </Box>
         </Box>
@@ -266,9 +218,9 @@ const Home: React.FC = () => {
         />
 
         <TopCategoriasCard
-          categorias={analyticsCategoriasData?.data?.categorias}
-          totalGeral={analyticsCategoriasData?.data?.totalGeral}
-          isLoading={loadingAnalyticsCategorias}
+          categorias={analyticsCategoriasData?.categorias}
+          totalGeral={analyticsCategoriasData?.totalGeral}
+          isLoading={loadingStates.analyticsCategorias}
           title="🏆 Top Categorias do Mês"
         />
       </Box>
@@ -300,13 +252,13 @@ const Home: React.FC = () => {
           </Card>
         </Box>
         <SaudeFinanceiraCard
-          saudeFinanceira={analyticsOrcamentoData?.data?.saudeFinanceira}
-          isLoading={loadingAnalyticsOrcamento}
+          saudeFinanceira={analyticsOrcamentoData?.saudeFinanceira}
+          isLoading={loadingStates.analyticsOrcamento}
           title="💚 Saúde Financeira"
         />
         <PadroesTemporaisCard
-          data={analyticsPadroesTemporaisData?.data}
-          isLoading={loadingAnalyticsPadroesTemporais}
+          data={analyticsPadroesTemporaisData}
+          isLoading={loadingStates.analyticsPadroesTemporais}
         />
       </Box>
 
@@ -332,10 +284,10 @@ const Home: React.FC = () => {
           />
         </Card>
         <MeiosPagamentoChart
-          meiosPagamento={analyticsMeiosPagamentoData?.data?.meiosPagamento}
-          formasPagamento={analyticsMeiosPagamentoData?.data?.formasPagamento}
-          resumo={analyticsMeiosPagamentoData?.data?.resumo}
-          isLoading={loadingAnalyticsMeiosPagamento}
+          meiosPagamento={analyticsMeiosPagamentoData?.meiosPagamento}
+          formasPagamento={analyticsMeiosPagamentoData?.formasPagamento}
+          resumo={analyticsMeiosPagamentoData?.resumo}
+          isLoading={loadingStates.analyticsMeiosPagamento}
           title="Meios de Pagamento"
         />
       </Box>

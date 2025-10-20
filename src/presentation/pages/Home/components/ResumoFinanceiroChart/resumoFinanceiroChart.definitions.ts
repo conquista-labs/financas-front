@@ -1,4 +1,4 @@
-import { ChartOptions } from "chart.js";
+import type { ChartOptions } from "chart.js";
 
 export const formatMonth = (mes: string) => {
   // Formata "2025-07" para "07/25"

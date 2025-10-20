@@ -1,11 +1,11 @@
 import { Box, Card, Icon, Skeleton, Text } from "@rarui-react/components";
 
-import { QuickStatCardProps } from "./quickStatCard.types";
 import {
   getVariacaoColor,
   getVariacaoIcon,
   icons,
 } from "./quickStatCard.definitions.tsx";
+import type { QuickStatCardProps } from "./quickStatCard.types";
 
 export const QuickStatCard: React.FC<QuickStatCardProps> = ({
   data,

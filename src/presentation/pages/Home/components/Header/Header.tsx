@@ -1,7 +1,7 @@
+import { RefreshIcon } from "@rarui/icons";
+import { Box, Button, Icon, Text, Title } from "@rarui-react/components";
 import React from "react";
 
-import { Box, Title, Text, Button, Icon } from "@rarui-react/components";
-import { RefreshIcon } from "@rarui/icons";
 import { getLastUpdate } from "./header.definitions";
 
 const Header: React.FC<{

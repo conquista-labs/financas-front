@@ -1,6 +1,5 @@
-import React, { useMemo } from "react";
-
 import { Box, Card, Title } from "@rarui-react/components";
+import React, { useMemo } from "react";
 
 import { Table, TableSkeleton } from "@/presentation/components";
 

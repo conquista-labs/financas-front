@@ -1,7 +1,8 @@
 import { Box, Card, Text, Title } from "@rarui-react/components";
 import React from "react";
-import { SaudeFinanceiraCardProps } from "./saudeFinanceiraCard.types";
+
 import { getStatusInfo } from "./saudeFinanceiraCard.definitions";
+import type { SaudeFinanceiraCardProps } from "./saudeFinanceiraCard.types";
 
 const SaudeFinanceiraCard: React.FC<SaudeFinanceiraCardProps> = ({
   saudeFinanceira,

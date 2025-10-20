@@ -1,4 +1,4 @@
-import {
+import type {
   DespesaPorCategoriaAno,
   DespesaPorCategoriaMes,
 } from "@/domain/models";

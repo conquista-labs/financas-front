@@ -1,5 +1,6 @@
 import { Box, Card, Divider, Text, Title } from "@rarui-react/components";
-import { AnalyticsPadroesTemporaisDataDto } from "@/domain/models";
+
+import type { AnalyticsPadroesTemporaisDataDto } from "@/domain/models";
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
 
 interface PadroesTemporaisCardProps {

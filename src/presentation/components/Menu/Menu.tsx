@@ -13,6 +13,7 @@ const Menu: React.FC<MenuProps> = () => {
       role="header"
       minHeight="calc(100dvh - 70px)"
       width="74px"
+      minWidth="74px"
       backgroundColor="$primary"
       gap="$2xs"
       display={{ xs: "none", md: "flex" }}

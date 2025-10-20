@@ -1,4 +1,4 @@
-import { DespesaPorCategoria } from "@/domain/models";
+import type { DespesaPorCategoria } from "@/domain/models";
 
 export interface ResumoFinanceiroChartProps {
   despesas: DespesaPorCategoria[];

@@ -1,18 +1,20 @@
+import { Box, Title } from "@rarui-react/components";
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Tooltip,
+} from "chart.js";
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { ResumoFinanceiroChartProps } from "./resumoFinanceiroChart.types";
-import { formatMonth, options } from "./resumoFinanceiroChart.definitions";
-import { Box, Title } from "@rarui-react/components";
+
 import { useTheme } from "@/App";
 import { useIsMobile } from "@/presentation/hooks/core";
+
+import { formatMonth, options } from "./resumoFinanceiroChart.definitions";
+import type { ResumoFinanceiroChartProps } from "./resumoFinanceiroChart.types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 

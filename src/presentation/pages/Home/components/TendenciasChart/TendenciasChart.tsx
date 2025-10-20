@@ -1,7 +1,9 @@
 import { Box, Card, Text, Title } from "@rarui-react/components";
 import React from "react";
-import { TendenciasChartProps } from "./tendenciasChart.types";
+
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
+
+import type { TendenciasChartProps } from "./tendenciasChart.types";
 
 const TendenciasChart: React.FC<TendenciasChartProps> = ({
   evolucaoMensal = [],

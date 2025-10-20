@@ -1,4 +1,8 @@
-import { ReceitaPorMes, DespesaPorMes, SaldosPorMes } from "@/domain/models";
+import type {
+  DespesaPorMes,
+  ReceitaPorMes,
+  SaldosPorMes,
+} from "@/domain/models";
 
 export interface ResumoMensalTableProps {
   receitasAno: number;

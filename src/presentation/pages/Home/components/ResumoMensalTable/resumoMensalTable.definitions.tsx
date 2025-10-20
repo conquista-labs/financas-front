@@ -1,4 +1,5 @@
 import { Box, Text } from "@rarui-react/components";
+
 import { ColumnsDefinitions } from "@/presentation/components";
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
 

@@ -1,4 +1,4 @@
-import { QuickStatDto } from "@/domain/models";
+import type { QuickStatDto } from "@/domain/models";
 
 export interface QuickStatCardProps {
   data?: QuickStatDto;

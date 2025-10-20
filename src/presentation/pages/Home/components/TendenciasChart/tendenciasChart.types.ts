@@ -1,6 +1,6 @@
-import { EvolucaoMensalDto } from "@/domain/models/evolucaoMensalDto";
-import { ProjecaoMesDto } from "@/domain/models/projecaoMesDto";
-import { InsightFinanceiroDto } from "@/domain/models/insightFinanceiroDto";
+import type { EvolucaoMensalDto } from "@/domain/models/evolucaoMensalDto";
+import type { InsightFinanceiroDto } from "@/domain/models/insightFinanceiroDto";
+import type { ProjecaoMesDto } from "@/domain/models/projecaoMesDto";
 
 export interface TendenciasChartProps {
   evolucaoMensal?: EvolucaoMensalDto[];

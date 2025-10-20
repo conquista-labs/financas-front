@@ -1,7 +1,9 @@
 import { Box, Card, Text, Title } from "@rarui-react/components";
 import React from "react";
-import { TopCategoriasCardProps } from "./topCategoriasCard.types";
+
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
+
+import type { TopCategoriasCardProps } from "./topCategoriasCard.types";
 
 const TopCategoriasCard: React.FC<TopCategoriasCardProps> = ({
   categorias = [],

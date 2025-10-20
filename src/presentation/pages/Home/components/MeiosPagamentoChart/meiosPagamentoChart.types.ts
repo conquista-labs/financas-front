@@ -1,6 +1,6 @@
-import { MeioPagamentoAnalyticsDto } from "@/domain/models/meioPagamentoAnalyticsDto";
-import { FormaPagamentoAnalyticsDto } from "@/domain/models/formaPagamentoAnalyticsDto";
-import { ResumoMeiosPagamentoDto } from "@/domain/models/resumoMeiosPagamentoDto";
+import type { FormaPagamentoAnalyticsDto } from "@/domain/models/formaPagamentoAnalyticsDto";
+import type { MeioPagamentoAnalyticsDto } from "@/domain/models/meioPagamentoAnalyticsDto";
+import type { ResumoMeiosPagamentoDto } from "@/domain/models/resumoMeiosPagamentoDto";
 
 export interface MeiosPagamentoChartProps {
   meiosPagamento?: MeioPagamentoAnalyticsDto[];

@@ -1,4 +1,4 @@
-import { ChartOptions } from "chart.js";
+import type { ChartOptions } from "chart.js";
 
 export const options: ChartOptions<"pie"> = {
   responsive: true,

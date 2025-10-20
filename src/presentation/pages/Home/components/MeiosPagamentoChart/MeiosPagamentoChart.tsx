@@ -1,7 +1,9 @@
 import { Box, Card, Text, Title } from "@rarui-react/components";
 import React from "react";
-import { MeiosPagamentoChartProps } from "./meiosPagamentoChart.types";
+
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
+
+import type { MeiosPagamentoChartProps } from "./meiosPagamentoChart.types";
 
 const MeiosPagamentoChart: React.FC<MeiosPagamentoChartProps> = ({
   meiosPagamento = [],

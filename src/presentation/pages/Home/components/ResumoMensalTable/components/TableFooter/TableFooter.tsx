@@ -1,7 +1,8 @@
 import { Box } from "@rarui-react/components";
 
 import { formatCurrency } from "@/presentation/pages/Home/home.definitions";
-import { TableFooterProps } from "./tableFooter.types";
+
+import type { TableFooterProps } from "./tableFooter.types";
 
 const TableFooter: React.FC<TableFooterProps> = ({
   despesasAno,

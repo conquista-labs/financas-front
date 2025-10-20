@@ -901,6 +901,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@icons/material@npm:^0.2.4":
+  version: 0.2.4
+  resolution: "@icons/material@npm:0.2.4"
+  peerDependencies:
+    react: "*"
+  checksum: 133518adf91010704b716e7671fc28bcc3c461dc4f4a56ad3a73a955b9993dfaa22494579e9377247fd3318baebe8e4ae7962c01bffeaca0044722c09baa9d73
+  languageName: node
+  linkType: hard
+
 "@inquirer/confirm@npm:^5.0.0":
   version: 5.1.13
   resolution: "@inquirer/confirm@npm:5.1.13"
@@ -1131,47 +1140,48 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rarui-react/components@npm:^1.45.0-rc.2":
-  version: 1.45.0-rc.2
-  resolution: "@rarui-react/components@npm:1.45.0-rc.2"
+"@rarui-react/components@npm:^1.47.1":
+  version: 1.48.0
+  resolution: "@rarui-react/components@npm:1.48.0"
   dependencies:
     "@floating-ui/react": "npm:^0.26.13"
-    "@rarui/icons": "npm:^1.2.0"
-    "@rarui/typings": "npm:^2.2.0"
+    "@rarui/icons": "npm:^1.3.0"
+    "@rarui/typings": "npm:^2.4.0"
+    react-color: "npm:^2.19.3"
     react-datepicker: "npm:^6.9.0"
   peerDependencies:
-    "@rarui/styles": ^2.7.0-rc.2
+    "@rarui/styles": ^3.2.2
     react: ^16.8 || ^17.0 || ^18.0
     react-dom: ^16.8 || ^17.0 || ^18.0
-  checksum: 9b4607325edb9cd98a4bc4087a31409110b3bfcfb955703abbb000b4ae83967d4093758c30bfa8ca829cc211c1426ad5ddf78cf7a2344cd706949eaa5029a68e
+  checksum: 3ad14885fb370b274a033a46943fd6d77b84cf59422c3e2409e684e184f09f68e628cd6599e79b082e90bb14eae1e6c3b98310c28481fe9ebea8516912ace0f5
   languageName: node
   linkType: hard
 
-"@rarui/icons@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@rarui/icons@npm:1.2.0"
+"@rarui/icons@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@rarui/icons@npm:1.3.0"
   peerDependencies:
     react: ^16.8 || ^17.0 || ^18.0
-  checksum: 99126634787b3d78af59c74860f1da3a5ef90210dc2aab5a7975e7eb429f561407245d74d5e3c8be3a89c0d671b859fb721908340eb0efd16c6a95cb19f78849
+  checksum: b5dfef63c8f289ebcbb4fbb85626e4374b4f8592c19508c54f7264eee1f03daadc352adb13f604527f40888cadafc08509d16c8d26b4394d5b8203bd029fac76
   languageName: node
   linkType: hard
 
-"@rarui/styles@npm:^2.7.0-rc.2":
-  version: 2.7.0-rc.2
-  resolution: "@rarui/styles@npm:2.7.0-rc.2"
+"@rarui/styles@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "@rarui/styles@npm:3.2.2"
   dependencies:
     "@vanilla-extract/css": "npm:^1.15.3"
     "@vanilla-extract/recipes": "npm:^0.5.3"
     rainbow-sprinkles: "npm:^0.17.2"
     rollup-plugin-postcss: "npm:^4.0.2"
-  checksum: 123303771a2a591fbd180113367ef12e57b82a8730d0bf0e5e100d5af42e047afca8d6cd54c4199db0d94b064b1c0ee59042f780c252dca68279ce6ac22b5afd
+  checksum: 33409e11530e5ab26ee53bcf7dee19f154bafb337315b6cbebbfa3120fbdf0579b17214f653b7865b1919a29ec232934515467b74998eae96e3188439ecca446
   languageName: node
   linkType: hard
 
-"@rarui/typings@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@rarui/typings@npm:2.2.0"
-  checksum: 397ef5f640961b366006311c4e88d60b8078ee017a7a831e22f9c43a8e249415bcb71fdca7c0aac6171a64b099c19ca05f55e193fb78905c5749dad5bbdad8ba
+"@rarui/typings@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@rarui/typings@npm:2.4.0"
+  checksum: 189d1994a916903fa0a83ffa76bd6ed2814d578e43ce258145fb38ad4915ac1b4320ff0626a5242a80eb738b58eb4e6c90ef976b6983b2e20cb11925a4461d75
   languageName: node
   linkType: hard
 
@@ -4341,6 +4351,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash-es@npm:^4.17.15":
+  version: 4.17.21
+  resolution: "lodash-es@npm:4.17.21"
+  checksum: fb407355f7e6cd523a9383e76e6b455321f0f153a6c9625e21a8827d10c54c2a2341bd2ae8d034358b60e07325e1330c14c224ff582d04612a46a4f0479ff2f2
+  languageName: node
+  linkType: hard
+
 "lodash.camelcase@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.camelcase@npm:4.3.0"
@@ -4411,7 +4428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.21":
+"lodash@npm:^4.0.1, lodash@npm:^4.17.15, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -4528,6 +4545,13 @@ __metadata:
     promise-retry: "npm:^2.0.1"
     ssri: "npm:^12.0.0"
   checksum: c40efb5e5296e7feb8e37155bde8eb70bc57d731b1f7d90e35a092fde403d7697c56fb49334d92d330d6f1ca29a98142036d6480a12681133a0a1453164cb2f0
+  languageName: node
+  linkType: hard
+
+"material-colors@npm:^1.2.1":
+  version: 1.2.6
+  resolution: "material-colors@npm:1.2.6"
+  checksum: 6502ab25b23b783cca4112946bc28a64fdba8bf8efcfbb1e76028d21ecc4b88a2b1338dacf1b64e4b6af46ab98984080586002cdaa9428dc91f6fdcc6909b12a
   languageName: node
   linkType: hard
 
@@ -5600,7 +5624,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.7.2":
+"prop-types@npm:^15.5.10, prop-types@npm:^15.7.2":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -5681,6 +5705,23 @@ __metadata:
     chart.js: ^4.1.1
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 4415d40217c084a49f9a936fbd30f67e0e705148e6f8359bec65601033d1076f31085c45793839fc29ec833e6c427b0bf9861a0c54c432c08d35bc9590ffa41a
+  languageName: node
+  linkType: hard
+
+"react-color@npm:^2.19.3":
+  version: 2.19.3
+  resolution: "react-color@npm:2.19.3"
+  dependencies:
+    "@icons/material": "npm:^0.2.4"
+    lodash: "npm:^4.17.15"
+    lodash-es: "npm:^4.17.15"
+    material-colors: "npm:^1.2.1"
+    prop-types: "npm:^15.5.10"
+    reactcss: "npm:^1.2.0"
+    tinycolor2: "npm:^1.4.1"
+  peerDependencies:
+    react: "*"
+  checksum: 6f9fce9ff3014926d960abccd5d79ecb391a41f835a4b85663fd48ff933554391222f40ed8cfc5417305d47b1e480023981ec22e13c3b16b0d8d718270fa815e
   languageName: node
   linkType: hard
 
@@ -5793,6 +5834,15 @@ __metadata:
   version: 19.1.0
   resolution: "react@npm:19.1.0"
   checksum: 530fb9a62237d54137a13d2cfb67a7db6a2156faed43eecc423f4713d9b20c6f2728b026b45e28fcd72e8eadb9e9ed4b089e99f5e295d2f0ad3134251bdd3698
+  languageName: node
+  linkType: hard
+
+"reactcss@npm:^1.2.0":
+  version: 1.2.3
+  resolution: "reactcss@npm:1.2.3"
+  dependencies:
+    lodash: "npm:^4.0.1"
+  checksum: a3aceb0fbfd58312f0c7fadbe92920e6536ec24d17ebee44fd4a14dd831d413fff5c2df0e85579b440667935e57a06876325cbd1368d3131824a8c2ec43b7978
   languageName: node
   linkType: hard
 
@@ -6514,6 +6564,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tinycolor2@npm:^1.4.1":
+  version: 1.6.0
+  resolution: "tinycolor2@npm:1.6.0"
+  checksum: 9aa79a36ba2c2a87cb221453465cabacd04b9e35f9694373e846fdc78b1c768110f81e581ea41440106c0f24d9a023891d0887e8075885e790ac40eb0e74a5c1
+  languageName: node
+  linkType: hard
+
 "tinyexec@npm:^0.3.2":
   version: 0.3.2
   resolution: "tinyexec@npm:0.3.2"
@@ -6821,9 +6878,9 @@ __metadata:
     "@faker-js/faker": "npm:^9.9.0"
     "@hookform/resolvers": "npm:^5.1.1"
     "@ngneat/falso": "npm:^8.0.1"
-    "@rarui-react/components": "npm:^1.45.0-rc.2"
-    "@rarui/icons": "npm:^1.2.0"
-    "@rarui/styles": "npm:^2.7.0-rc.2"
+    "@rarui-react/components": "npm:^1.47.1"
+    "@rarui/icons": "npm:^1.3.0"
+    "@rarui/styles": "npm:^3.2.2"
     "@tanstack/react-query": "npm:^5.81.5"
     "@tanstack/react-query-devtools": "npm:^5.81.5"
     "@tanstack/react-table": "npm:^8.21.3"

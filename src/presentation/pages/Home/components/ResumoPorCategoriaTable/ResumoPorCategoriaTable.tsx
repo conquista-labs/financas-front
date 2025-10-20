@@ -1,9 +1,10 @@
+import { Box, Button, Text, Title } from "@rarui-react/components";
 import React, { useMemo, useState } from "react";
 
-import { ResumoPorCategoriaTableProps } from "./resumoPorCategoriaTable.types";
-import { formatMonth, getColumns } from "./resumoPorCategoriaTable.definitions";
 import { Table, TableSkeleton } from "@/presentation/components";
-import { Box, Title, Button, Text } from "@rarui-react/components";
+
+import { formatMonth, getColumns } from "./resumoPorCategoriaTable.definitions";
+import type { ResumoPorCategoriaTableProps } from "./resumoPorCategoriaTable.types";
 
 interface LinhaFixa {
   categoria: string;
@@ -54,7 +55,7 @@ export const ResumoPorCategoriaTable: React.FC<
       }
     });
 
-    let allRows = Array.from(categoriasMap.values());
+    const allRows = Array.from(categoriasMap.values());
 
     // Ordenação dinâmica por valor total decrescente
     allRows.sort((a, b) => {

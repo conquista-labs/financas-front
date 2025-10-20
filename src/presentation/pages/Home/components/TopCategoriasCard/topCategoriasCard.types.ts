@@ -1,4 +1,4 @@
-import { CategoriaAnalyticsDto } from "@/domain/models/categoriaAnalyticsDto";
+import type { CategoriaAnalyticsDto } from "@/domain/models/categoriaAnalyticsDto";
 
 export interface TopCategoriasCardProps {
   categorias?: CategoriaAnalyticsDto[];

@@ -1,10 +1,10 @@
 import {
   CalendarDateRangeOutlinedIcon,
   CalendarEventOutlinedIcon,
-  MoneyOutlinedIcon,
-  CreditCardOutlinedIcon,
-  TagOutlinedIcon,
   ChartBarsOutlinedIcon,
+  CreditCardOutlinedIcon,
+  MoneyOutlinedIcon,
+  TagOutlinedIcon,
 } from "@rarui/icons";
 
 export const getVariacaoColor = (tipo: string) => {
