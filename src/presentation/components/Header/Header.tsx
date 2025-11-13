@@ -7,6 +7,7 @@ import {
   IconButton,
   Toggle,
 } from "@rarui-react/components";
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   MenuIcon,
   UserFilledIcon,
@@ -16,13 +17,17 @@ import {
 } from "@rarui/icons";
 
 import Logo from "@/presentation/assets/images/logo.svg?react";
-import type { HeaderProps } from "./header.types";
 import { useAuthStore } from "@/presentation/store";
+import { usePostLogoutGoogle } from "@/presentation/hooks/api";
 import { useTheme } from "@/App";
+import type { HeaderProps } from "./header.types";
+import { Loading } from "@/presentation/components";
 
 const Header: React.FC<HeaderProps> = ({ handleMenu }) => {
-  const { resetState } = useAuthStore();
+  const { resetState, auth } = useAuthStore();
   const { setDarkMode, darkMode } = useTheme();
+  const { mutate, isPending } = usePostLogoutGoogle();
+  const { addToast } = useToast();
 
   const handleDarkTheme = () => {
     localStorage.setItem("dark-theme", `${!darkMode}`);
@@ -80,7 +85,19 @@ const Header: React.FC<HeaderProps> = ({ handleMenu }) => {
           content={
             <Dropdown.Item
               as="button"
-              onClick={resetState}
+              onClick={() =>
+                mutate(undefined, {
+                  onSuccess: () => resetState(),
+                  onError: (error) => {
+                    addToast({
+                      title: error.message,
+                      appearance: "error",
+                      variant: "solid",
+                      duration: 4000,
+                    });
+                  },
+                })
+              }
               icon={<LogoutIcon />}
               name="Sair"
             />
@@ -93,12 +110,22 @@ const Header: React.FC<HeaderProps> = ({ handleMenu }) => {
             borderWidth="$none"
             backgroundColor="$transparent"
           >
-            <Avatar>
-              <Icon source={<UserFilledIcon />} />
+            <Avatar size="large">
+              {auth.user.avatar ? (
+                <img
+                  src={auth.user.avatar}
+                  alt={auth.user.nome ?? "User Avatar"}
+                  width="100%"
+                  height="100%"
+                />
+              ) : (
+                <Icon source={<UserFilledIcon />} />
+              )}
             </Avatar>
           </Box>
         </Dropdown>
       </Box>
+      <Loading isLoading={isPending} />
     </Box>
   );
 };

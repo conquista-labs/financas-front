@@ -89,7 +89,7 @@ const Home: React.FC = () => {
       {/* 🎯 SEÇÃO 1: Header + Controles */}
       <Box display="flex" flexDirection="column" gap="$s">
         <Header
-          nome={auth.nome}
+          nome={auth.user.nome ?? ""}
           atualizadoEm={atualizadoEm}
           onAtualizar={handleRefreshData}
         />

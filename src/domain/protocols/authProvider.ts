@@ -1,7 +1,6 @@
-interface Auth {
-  access_token: string;
-}
+import { GoogleAuth } from "@/domain/models";
+
 export interface AuthProvider {
-  getAuth: () => Auth;
+  getAuth: () => GoogleAuth;
   resetAuth: () => void;
 }

@@ -304,6 +304,81 @@
         ]
       }
     },
+    "/auth/google-login": {
+      "post": {
+        "operationId": "AuthController_googleLogin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleLoginResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Email não autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Email não autorizado para acesso",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Login com código de autorização Google OAuth2",
+        "tags": [
+          "Autenticação"
+        ]
+      }
+    },
+    "/auth/google/disconnect": {
+      "post": {
+        "operationId": "AuthController_disconnectGoogle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Conta Google desconectada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "success": true,
+                    "message": "Conta Google desconectada com sucesso",
+                    "data": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou expirado"
+          }
+        },
+        "summary": "Desconectar conta Google",
+        "tags": [
+          "Autenticação"
+        ]
+      }
+    },
     "/categorias": {
       "get": {
         "operationId": "CategoriasController_findAll",
@@ -817,6 +892,22 @@
             }
           },
           {
+            "name": "pessoaIds",
+            "required": false,
+            "in": "query",
+            "description": "IDs das pessoas usadas para filtrar as transações (múltiplas pessoas)",
+            "schema": {
+              "example": [
+                "uuid-pessoa-1",
+                "uuid-pessoa-2"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "meioPagamentoId",
             "required": false,
             "in": "query",
@@ -944,6 +1035,22 @@
             "description": "ID da pessoa para filtrar",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "pessoaIds",
+            "required": false,
+            "in": "query",
+            "description": "IDs das pessoas para filtrar (múltiplas pessoas)",
+            "schema": {
+              "example": [
+                "uuid-pessoa-1",
+                "uuid-pessoa-2"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
@@ -1683,6 +1790,226 @@
           "Analytics"
         ]
       }
+    },
+    "/admin/allowed-emails": {
+      "get": {
+        "operationId": "AdminController_getAllowedEmails",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de emails permitidos retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllowedEmailsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar todos os emails permitidos",
+        "tags": [
+          "Administração"
+        ]
+      },
+      "post": {
+        "operationId": "AdminController_addAllowedEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddAllowedEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Email adicionado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddAllowedEmailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email já está na lista de permitidos"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Adicionar email à lista de permitidos",
+        "tags": [
+          "Administração"
+        ]
+      }
+    },
+    "/admin/allowed-emails/active": {
+      "get": {
+        "operationId": "AdminController_getActiveAllowedEmails",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de emails permitidos ativos retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllowedEmailsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar emails permitidos ativos",
+        "tags": [
+          "Administração"
+        ]
+      }
+    },
+    "/admin/allowed-emails/{id}": {
+      "put": {
+        "operationId": "AdminController_updateAllowedEmail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do email permitido",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAllowedEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateAllowedEmailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email não encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualizar status de email permitido",
+        "tags": [
+          "Administração"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_removeAllowedEmail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do email permitido",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email removido com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAllowedEmailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email não encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remover email da lista (soft delete)",
+        "tags": [
+          "Administração"
+        ]
+      }
+    },
+    "/admin/allowed-emails/{id}/permanent": {
+      "delete": {
+        "operationId": "AdminController_deleteAllowedEmailPermanently",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do email permitido",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email deletado permanentemente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAllowedEmailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email não encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deletar email permanentemente",
+        "tags": [
+          "Administração"
+        ]
+      }
     }
   },
   "info": {
@@ -1966,6 +2293,73 @@
           },
           "data": {
             "$ref": "#/components/schemas/Auth"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "GoogleLoginRequest": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "4/0AfJohXlKJsJjskd...",
+            "description": "Código de autorização do Google OAuth2"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "GoogleAuth": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "jwt.token.here"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "uuid-user-id"
+              },
+              "email": {
+                "type": "string",
+                "example": "usuario@gmail.com"
+              },
+              "nome": {
+                "type": "string",
+                "example": "João Silva"
+              },
+              "avatar": {
+                "type": "string",
+                "example": "https://lh3.googleusercontent.com/a/..."
+              },
+              "isGoogleUser": {
+                "type": "boolean",
+                "example": true
+              }
+            }
+          }
+        },
+        "required": [
+          "token",
+          "user"
+        ]
+      },
+      "GoogleLoginResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/GoogleAuth"
           }
         },
         "required": [
@@ -3761,11 +4155,6 @@
             ],
             "example": "despesa"
           },
-          "icone": {
-            "type": "string",
-            "description": "Ícone da categoria",
-            "example": "utensils"
-          },
           "cor": {
             "type": "string",
             "description": "Cor da categoria",
@@ -3822,7 +4211,6 @@
           "id",
           "nome",
           "tipo",
-          "icone",
           "cor",
           "valorTotal",
           "numeroTransacoes",
@@ -4957,6 +5345,131 @@
                 "$ref": "#/components/schemas/AnalyticsPadroesTemporaisDataDto"
               }
             ]
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "AllowedEmail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-email-permitido"
+          },
+          "email": {
+            "type": "string",
+            "example": "usuario@gmail.com"
+          },
+          "adicionadoPor": {
+            "type": "string",
+            "example": "admin@sistema.com"
+          },
+          "ativo": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2025-11-11T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "adicionadoPor",
+          "ativo",
+          "createdAt"
+        ]
+      },
+      "GetAllowedEmailsResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllowedEmail"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "AddAllowedEmailRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "usuario@gmail.com",
+            "description": "Email a ser adicionado à lista de permitidos"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "AddAllowedEmailResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AllowedEmail"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "UpdateAllowedEmailRequest": {
+        "type": "object",
+        "properties": {
+          "ativo": {
+            "type": "boolean",
+            "example": true,
+            "description": "Status ativo/inativo do email permitido"
+          }
+        },
+        "required": [
+          "ativo"
+        ]
+      },
+      "UpdateAllowedEmailResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AllowedEmail"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "DeleteAllowedEmailResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AllowedEmail"
           }
         },
         "required": [

@@ -14,7 +14,7 @@ const ProxyRoute: React.FC = () => {
 
   const { auth } = useAuthStore();
 
-  return auth?.access_token ? <PrivateRoute /> : <PublicRoutes />;
+  return auth?.token ? <PrivateRoute /> : <PublicRoutes />;
 };
 
 export default ProxyRoute;

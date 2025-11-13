@@ -26,10 +26,6 @@ export interface CategoriaAnalyticsDto {
    */
   tipo: CategoriaAnalyticsDto.TipoEnum;
   /**
-   * Ícone da categoria
-   */
-  icone: string;
-  /**
    * Cor da categoria
    */
   cor: string;
