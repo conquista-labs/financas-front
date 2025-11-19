@@ -17,6 +17,12 @@ const Form: React.FC = () => {
 
   const login = useGoogleLogin({
     flow: "auth-code",
+    scope: [
+      "openid",
+      "profile",
+      "email",
+      "https://www.googleapis.com/auth/calendar", // ✅ Este scope já inclui eventos
+    ].join(" "),
     onSuccess: (credentialResponse) => {
       mutate(
         {
