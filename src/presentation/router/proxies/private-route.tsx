@@ -19,6 +19,9 @@ import {
   MeansOfPayment,
   CreateMeansOfPayment,
   EditMeansOfPayment,
+  Patrimony,
+  CreatePatrimony,
+  EditPatrimony,
 } from "@/presentation/pages";
 
 const PrivateRoute: React.FC = () => (
@@ -142,6 +145,30 @@ const PrivateRoute: React.FC = () => (
         element={
           <Suspense>
             <EditMeansOfPayment />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.patrimony}
+        element={
+          <Suspense>
+            <Patrimony />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.createPatrimony}
+        element={
+          <Suspense>
+            <CreatePatrimony />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.editPatrimony}
+        element={
+          <Suspense>
+            <EditPatrimony />
           </Suspense>
         }
       />

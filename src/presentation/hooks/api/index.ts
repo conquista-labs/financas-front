@@ -2,6 +2,7 @@ export * from "./analytics";
 export * from "./auth";
 export * from "./calendario";
 export * from "./meiosPagamento";
+export * from "./patrimonio";
 export * from "./categorias";
 export * from "./enums";
 export * from "./pessoas";

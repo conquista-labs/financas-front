@@ -6,3 +6,4 @@ export * from "./Transactions";
 export * from "./Peoples";
 export * from "./Categories";
 export * from "./MeansOfPayment";
+export * from "./Patrimony";

@@ -61,4 +61,8 @@ export const crumbsMapper: Partial<
     label: "Editar",
     link: urlRouters.editMeansOfPayment,
   },
+  patrimony: {
+    label: "Patrimônio",
+    link: urlRouters.patrimony,
+  },
 };

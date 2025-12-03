@@ -29,5 +29,8 @@ export const urlRouters = {
   meansOfPayment: "/means-of-payment",
   createMeansOfPayment: "/means-of-payment/create",
   editMeansOfPayment: "/means-of-payment/edit/:id",
+  patrimony: "/patrimony",
+  createPatrimony: "/patrimony/create",
+  editPatrimony: "/patrimony/edit/:id",
   error: "/error",
 };

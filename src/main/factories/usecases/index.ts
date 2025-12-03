@@ -4,6 +4,7 @@ export * from "./calendario";
 export * from "./categorias";
 export * from "./enums";
 export * from "./meiosPagamento";
+export * from "./patrimonio";
 export * from "./pessoas";
 export * from "./resumoFinanceiro";
 export * from "./transacoes";

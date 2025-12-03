@@ -15,5 +15,7 @@ export interface Enums {
   tipoCategoria: Array<EnumOption>;
   tipoTransacao: Array<EnumOption>;
   tipoPatrimonio: Array<EnumOption>;
+  tipoPatrimonioEnum: Array<EnumOption>;
+  categoriaPatrimonio: Array<EnumOption>;
   formaPagamento: Array<EnumOption>;
 }

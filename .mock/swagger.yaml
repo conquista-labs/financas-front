@@ -985,6 +985,9 @@
         "security": [
           {
             "access-token": []
+          },
+          {
+            "bearer": []
           }
         ],
         "summary": "Criar nova transação",
@@ -1179,6 +1182,9 @@
         "security": [
           {
             "access-token": []
+          },
+          {
+            "bearer": []
           }
         ],
         "summary": "Atualizar transação por ID",
@@ -1217,11 +1223,80 @@
         "security": [
           {
             "access-token": []
+          },
+          {
+            "bearer": []
           }
         ],
         "summary": "Remover transação por ID",
         "tags": [
           "Transações"
+        ]
+      }
+    },
+    "/calendar/list": {
+      "get": {
+        "operationId": "CalendarController_getUserCalendars",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de calendários do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "success": true,
+                    "message": "Calendários listados com sucesso",
+                    "data": [
+                      {
+                        "id": "primary",
+                        "summary": "Primary",
+                        "primary": true
+                      },
+                      {
+                        "id": "calendar_id@group.calendar.google.com",
+                        "summary": "Financeiro",
+                        "primary": false
+                      }
+                    ],
+                    "preferredCalendarId": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Listar calendários disponíveis do usuário",
+        "tags": [
+          "Calendários"
+        ]
+      }
+    },
+    "/calendar/set-preferred": {
+      "post": {
+        "operationId": "CalendarController_setPreferredCalendar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Calendário preferido definido com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "success": true,
+                    "message": "Calendário preferido definido com sucesso",
+                    "data": {
+                      "preferredCalendarId": "calendar_id@group.calendar.google.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Definir calendário preferido do usuário",
+        "tags": [
+          "Calendários"
         ]
       }
     },
@@ -2010,6 +2085,374 @@
           "Administração"
         ]
       }
+    },
+    "/patrimonios": {
+      "post": {
+        "operationId": "PatrimoniosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePatrimonioRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Patrimônio criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePatrimonioResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Criar um novo patrimônio",
+        "tags": [
+          "Patrimônios"
+        ]
+      },
+      "get": {
+        "operationId": "PatrimoniosController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Página atual",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Quantidade de itens por página",
+            "schema": {
+              "minimum": 1,
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "tipo",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por tipo",
+            "schema": {
+              "example": "ativo",
+              "type": "string",
+              "enum": [
+                "ativo",
+                "passivo"
+              ]
+            }
+          },
+          {
+            "name": "categoria",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por categoria",
+            "schema": {
+              "example": "imovel",
+              "type": "string",
+              "enum": [
+                "imovel",
+                "veiculo",
+                "investimento",
+                "disponivel",
+                "outros_ativos",
+                "financiamento",
+                "emprestimo",
+                "divida",
+                "outros_passivos"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de patrimônios retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPatrimoniosResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar todos os patrimônios com filtros",
+        "tags": [
+          "Patrimônios"
+        ]
+      }
+    },
+    "/patrimonios/resumo": {
+      "get": {
+        "operationId": "PatrimoniosController_getResumo",
+        "parameters": [
+          {
+            "name": "dataReferencia",
+            "required": false,
+            "in": "query",
+            "description": "Data de referência para o resumo (default: hoje)",
+            "schema": {
+              "format": "date-time",
+              "example": "2024-12-01T00:00:00.000Z",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resumo do patrimônio retornado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResumoPatrimonioResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obter resumo geral do patrimônio",
+        "tags": [
+          "Patrimônios"
+        ]
+      }
+    },
+    "/patrimonios/evolucao": {
+      "get": {
+        "operationId": "PatrimoniosController_getEvolucao",
+        "parameters": [
+          {
+            "name": "dataInicio",
+            "required": true,
+            "in": "query",
+            "description": "Data de início do período",
+            "schema": {
+              "format": "date-time",
+              "example": "2024-01-01T00:00:00.000Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "dataFim",
+            "required": true,
+            "in": "query",
+            "description": "Data de fim do período",
+            "schema": {
+              "format": "date-time",
+              "example": "2024-12-31T23:59:59.999Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "granularidade",
+            "required": false,
+            "in": "query",
+            "description": "Granularidade dos dados",
+            "schema": {
+              "default": "mensal",
+              "example": "mensal",
+              "type": "string",
+              "enum": [
+                "mensal"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evolução do patrimônio retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetEvolucaoPatrimonioResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obter evolução do patrimônio ao longo do tempo",
+        "tags": [
+          "Patrimônios"
+        ]
+      }
+    },
+    "/patrimonios/{id}": {
+      "get": {
+        "operationId": "PatrimoniosController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do patrimônio",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patrimônio encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetPatrimonioResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Patrimônio não encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Buscar patrimônio por ID",
+        "tags": [
+          "Patrimônios"
+        ]
+      },
+      "patch": {
+        "operationId": "PatrimoniosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do patrimônio",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditPatrimonioRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Patrimônio atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditPatrimonioResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Patrimônio não encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualizar patrimônio",
+        "tags": [
+          "Patrimônios"
+        ]
+      },
+      "delete": {
+        "operationId": "PatrimoniosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do patrimônio",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Patrimônio removido com sucesso"
+          },
+          "404": {
+            "description": "Patrimônio não encontrado"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remover patrimônio",
+        "tags": [
+          "Patrimônios"
+        ]
+      }
+    },
+    "/patrimonios/snapshots/create": {
+      "post": {
+        "description": "Este endpoint normalmente é chamado automaticamente pelo cron job no dia 1 de cada mês",
+        "operationId": "PatrimoniosController_createSnapshots",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Snapshots criados com sucesso"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Criar snapshots mensais manualmente (admin)",
+        "tags": [
+          "Patrimônios"
+        ]
+      }
     }
   },
   "info": {
@@ -2758,6 +3201,18 @@
               "$ref": "#/components/schemas/EnumOption"
             }
           },
+          "tipoPatrimonioEnum": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnumOption"
+            }
+          },
+          "categoriaPatrimonio": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnumOption"
+            }
+          },
           "formaPagamento": {
             "type": "array",
             "items": {
@@ -2769,6 +3224,8 @@
           "tipoCategoria",
           "tipoTransacao",
           "tipoPatrimonio",
+          "tipoPatrimonioEnum",
+          "categoriaPatrimonio",
           "formaPagamento"
         ]
       },
@@ -5470,6 +5927,634 @@
           },
           "data": {
             "$ref": "#/components/schemas/AllowedEmail"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CreatePatrimonioRequest": {
+        "type": "object",
+        "properties": {
+          "descricao": {
+            "type": "string",
+            "description": "Descrição do patrimônio",
+            "example": "Apartamento Centro",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Tipo do patrimônio",
+            "enum": [
+              "ativo",
+              "passivo"
+            ],
+            "example": "ativo"
+          },
+          "categoria": {
+            "type": "string",
+            "description": "Categoria do patrimônio",
+            "enum": [
+              "imovel",
+              "veiculo",
+              "investimento",
+              "disponivel",
+              "outros_ativos",
+              "financiamento",
+              "emprestimo",
+              "divida",
+              "outros_passivos"
+            ],
+            "example": "imovel"
+          },
+          "valorAtual": {
+            "type": "number",
+            "description": "Valor atual do patrimônio",
+            "example": 250000,
+            "minimum": 0.01
+          },
+          "valorInicial": {
+            "type": "number",
+            "description": "Valor inicial/aquisição do patrimônio",
+            "example": 230000,
+            "minimum": 0.01
+          },
+          "dataAquisicao": {
+            "type": "string",
+            "description": "Data de aquisição do patrimônio",
+            "example": "2020-01-15T00:00:00.000Z",
+            "format": "date-time"
+          },
+          "observacoes": {
+            "type": "string",
+            "description": "Observações sobre o patrimônio",
+            "example": "Apartamento em região valorizada",
+            "maxLength": 500
+          },
+          "saldoDevedor": {
+            "type": "number",
+            "description": "Saldo devedor (obrigatório para passivos)",
+            "example": 180000,
+            "minimum": 0.01
+          },
+          "taxaJuros": {
+            "type": "number",
+            "description": "Taxa de juros mensal (%)",
+            "example": 0.8,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "dataVencimento": {
+            "type": "string",
+            "description": "Data de vencimento (para passivos)",
+            "example": "2035-01-15T00:00:00.000Z",
+            "format": "date-time"
+          },
+          "pessoaId": {
+            "type": "string",
+            "description": "ID da pessoa (opcional)",
+            "example": "uuid"
+          }
+        },
+        "required": [
+          "descricao",
+          "tipo",
+          "categoria",
+          "valorAtual",
+          "dataAquisicao"
+        ]
+      },
+      "Patrimonio": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Apartamento Centro"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "ativo",
+              "passivo"
+            ],
+            "example": "ativo"
+          },
+          "tipoFormatado": {
+            "type": "string",
+            "example": "Ativo",
+            "description": "Tipo formatado com label"
+          },
+          "categoria": {
+            "type": "string",
+            "enum": [
+              "imovel",
+              "veiculo",
+              "investimento",
+              "disponivel",
+              "outros_ativos",
+              "financiamento",
+              "emprestimo",
+              "divida",
+              "outros_passivos"
+            ],
+            "example": "imovel"
+          },
+          "categoriaFormatada": {
+            "type": "string",
+            "example": "Imóvel",
+            "description": "Categoria formatada com label"
+          },
+          "valorAtual": {
+            "type": "number",
+            "example": 250000
+          },
+          "valorInicial": {
+            "type": "number",
+            "example": 230000
+          },
+          "dataAquisicao": {
+            "type": "string",
+            "example": "2020-01-15T00:00:00.000Z"
+          },
+          "observacoes": {
+            "type": "string",
+            "example": "Apartamento em região valorizada"
+          },
+          "saldoDevedor": {
+            "type": "number",
+            "example": 180000
+          },
+          "taxaJuros": {
+            "type": "number",
+            "example": 0.8
+          },
+          "dataVencimento": {
+            "type": "string",
+            "example": "2035-01-15T00:00:00.000Z"
+          },
+          "mesesRestantes": {
+            "type": "number",
+            "example": 120,
+            "description": "Meses restantes até o vencimento (calculado)"
+          },
+          "pessoaId": {
+            "type": "string",
+            "example": "uuid-pessoa"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "tipo",
+          "tipoFormatado",
+          "categoria",
+          "categoriaFormatada",
+          "valorAtual",
+          "dataAquisicao",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreatePatrimonioResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Patrimonio"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "PatrimonioPaginatedData": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Patrimonio"
+            }
+          }
+        },
+        "required": [
+          "meta",
+          "rows"
+        ]
+      },
+      "GetPatrimoniosResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PatrimonioPaginatedData"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EvolucaoDetalhada": {
+        "type": "object",
+        "properties": {
+          "mesAnterior": {
+            "type": "number",
+            "example": 170000
+          },
+          "variacao": {
+            "type": "number",
+            "example": 10000
+          },
+          "percentual": {
+            "type": "number",
+            "example": 5.88
+          },
+          "tendencia": {
+            "type": "string",
+            "example": "alta",
+            "enum": [
+              "alta",
+              "baixa",
+              "estavel"
+            ],
+            "description": "Tendência baseada na variação"
+          }
+        },
+        "required": [
+          "mesAnterior",
+          "variacao",
+          "percentual",
+          "tendencia"
+        ]
+      },
+      "EvolucaoItem": {
+        "type": "object",
+        "properties": {
+          "valorAtual": {
+            "type": "number",
+            "example": 250000
+          },
+          "valorMesAnterior": {
+            "type": "number",
+            "example": 240000
+          },
+          "variacao": {
+            "type": "number",
+            "example": 10000
+          },
+          "percentual": {
+            "type": "number",
+            "example": 4.17
+          },
+          "tendencia": {
+            "type": "string",
+            "example": "alta",
+            "enum": [
+              "alta",
+              "baixa",
+              "estavel"
+            ]
+          }
+        },
+        "required": [
+          "valorAtual",
+          "valorMesAnterior",
+          "variacao",
+          "percentual",
+          "tendencia"
+        ]
+      },
+      "DistribuicaoItem": {
+        "type": "object",
+        "properties": {
+          "categoria": {
+            "type": "string",
+            "example": "imovel"
+          },
+          "categoriaFormatada": {
+            "type": "string",
+            "example": "Imóvel"
+          },
+          "valor": {
+            "type": "number",
+            "example": 180000
+          },
+          "percentual": {
+            "type": "number",
+            "example": 72
+          },
+          "quantidade": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "categoria",
+          "categoriaFormatada",
+          "valor",
+          "percentual",
+          "quantidade"
+        ]
+      },
+      "ResumoPatrimonio": {
+        "type": "object",
+        "properties": {
+          "dataReferencia": {
+            "type": "string",
+            "example": "2024-12-01T00:00:00.000Z"
+          },
+          "saldoDisponivel": {
+            "type": "number",
+            "example": 50000,
+            "description": "Saldo disponível em conta (calculado das transações: receitas - despesas)"
+          },
+          "totalAtivos": {
+            "type": "number",
+            "example": 250000,
+            "description": "Total de ativos (incluindo saldo disponível)"
+          },
+          "totalPassivos": {
+            "type": "number",
+            "example": 80000
+          },
+          "patrimonioLiquido": {
+            "type": "number",
+            "example": 170000,
+            "description": "Patrimônio líquido (totalAtivos - totalPassivos)"
+          },
+          "evolucao": {
+            "description": "Evolução do patrimônio líquido",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EvolucaoDetalhada"
+              }
+            ]
+          },
+          "evolucaoAtivos": {
+            "description": "Evolução detalhada dos ativos",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EvolucaoItem"
+              }
+            ]
+          },
+          "evolucaoPassivos": {
+            "description": "Evolução detalhada dos passivos",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EvolucaoItem"
+              }
+            ]
+          },
+          "distribuicaoAtivos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DistribuicaoItem"
+            }
+          },
+          "distribuicaoPassivos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DistribuicaoItem"
+            }
+          }
+        },
+        "required": [
+          "dataReferencia",
+          "saldoDisponivel",
+          "totalAtivos",
+          "totalPassivos",
+          "patrimonioLiquido",
+          "evolucao",
+          "evolucaoAtivos",
+          "evolucaoPassivos",
+          "distribuicaoAtivos",
+          "distribuicaoPassivos"
+        ]
+      },
+      "GetResumoPatrimonioResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ResumoPatrimonio"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "SerieItem": {
+        "type": "object",
+        "properties": {
+          "mesReferencia": {
+            "type": "string",
+            "example": "2024-01"
+          },
+          "totalAtivos": {
+            "type": "number",
+            "example": 250000
+          },
+          "totalPassivos": {
+            "type": "number",
+            "example": 80000
+          },
+          "patrimonioLiquido": {
+            "type": "number",
+            "example": 170000
+          }
+        },
+        "required": [
+          "mesReferencia",
+          "totalAtivos",
+          "totalPassivos",
+          "patrimonioLiquido"
+        ]
+      },
+      "EvolucaoPatrimonio": {
+        "type": "object",
+        "properties": {
+          "dataInicio": {
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "dataFim": {
+            "type": "string",
+            "example": "2024-12-31T23:59:59.999Z"
+          },
+          "granularidade": {
+            "type": "string",
+            "example": "mensal"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SerieItem"
+            }
+          }
+        },
+        "required": [
+          "dataInicio",
+          "dataFim",
+          "granularidade",
+          "series"
+        ]
+      },
+      "GetEvolucaoPatrimonioResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EvolucaoPatrimonio"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "GetPatrimonioResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Patrimonio"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EditPatrimonioRequest": {
+        "type": "object",
+        "properties": {
+          "descricao": {
+            "type": "string",
+            "description": "Descrição do patrimônio",
+            "example": "Apartamento Centro",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Tipo do patrimônio",
+            "enum": [
+              "ativo",
+              "passivo"
+            ],
+            "example": "ativo"
+          },
+          "categoria": {
+            "type": "string",
+            "description": "Categoria do patrimônio",
+            "enum": [
+              "imovel",
+              "veiculo",
+              "investimento",
+              "disponivel",
+              "outros_ativos",
+              "financiamento",
+              "emprestimo",
+              "divida",
+              "outros_passivos"
+            ],
+            "example": "imovel"
+          },
+          "valorAtual": {
+            "type": "number",
+            "description": "Valor atual do patrimônio",
+            "example": 250000,
+            "minimum": 0.01
+          },
+          "valorInicial": {
+            "type": "number",
+            "description": "Valor inicial/aquisição do patrimônio",
+            "example": 230000,
+            "minimum": 0.01
+          },
+          "dataAquisicao": {
+            "type": "string",
+            "description": "Data de aquisição do patrimônio",
+            "example": "2020-01-15T00:00:00.000Z",
+            "format": "date-time"
+          },
+          "observacoes": {
+            "type": "string",
+            "description": "Observações sobre o patrimônio",
+            "example": "Apartamento em região valorizada",
+            "maxLength": 500
+          },
+          "saldoDevedor": {
+            "type": "number",
+            "description": "Saldo devedor (obrigatório para passivos)",
+            "example": 180000,
+            "minimum": 0.01
+          },
+          "taxaJuros": {
+            "type": "number",
+            "description": "Taxa de juros mensal (%)",
+            "example": 0.8,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "dataVencimento": {
+            "type": "string",
+            "description": "Data de vencimento (para passivos)",
+            "example": "2035-01-15T00:00:00.000Z",
+            "format": "date-time"
+          },
+          "pessoaId": {
+            "type": "string",
+            "description": "ID da pessoa (opcional)",
+            "example": "uuid"
+          }
+        }
+      },
+      "EditPatrimonioResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Patrimonio"
           }
         },
         "required": [
