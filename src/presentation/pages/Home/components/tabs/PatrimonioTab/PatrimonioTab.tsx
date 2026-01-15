@@ -13,7 +13,7 @@ import {
 } from "../../patrimonio";
 import type { PatrimonioTabProps } from "./patrimonioTab.types";
 
-const PatrimonioTab: React.FC<PatrimonioTabProps> = ({ year }) => {
+const PatrimonioTab: React.FC<PatrimonioTabProps> = ({ year, month }) => {
   // Calcula datas para o ano selecionado (Janeiro a Dezembro)
   const { dataInicio, dataFim } = useMemo(() => {
     return {
@@ -46,36 +46,37 @@ const PatrimonioTab: React.FC<PatrimonioTabProps> = ({ year }) => {
       <PatrimonyCards
         data={resumoPatrimonioData?.data}
         isLoading={loadingResumo}
+        evolucaoData={evolucaoData?.data}
+        selectedMonth={month}
+        selectedYear={year}
       />
 
-      <Box display="flex" gap="$s" pt="$s">
-        <Box
-          display="grid"
-          gridTemplateColumns={{
-            xs: "1fr",
-            md: "1fr",
-            xl: "2fr 1fr",
-          }}
-          gap="$s"
-          padding="$s"
-          borderRadius="$lg"
-          backgroundColor="$background"
-          borderWidth="$1"
-          borderStyle="solid"
-          borderColor="$secondary"
-          width="100%"
-        >
-          {/* Gráfico de Evolução */}
-          <EvolucaoPatrimonioChart
-            data={evolucaoData}
-            isLoading={loadingEvolucao}
-          />
-          {/* Gráficos de Distribuição */}
-          <DistribuicaoPatrimonioCharts
-            data={resumoPatrimonioData}
-            isLoading={loadingResumo}
-          />
-        </Box>
+      <Box
+        display="grid"
+        gridTemplateColumns={{
+          xs: "1fr",
+          md: "1fr",
+          xl: "2fr 1fr",
+        }}
+        gap="$s"
+        padding="$s"
+        borderRadius="$lg"
+        backgroundColor="$background"
+        borderWidth="$1"
+        borderStyle="solid"
+        borderColor="$secondary"
+        width="100%"
+      >
+        {/* Gráfico de Evolução */}
+        <EvolucaoPatrimonioChart
+          data={evolucaoData}
+          isLoading={loadingEvolucao}
+        />
+        {/* Gráficos de Distribuição */}
+        <DistribuicaoPatrimonioCharts
+          data={resumoPatrimonioData}
+          isLoading={loadingResumo}
+        />
       </Box>
     </Box>
   );

@@ -85,11 +85,14 @@ const EvolucaoPatrimonioChart: React.FC<EvolucaoPatrimonioChartProps> = ({
           display="flex"
           flexDirection="column"
           alignItems="center"
-          minHeight="466px"
           gap="$s"
+          minHeight={{
+            xs: "300px",
+            md: "400px",
+            xl: "450px",
+          }}
         >
           <Skeleton height="25px" width="50%" />
-
           <Skeleton height="100%" width="100%" borderRadius="4px" />
         </Box>
       </Card>
@@ -101,19 +104,29 @@ const EvolucaoPatrimonioChart: React.FC<EvolucaoPatrimonioChartProps> = ({
       <Box
         display="flex"
         width="100%"
-        height="100%"
-        maxHeight="400px"
         flexDirection="column"
         alignItems="center"
-        justifyContent="center"
+        justifyContent="flex-start"
         gap="$s"
         padding="$s"
-        minHeight="466px"
+        minHeight={{
+          xs: "300px",
+          md: "400px",
+          xl: "450px",
+        }}
       >
         <Title as="h6" color="$secondary">
           📈 Evolução do Patrimônio (últimos 12 meses)
         </Title>
-        <Line data={chartData} options={getChartOptions(darkMode)} />
+        <Box
+          width="100%"
+          height="100%"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Line data={chartData} options={getChartOptions(darkMode)} />
+        </Box>
       </Box>
     </Card>
   );

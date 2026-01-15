@@ -109,7 +109,10 @@ const Home: React.FC = () => {
         </Tabs.Item>
 
         <Tabs.Item label="💰 Patrimônio" onClick={() => setParams({ tab: 1 })}>
-          <PatrimonioTab year={Number(params.year)} />
+          <PatrimonioTab
+            year={Number(params.year)}
+            month={Number(params.month)}
+          />
         </Tabs.Item>
 
         <Tabs.Item

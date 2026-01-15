@@ -11,7 +11,50 @@ import type { PatrimonyCardProps } from "./patrimonyCards.types.ts";
 export const PatrimonyCards: React.FC<PatrimonyCardProps> = ({
   data,
   isLoading = false,
+  evolucaoData,
+  selectedMonth,
+  selectedYear,
 }) => {
+  // Busca dados do mês selecionado na evolução
+  const dadosMesSelecionado = useMemo(() => {
+    if (!evolucaoData?.series) return null;
+
+    const monthStr = String(selectedMonth).padStart(2, "0");
+    const mesReferencia = `${selectedYear}-${monthStr}`;
+
+    return evolucaoData.series.find(
+      (item) => item.mesReferencia === mesReferencia,
+    );
+  }, [evolucaoData, selectedMonth, selectedYear]);
+
+  // Busca o patrimônio líquido de dezembro (direto da API)
+  const patrimonioLiquidoDezembro = useMemo(() => {
+    if (!evolucaoData?.series) return null;
+
+    // Buscar dados de dezembro na série
+    const dadosDezembro = evolucaoData.series.find(
+      (item) => item.mesReferencia === `${selectedYear}-12`,
+    );
+
+    return dadosDezembro ? dadosDezembro.patrimonioLiquido : null;
+  }, [evolucaoData, selectedYear]);
+
+  // Dados a exibir (usa mês selecionado da evolução se disponível, senão usa data do resumo)
+  const dadosExibicao = useMemo(() => {
+    if (dadosMesSelecionado) {
+      return {
+        totalAtivos: dadosMesSelecionado.totalAtivos,
+        totalPassivos: dadosMesSelecionado.totalPassivos,
+        patrimonioLiquido: dadosMesSelecionado.patrimonioLiquido,
+      };
+    }
+    return {
+      totalAtivos: data?.totalAtivos ?? 0,
+      totalPassivos: data?.totalPassivos ?? 0,
+      patrimonioLiquido: data?.patrimonioLiquido ?? 0,
+    };
+  }, [dadosMesSelecionado, data]);
+
   // Calcula a categoria dominante de ativos
   const categoriaDominanteAtivos = useMemo(() => {
     if (!data?.distribuicaoAtivos || data.distribuicaoAtivos.length === 0)
@@ -72,11 +115,11 @@ export const PatrimonyCards: React.FC<PatrimonyCardProps> = ({
           gridTemplateColumns={{
             xs: "1fr",
             md: "repeat(2, 1fr)",
-            lg: "repeat(3, 1fr)",
+            lg: "repeat(4, 1fr)",
           }}
           gap="$s"
         >
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3, 4].map((i) => (
             <Card key={i}>
               <Box display="flex" flexDirection="column" gap="$xs">
                 <Skeleton width="70%" height="16px" />
@@ -113,7 +156,7 @@ export const PatrimonyCards: React.FC<PatrimonyCardProps> = ({
         gridTemplateColumns={{
           xs: "1fr",
           md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
+          lg: "repeat(4, 1fr)",
         }}
         gap="$s"
       >
@@ -148,7 +191,7 @@ export const PatrimonyCards: React.FC<PatrimonyCardProps> = ({
               lineHeight="$m"
               color="$success"
             >
-              {formatCurrency(data?.totalAtivos ?? 0)}
+              {formatCurrency(dadosExibicao.totalAtivos)}
             </Text>
 
             {/* Evolução dos ativos */}
@@ -221,7 +264,7 @@ export const PatrimonyCards: React.FC<PatrimonyCardProps> = ({
               lineHeight="$m"
               color="$error"
             >
-              {formatCurrency(data?.totalPassivos ?? 0)}
+              {formatCurrency(dadosExibicao.totalPassivos)}
             </Text>
 
             {/* Evolução dos passivos */}
@@ -290,7 +333,7 @@ export const PatrimonyCards: React.FC<PatrimonyCardProps> = ({
               lineHeight="$m"
               color="$brand"
             >
-              {formatCurrency(data?.patrimonioLiquido ?? 0)}
+              {formatCurrency(dadosExibicao.patrimonioLiquido)}
             </Text>
 
             {/* Evolução do patrimônio líquido */}
@@ -316,10 +359,90 @@ export const PatrimonyCards: React.FC<PatrimonyCardProps> = ({
             {data?.totalAtivos !== undefined &&
               data?.totalPassivos !== undefined && (
                 <Text fontSize="$xxs" color="$secondary">
-                  💡 {formatCurrency(data.totalAtivos)} -{" "}
-                  {formatCurrency(data.totalPassivos)}
+                  💡 {formatCurrency(dadosExibicao.totalAtivos)} -{" "}
+                  {formatCurrency(dadosExibicao.totalPassivos)}
                 </Text>
               )}
+          </Box>
+        </Card>
+
+        {/* Previsão de Dezembro */}
+        <Card>
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-between"
+            height="100%"
+            gap="$2xs"
+          >
+            <Box
+              display="flex"
+              alignItems="center"
+              gap="$4xs"
+              marginBottom="$4xs"
+            >
+              <Box fontSize="$body-xl">🔮</Box>
+              <Text
+                fontSize="$s"
+                fontWeight="$medium"
+                color="$secondary"
+                lineHeight="$s"
+              >
+                Dezembro/{selectedYear}
+              </Text>
+            </Box>
+
+            <Text
+              fontSize="$xl"
+              fontWeight="$bold"
+              lineHeight="$m"
+              color="$brand"
+            >
+              {patrimonioLiquidoDezembro
+                ? formatCurrency(patrimonioLiquidoDezembro)
+                : "—"}
+            </Text>
+
+            {/* Variação esperada vs atual */}
+            {patrimonioLiquidoDezembro &&
+              dadosExibicao.patrimonioLiquido > 0 && (
+                <Box display="flex" flexDirection="column" gap="$4xs">
+                  <Text
+                    fontSize="$xs"
+                    color={
+                      patrimonioLiquidoDezembro >
+                      dadosExibicao.patrimonioLiquido
+                        ? "$on-success"
+                        : "$on-error"
+                    }
+                  >
+                    {patrimonioLiquidoDezembro > dadosExibicao.patrimonioLiquido
+                      ? "↑"
+                      : "↓"}{" "}
+                    {formatPercentage(
+                      Math.abs(
+                        ((patrimonioLiquidoDezembro -
+                          dadosExibicao.patrimonioLiquido) /
+                          dadosExibicao.patrimonioLiquido) *
+                          100,
+                      ),
+                    )}
+                  </Text>
+                  <Text fontSize="$xxs" color="$secondary">
+                    {formatCurrency(
+                      Math.abs(
+                        patrimonioLiquidoDezembro -
+                          dadosExibicao.patrimonioLiquido,
+                      ),
+                    )}{" "}
+                    vs mês atual
+                  </Text>
+                </Box>
+              )}
+
+            <Text fontSize="$xxs" color="$secondary">
+              📊 Meta de patrimônio líquido para o final do ano
+            </Text>
           </Box>
         </Card>
       </Box>
