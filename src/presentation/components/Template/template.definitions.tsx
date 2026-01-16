@@ -18,21 +18,22 @@ export const MENUS = [
   },
   {
     id: 2,
-    title: "Patrimônio",
-    link: urlRouters.patrimony,
-    icon: <TagFilledIcon size="medium" height={18} width={18} />,
-  },
-  {
-    id: 3,
     title: "Transações",
     link: urlRouters.transactions,
     icon: <MoneyFilledIcon size="medium" height={18} width={18} />,
   },
+
   {
-    id: 4,
+    id: 3,
     title: "Calendario",
     link: urlRouters.calendar,
     icon: <CalendarEventFilledIcon size="medium" height={18} width={18} />,
+  },
+  {
+    id: 4,
+    title: "Patrimônio",
+    link: urlRouters.patrimony,
+    icon: <TagFilledIcon size="medium" height={18} width={18} />,
   },
   {
     id: 5,
