@@ -1,6 +1,6 @@
-export { useCalendarLogic } from "./useCalendarLogic";
 export type {
+  CalendarDay,
   UseCalendarLogicProps,
   UseCalendarLogicReturn,
-  CalendarDay,
 } from "./useCalendarLogic";
+export { useCalendarLogic } from "./useCalendarLogic";

@@ -1,11 +1,11 @@
-import React from "react";
-import { useController } from "react-hook-form";
 import {
   Box,
-  Text,
   Label,
+  Text,
   Textarea as RaruiTextarea,
 } from "@rarui-react/components";
+import React from "react";
+import { useController } from "react-hook-form";
 
 import { type DatepickerProps } from "./textarea.types.ts";
 

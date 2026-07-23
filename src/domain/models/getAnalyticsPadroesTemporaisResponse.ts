@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AnalyticsPadroesTemporaisDataDto } from "./analyticsPadroesTemporaisDataDto";
+import type { AnalyticsPadroesTemporaisDataDto } from "./analyticsPadroesTemporaisDataDto";
 
 export interface GetAnalyticsPadroesTemporaisResponse {
   /**

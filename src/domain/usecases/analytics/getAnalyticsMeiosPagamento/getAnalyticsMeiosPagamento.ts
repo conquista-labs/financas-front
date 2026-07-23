@@ -1,4 +1,4 @@
-import { GetAnalyticsMeiosPagamentoResponse } from "@/domain/models/getAnalyticsMeiosPagamentoResponse";
+import type { GetAnalyticsMeiosPagamentoResponse } from "@/domain/models/getAnalyticsMeiosPagamentoResponse";
 
 export interface GetAnalyticsMeiosPagamentoUsecase {
   get: (

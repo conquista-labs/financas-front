@@ -1,0 +1,1 @@
+export { TopCategoriasCard } from "./TopCategoriasCard";

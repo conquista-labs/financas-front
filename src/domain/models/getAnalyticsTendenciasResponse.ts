@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AnalyticsTendenciasDataDto } from "./analyticsTendenciasDataDto";
+import type { AnalyticsTendenciasDataDto } from "./analyticsTendenciasDataDto";
 
 export interface GetAnalyticsTendenciasResponse {
   /**

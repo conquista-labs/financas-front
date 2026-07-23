@@ -1,4 +1,5 @@
 import { Box } from "@rarui-react/components";
+
 import { Skeleton } from "../Skeleton";
 
 interface TableSkeletonProps {

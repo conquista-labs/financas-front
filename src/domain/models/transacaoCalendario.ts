@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CategoriaCalendario } from "./categoriaCalendario";
-import { MeioPagamentoCalendario } from "./meioPagamentoCalendario";
-import { PessoaCalendario } from "./pessoaCalendario";
+import type { CategoriaCalendario } from "./categoriaCalendario";
+import type { MeioPagamentoCalendario } from "./meioPagamentoCalendario";
+import type { PessoaCalendario } from "./pessoaCalendario";
 
 export interface TransacaoCalendario {
   id: string;
@@ -28,6 +28,10 @@ export interface TransacaoCalendario {
    * Flag para mostrar transação no calendário como lembrete
    */
   lembrarMe: boolean;
+  /**
+   * Nomes das tags vinculadas à transação
+   */
+  tags: Array<string>;
   tipo: TransacaoCalendario.TipoEnum;
 }
 export namespace TransacaoCalendario {

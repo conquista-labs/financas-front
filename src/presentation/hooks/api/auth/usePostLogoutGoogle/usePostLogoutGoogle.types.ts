@@ -1,6 +1,7 @@
-import type { PostLogoutGoogleModel } from "@/domain/usecases";
 import { type UseMutationOptions } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
+
+import type { PostLogoutGoogleModel } from "@/domain/usecases";
 
 export type UsePostLogoutGoogle = Omit<
   UseMutationOptions<PostLogoutGoogleModel, AxiosError>,

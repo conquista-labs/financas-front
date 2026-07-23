@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Categoria } from "./categoria";
-import { MeioPagamento } from "./meioPagamento";
-import { Pessoa } from "./pessoa";
+import type { Categoria } from "./categoria";
+import type { MeioPagamento } from "./meioPagamento";
+import type { Pessoa } from "./pessoa";
 
 export interface TransacaoResponse {
   id: string;
@@ -28,6 +28,22 @@ export interface TransacaoResponse {
   meioPagamentoId?: string;
   formaPagamento?: TransacaoResponse.FormaPagamentoEnum;
   createdAt: string;
+  /**
+   * Nomes das tags vinculadas à transação
+   */
+  tags?: Array<string>;
+  /**
+   * Status persistido (pendente | paga)
+   */
+  status: TransacaoResponse.StatusEnum;
+  /**
+   * Status para exibição. \"atrasada\" é derivado: pendente + data (vencimento) < hoje.
+   */
+  statusExibicao: TransacaoResponse.StatusExibicaoEnum;
+  /**
+   * Quando foi marcada como paga (null enquanto pendente)
+   */
+  pagaEm?: string | null;
   categoria: Categoria;
   pessoa: Pessoa;
   meioPagamento: MeioPagamento;
@@ -61,5 +77,16 @@ export namespace TransacaoResponse {
     Parcela10x: "parcela10x" as FormaPagamentoEnum,
     Parcela11x: "parcela11x" as FormaPagamentoEnum,
     Parcela12x: "parcela12x" as FormaPagamentoEnum,
+  };
+  export type StatusEnum = "pendente" | "paga";
+  export const StatusEnum = {
+    Pendente: "pendente" as StatusEnum,
+    Paga: "paga" as StatusEnum,
+  };
+  export type StatusExibicaoEnum = "pendente" | "paga" | "atrasada";
+  export const StatusExibicaoEnum = {
+    Pendente: "pendente" as StatusExibicaoEnum,
+    Paga: "paga" as StatusExibicaoEnum,
+    Atrasada: "atrasada" as StatusExibicaoEnum,
   };
 }

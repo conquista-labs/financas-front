@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EvolucaoPatrimonio } from "./evolucaoPatrimonio";
+import type { EvolucaoPatrimonio } from "./evolucaoPatrimonio";
 
 export interface GetEvolucaoPatrimonioResponse {
   message: string;

@@ -1,7 +1,7 @@
-import { useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 
-import { UsePaginationProps } from "./usePagination.types";
+import type { UsePaginationProps } from "./usePagination.types";
 
 const usePagination = (totalItems = 0): UsePaginationProps => {
   const [param, setParam] = useQueryParams({

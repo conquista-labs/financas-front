@@ -13,5 +13,13 @@
 export interface MeioPagamento {
   id: string;
   nome: string;
+  /**
+   * Se o meio de pagamento é favorito
+   */
+  favorito: boolean;
+  /**
+   * Número de transações usando este meio
+   */
+  totalLancamentos: number;
   createdAt: string;
 }

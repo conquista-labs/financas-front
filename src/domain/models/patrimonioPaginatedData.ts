@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PaginationMeta } from "./paginationMeta";
-import { Patrimonio } from "./patrimonio";
+import type { PaginationMeta } from "./paginationMeta";
+import type { Patrimonio } from "./patrimonio";
 
 export interface PatrimonioPaginatedData {
   meta: PaginationMeta;

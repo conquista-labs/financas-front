@@ -1,10 +1,11 @@
-import { HttpClient, HttpStatusCode } from "@/data/protocols/http";
-import {
+import type { HttpClient } from "@/data/protocols/http";
+import { HttpStatusCode } from "@/data/protocols/http";
+import { UnexpectedError } from "@/domain/errors";
+import type {
   GetAnalyticsCategoriasModel,
   GetAnalyticsCategoriasParams,
   GetAnalyticsCategoriasUsecase,
 } from "@/domain/usecases";
-import { UnexpectedError } from "@/domain/errors";
 
 export class GetAnalyticsCategorias implements GetAnalyticsCategoriasUsecase {
   constructor(

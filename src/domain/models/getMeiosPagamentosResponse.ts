@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MeioPagamentoPaginatedData } from "./meioPagamentoPaginatedData";
+import type { MeioPagamentoPaginatedData } from "./meioPagamentoPaginatedData";
 
 export interface GetMeiosPagamentosResponse {
   message: string;

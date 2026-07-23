@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
 import type { BoxProps } from "@rarui-react/components";
+import type { ReactNode } from "react";
 
 export interface Column<T> {
   label: string;

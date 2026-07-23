@@ -1,4 +1,4 @@
-import { GetQuickStatsResponse } from "@/domain/models/getQuickStatsResponse";
+import type { GetQuickStatsResponse } from "@/domain/models/getQuickStatsResponse";
 
 export interface GetQuickStatsUsecase {
   get: (params: GetQuickStatsParams) => Promise<GetQuickStatsModel>;

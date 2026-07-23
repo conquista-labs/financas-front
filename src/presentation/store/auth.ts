@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { GoogleAuth } from "@/domain/models";
+
+import type { GoogleAuth } from "@/domain/models";
 
 const initialState = {
   auth: {} as GoogleAuth,

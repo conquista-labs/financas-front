@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ResumoPatrimonio } from "./resumoPatrimonio";
+import type { ResumoPatrimonio } from "./resumoPatrimonio";
 
 export interface GetResumoPatrimonioResponse {
   message: string;

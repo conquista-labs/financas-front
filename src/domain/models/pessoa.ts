@@ -14,5 +14,13 @@ export interface Pessoa {
   id: string;
   nome: string;
   email: string;
+  /**
+   * Se a pessoa é favorita
+   */
+  favorito: boolean;
+  /**
+   * Número de transações vinculadas a esta pessoa
+   */
+  totalLancamentos: number;
   createdAt: string;
 }

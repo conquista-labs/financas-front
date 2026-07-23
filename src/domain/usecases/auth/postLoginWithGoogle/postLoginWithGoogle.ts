@@ -1,4 +1,4 @@
-import type { GoogleLoginResponse, GoogleLoginRequest } from "@/domain/models";
+import type { GoogleLoginRequest, GoogleLoginResponse } from "@/domain/models";
 
 export interface PostLoginWithGoogleUseCase {
   excute: (

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+
+import type { GetAnalyticsPadroesTemporaisParams } from "@/domain/usecases";
 import { makeGetAnalyticsPadroesTemporaisFactory } from "@/main/factories/usecases";
-import { GetAnalyticsPadroesTemporaisParams } from "@/domain/usecases";
 
 export const useGetAnalyticsPadroesTemporais = (
   params: GetAnalyticsPadroesTemporaisParams,

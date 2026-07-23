@@ -1,56 +1,145 @@
-import { useCallback, useState } from "react";
-import { Box } from "@rarui-react/components";
-import { getMonth, getYear } from "date-fns";
+import { useState } from "react";
 
-import {
-  Breadcrumb,
-  Calendar as CalendarComponent,
-} from "@/presentation/components";
+import type { DiaCalendario } from "@/domain/models";
+import { MonthPicker } from "@/presentation/components";
+import { Skeleton } from "@/presentation/components/ui";
 import { useGetCalendario } from "@/presentation/hooks/api";
 
-const Calendar: React.FC = () => {
-  const today = new Date();
-  const [currentMonth, setCurrentMonth] = useState(getMonth(today) + 1);
-  const [currentYear, setCurrentYear] = useState(getYear(today));
+import { buildGrid, buildKpis, buildWeekSummaries } from "./calendar.helpers";
+import { segButton } from "./calendar.styles";
+import {
+  CalendarKpis,
+  ContasAPagarTab,
+  DayTransactionsDialog,
+  MonthCalendarGrid,
+  WeekSummary,
+} from "./components";
 
-  const { data, isLoading } = useGetCalendario({
-    ano: currentYear,
-    mes: currentMonth,
-  });
+const now = new Date();
 
-  const handleNavigateMonth = useCallback((month: number, year: number) => {
-    setCurrentMonth(month);
-    setCurrentYear(year);
-  }, []);
+const MESES = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
 
-  const handleToday = useCallback(() => {
-    const now = new Date();
-    setCurrentMonth(getMonth(now) + 1);
-    setCurrentYear(getYear(now));
-  }, []);
+/**
+ * Tela de Calendário (nova identidade). Card único com KPIs do mês, grade
+ * mensal (heatmap de gasto + entradas por dia) e resumo por semana. Clicar num
+ * dia abre o modal com as transações. Aba "Contas a pagar" = placeholder
+ * (recorrências, Etapa 3).
+ */
+const Calendar = () => {
+  const [mes, setMes] = useState(now.getMonth() + 1);
+  const [ano, setAno] = useState(now.getFullYear());
+  const [tab, setTab] = useState<"lancamentos" | "contas">("lancamentos");
+  const [dayModal, setDayModal] = useState<{
+    open: boolean;
+    dia: DiaCalendario | null;
+  }>({ open: false, dia: null });
+
+  const { data, isLoading } = useGetCalendario({ ano, mes });
+  const dias = data?.data?.diasDoMes ?? [];
+
+  const kpis = buildKpis(dias);
+  const cells = buildGrid(dias, ano, mes);
+  const weeks = buildWeekSummaries(cells);
 
   return (
-    <Box display="flex" flexDirection="column">
-      <Breadcrumb crumbs={["calendar"]} />
+    <div className="animate-om-fade pb-8">
+      <h1 className="mb-5 font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
+        Calendário
+      </h1>
 
-      <Box
-        flex="1"
-        display="flex"
-        justifyContent="center"
-        alignItems="flex-start"
-        padding={{ xs: "$xs", md: "$md" }}
-        paddingTop="$xs"
-      >
-        <CalendarComponent
-          data={data?.data}
-          currentMonth={currentMonth}
-          currentYear={currentYear}
-          onNavigateMonth={handleNavigateMonth}
-          onHandleToday={handleToday}
-          isLoading={isLoading}
+      {/* Sub-tabs */}
+      <div className="mb-4 inline-flex max-w-[360px] gap-1 rounded-[13px] bg-track p-1">
+        <button
+          type="button"
+          onClick={() => setTab("lancamentos")}
+          className={segButton({ active: tab === "lancamentos" })}
+        >
+          Lançamentos
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("contas")}
+          className={segButton({ active: tab === "contas" })}
+        >
+          Contas a pagar
+        </button>
+      </div>
+
+      {tab === "lancamentos" ? (
+        <div className="flex flex-col gap-4">
+          <CalendarKpis kpis={kpis} isLoading={isLoading} />
+
+          {/* Card do calendário */}
+          <div className="rounded-card border border-line bg-card p-[22px] sm:px-6">
+            {/* Header: mês + legenda + navegação */}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="font-display text-[19px] font-semibold text-fg">
+                {MESES[mes - 1]} {ano}
+              </h2>
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-[6px] text-[12px] text-muted">
+                  <span
+                    className="size-[10px] rounded-[3px]"
+                    style={{ backgroundColor: "rgba(229,72,77,.28)" }}
+                  />
+                  gasto no dia
+                </span>
+                <MonthPicker
+                  month={mes}
+                  year={ano}
+                  onChange={(m, y) => {
+                    setMes(m);
+                    setAno(y);
+                  }}
+                />
+              </div>
+            </div>
+
+            {isLoading ? (
+              <Skeleton className="h-[520px] rounded-xl" />
+            ) : (
+              <>
+                <MonthCalendarGrid
+                  dias={dias}
+                  ano={ano}
+                  mes={mes}
+                  onDayClick={(dia) => setDayModal({ open: true, dia })}
+                />
+                <WeekSummary weeks={weeks} />
+              </>
+            )}
+          </div>
+        </div>
+      ) : (
+        <ContasAPagarTab
+          ano={ano}
+          mes={mes}
+          onMonthChange={(m, y) => {
+            setMes(m);
+            setAno(y);
+          }}
         />
-      </Box>
-    </Box>
+      )}
+
+      <DayTransactionsDialog
+        dia={dayModal.dia}
+        open={dayModal.open}
+        onOpenChange={(open) => setDayModal((d) => ({ ...d, open }))}
+      />
+    </div>
   );
 };
 

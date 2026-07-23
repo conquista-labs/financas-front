@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MeioPagamento } from "./meioPagamento";
+import type { MeioPagamento } from "./meioPagamento";
 
 export interface CreateMeioPagamentoResponse {
   message: string;

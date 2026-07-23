@@ -2,8 +2,8 @@ import { type HttpClient, HttpStatusCode } from "@/data/protocols";
 import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
 import type {
   DeleteTransacoesIdModel,
-  DeleteTransacoesIdUseCase,
   DeleteTransacoesIdParams,
+  DeleteTransacoesIdUseCase,
 } from "@/domain/usecases";
 
 export class DeleteTransacoesId implements DeleteTransacoesIdUseCase {

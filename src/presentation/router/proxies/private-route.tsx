@@ -1,28 +1,19 @@
 import React from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
 
-import { urlRouters } from "@/presentation/router/router.definitions";
-import { Suspense, Template } from "@/presentation/components";
+import { AppShell, Suspense } from "@/presentation/components";
 import {
-  Home,
-  NotFound,
   Calendar,
-  Transactions,
   CreateTransactions,
   EditTransactions,
-  Peoples,
-  CreatePeoples,
-  EditPeoples,
-  Categories,
-  CreateCategories,
-  EditCategories,
-  MeansOfPayment,
-  CreateMeansOfPayment,
-  EditMeansOfPayment,
+  Home,
+  Import,
+  NotFound,
   Patrimony,
-  CreatePatrimony,
-  EditPatrimony,
+  Registers,
+  Transactions,
 } from "@/presentation/pages";
+import { urlRouters } from "@/presentation/router/router.definitions";
 
 const PrivateRoute: React.FC = () => (
   <Routes>
@@ -30,9 +21,9 @@ const PrivateRoute: React.FC = () => (
       path={urlRouters.root}
       element={
         <Suspense>
-          <Template>
+          <AppShell>
             <Outlet />
-          </Template>
+          </AppShell>
         </Suspense>
       }
     >
@@ -77,74 +68,18 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.peoples}
+        path={urlRouters.registers}
         element={
           <Suspense>
-            <Peoples />
+            <Registers />
           </Suspense>
         }
       />
       <Route
-        path={urlRouters.createPeoples}
+        path={urlRouters.import}
         element={
           <Suspense>
-            <CreatePeoples />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.editPeoples}
-        element={
-          <Suspense>
-            <EditPeoples />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.categories}
-        element={
-          <Suspense>
-            <Categories />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.createCategories}
-        element={
-          <Suspense>
-            <CreateCategories />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.editCategories}
-        element={
-          <Suspense>
-            <EditCategories />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.meansOfPayment}
-        element={
-          <Suspense>
-            <MeansOfPayment />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.createMeansOfPayment}
-        element={
-          <Suspense>
-            <CreateMeansOfPayment />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.editMeansOfPayment}
-        element={
-          <Suspense>
-            <EditMeansOfPayment />
+            <Import />
           </Suspense>
         }
       />
@@ -153,22 +88,6 @@ const PrivateRoute: React.FC = () => (
         element={
           <Suspense>
             <Patrimony />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.createPatrimony}
-        element={
-          <Suspense>
-            <CreatePatrimony />
-          </Suspense>
-        }
-      />
-      <Route
-        path={urlRouters.editPatrimony}
-        element={
-          <Suspense>
-            <EditPatrimony />
           </Suspense>
         }
       />

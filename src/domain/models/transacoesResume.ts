@@ -11,5 +11,8 @@
  */
 
 export interface TransacoesResume {
+  /**
+   * Total do período (número cru)
+   */
   total: number;
 }

@@ -24,6 +24,14 @@ export interface EditTransacaoRequest {
    */
   lembrarMe?: boolean;
   meioPagamentoId?: string;
+  /**
+   * Nomes das tags. São normalizados e criados automaticamente se não existirem.
+   */
+  tags?: Array<string>;
+  /**
+   * Status. Default \"paga\" (lançamento normal). Use \"pendente\" para conta a pagar.
+   */
+  status?: EditTransacaoRequest.StatusEnum;
 }
 export namespace EditTransacaoRequest {
   export type FormaPagamentoEnum =
@@ -54,5 +62,10 @@ export namespace EditTransacaoRequest {
     Parcela10x: "parcela10x" as FormaPagamentoEnum,
     Parcela11x: "parcela11x" as FormaPagamentoEnum,
     Parcela12x: "parcela12x" as FormaPagamentoEnum,
+  };
+  export type StatusEnum = "pendente" | "paga";
+  export const StatusEnum = {
+    Pendente: "pendente" as StatusEnum,
+    Paga: "paga" as StatusEnum,
   };
 }

@@ -1,4 +1,4 @@
-import { GetAnalyticsOrcamentoResponse } from "@/domain/models/getAnalyticsOrcamentoResponse";
+import type { GetAnalyticsOrcamentoResponse } from "@/domain/models/getAnalyticsOrcamentoResponse";
 
 export interface GetAnalyticsOrcamentoUsecase {
   get: (

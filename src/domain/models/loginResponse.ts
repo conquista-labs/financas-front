@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Auth } from "./auth";
+import type { Auth } from "./auth";
 
 export interface LoginResponse {
   message: string;

@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { GoogleAuthUser } from "./googleAuthUser";
+import type { GoogleAuthUser } from "./googleAuthUser";
 
 export interface GoogleAuth {
   token: string;

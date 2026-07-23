@@ -1,5 +1,5 @@
 export * from "./deleteMeiosPagamentoFactory";
-export * from "./getMeiosPagamentoIdFactory";
 export * from "./getMeiosPagamentoFactory";
-export * from "./postMeiosPagamentoFactory";
+export * from "./getMeiosPagamentoIdFactory";
 export * from "./patchMeiosPagamentoFactory";
+export * from "./postMeiosPagamentoFactory";

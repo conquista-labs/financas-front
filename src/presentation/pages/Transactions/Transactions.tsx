@@ -1,41 +1,41 @@
-import React, { useMemo, useState, useCallback } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { addMonths, endOfMonth, format, startOfMonth } from "date-fns";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   DateParam,
   StringParam,
   useQueryParams,
   withDefault,
 } from "use-query-params";
-import {
-  Box,
-  Button,
-  Datepicker,
-  Icon,
-  IconButton,
-} from "@rarui-react/components";
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  FilterAltOutlinedIcon,
-} from "@rarui/icons";
-import { addMonths, format, startOfMonth, endOfMonth } from "date-fns";
 
-import { urlRouters } from "@/presentation/router/router.definitions";
+import type { TransacaoResponse } from "@/domain/models";
+import { useQuickAdd } from "@/presentation/components/QuickAdd";
 import {
   useDeleteTransacoesId,
-  useGetTransacoes,
   useGetRelatorioTransacoes,
+  useGetTransacoes,
 } from "@/presentation/hooks/api";
-import { Breadcrumb, Table } from "@/presentation/components";
-import { useIsMobile, usePagination } from "@/presentation/hooks/core";
-import { getColumns } from "./transactions.definitions";
-import { Filters, TableFooter } from "./components";
+import { useDebounce, usePagination } from "@/presentation/hooks/core";
+import { urlRouters } from "@/presentation/router/router.definitions";
 
-const Transactions: React.FC = () => {
-  const { isMobile } = useIsMobile();
-  const [openFilters, setOpenFilters] = useState(false);
+import { ActionBar } from "./components/ActionBar";
+import { ActiveFilterChips } from "./components/ActiveFilterChips";
+import type { TransactionFilters } from "./components/FiltersSheet";
+import { FiltersSheet } from "./components/FiltersSheet";
+import { MonthSelector } from "./components/MonthSelector";
+import { TransactionsList } from "./components/TransactionsList";
+
+/**
+ * Tela de Transações (nova identidade "Nossa Grana"). Fatia 1: lista + busca +
+ * paginação + export. Fatia 2: filtros avançados (painel + chips ativos).
+ * Preserva a lógica de dados da versão anterior (query params na URL, hooks
+ * React Query); só a apresentação muda. Lançamento rápido vem depois.
+ */
+const Transactions = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { openQuickAdd } = useQuickAdd();
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const [queryParams, setQueryParams] = useQueryParams({
     startDate: withDefault(DateParam, startOfMonth(new Date())),
@@ -48,6 +48,20 @@ const Transactions: React.FC = () => {
     tipo: withDefault(StringParam, ""),
   });
 
+  const { page, pageSize, onChangePage, onChangePageSize } = usePagination();
+
+  // Busca com debounce: input local reflete imediato, query dispara após 300ms.
+  const [searchInput, setSearchInput] = useState(queryParams.search ?? "");
+  const debouncedSearch = useDebounce(searchInput, 300);
+
+  useEffect(() => {
+    if (debouncedSearch !== queryParams.search) {
+      setQueryParams({ search: debouncedSearch });
+      onChangePage({ page: 1, pageSize });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
+
   const formattedParams = useMemo(
     () => ({
       ...queryParams,
@@ -59,151 +73,180 @@ const Transactions: React.FC = () => {
     [queryParams],
   );
 
-  const { page, pageSize, onChangePage } = usePagination();
-  const {
-    data,
-    isLoading: isLoadingGetTransacoes,
-    refetch,
-  } = useGetTransacoes({
+  const { data, isLoading } = useGetTransacoes({
     page,
     limit: pageSize,
     ...formattedParams,
   });
 
-  const {
-    refetch: getRelatorioTransacoes,
-    isLoading: isLoadingGetRelatorioTransacoes,
-  } = useGetRelatorioTransacoes(
-    { page, limit: pageSize, ...formattedParams },
-    { enabled: false },
-  );
+  const { refetch: fetchRelatorio, isFetching: isExporting } =
+    useGetRelatorioTransacoes(
+      { page, limit: pageSize, ...formattedParams },
+      { enabled: false },
+    );
 
-  const { mutate, isPending } = useDeleteTransacoesId();
+  const { mutate: deleteTransacao } = useDeleteTransacoesId();
 
-  const currentSearch = location.search;
+  const rows = data?.data?.rows ?? [];
+  const totalItems = data?.data?.meta?.total ?? 0;
+  const periodTotal = data?.data?.resume?.total ?? 0;
 
-  const handleNavigate = useCallback(
-    (path: string) => {
-      navigate(`${path}${currentSearch}`);
-    },
-    [navigate, currentSearch],
-  );
+  const activeFilterCount = [
+    queryParams.categoriaId,
+    queryParams.pessoaId,
+    queryParams.meioPagamentoId,
+    queryParams.formaPagamento,
+    queryParams.tipo,
+  ].filter(Boolean).length;
 
-  const handleDateChange = ([newStartDate, newEndDate]: [Date, Date]) => {
-    setQueryParams({ startDate: newStartDate, endDate: newEndDate });
+  // Filtros (subconjunto dos query params) para o painel e os chips ativos.
+  const filters: TransactionFilters = {
+    tipo: queryParams.tipo,
+    categoriaId: queryParams.categoriaId,
+    pessoaId: queryParams.pessoaId,
+    meioPagamentoId: queryParams.meioPagamentoId,
+    formaPagamento: queryParams.formaPagamento,
+    startDate: formattedParams.startDate,
+    endDate: formattedParams.endDate,
+  };
+
+  const applyFilters = (next: TransactionFilters) => {
+    setQueryParams({
+      tipo: next.tipo,
+      categoriaId: next.categoriaId,
+      pessoaId: next.pessoaId,
+      meioPagamentoId: next.meioPagamentoId,
+      formaPagamento: next.formaPagamento,
+      startDate: next.startDate
+        ? new Date(`${next.startDate}T00:00:00`)
+        : undefined,
+      endDate: next.endDate ? new Date(`${next.endDate}T00:00:00`) : undefined,
+    });
+    onChangePage({ page: 1, pageSize });
+    setFiltersOpen(false);
+  };
+
+  const clearFilters = () => {
+    setQueryParams({
+      tipo: "",
+      categoriaId: "",
+      pessoaId: "",
+      meioPagamentoId: "",
+      formaPagamento: "",
+    });
+    onChangePage({ page: 1, pageSize });
+    setFiltersOpen(false);
+  };
+
+  const removeFilter = (key: keyof TransactionFilters) => {
+    setQueryParams({ [key]: "" });
     onChangePage({ page: 1, pageSize });
   };
 
   const navigateMonth = (direction: "prev" | "next") => {
     const multiplier = direction === "prev" ? -1 : 1;
     const newStart = addMonths(queryParams.startDate, multiplier);
-    const newEnd = queryParams.endDate
-      ? addMonths(queryParams.endDate, multiplier)
-      : endOfMonth(newStart);
-
+    const newEnd = endOfMonth(newStart);
     setQueryParams({ startDate: newStart, endDate: newEnd });
-    onChangePage({ page: 1, pageSize: 10 });
+    onChangePage({ page: 1, pageSize });
   };
 
-  const handleResume = async () => {
+  const handleExport = async () => {
     try {
-      const { data } = await getRelatorioTransacoes();
-      const blob = new Blob([data as unknown as BlobPart], {
+      const { data: report } = await fetchRelatorio();
+      const blob = new Blob([report as unknown as BlobPart], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "relatorio.xlsx";
+      a.download = "transacoes.xlsx";
       document.body.appendChild(a);
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Erro ao gerar relatório:", error);
+    } catch {
+      toast.error("Não foi possível exportar o relatório.");
     }
   };
 
-  const columns = useMemo(
-    () => getColumns(handleNavigate, mutate, refetch),
-    [handleNavigate, mutate, refetch],
-  );
+  const handleDelete = (transacao: TransacaoResponse) => {
+    deleteTransacao(
+      { id: transacao.id },
+      {
+        onSuccess: () =>
+          toast.success("Transação excluída", {
+            action: {
+              label: "Desfazer",
+              // TODO: re-POST do payload (não há endpoint de restore) — Fatia 2.
+              onClick: () => toast.info("Desfazer virá com o lançamento."),
+            },
+          }),
+        onError: (error) => toast.error(error.message),
+      },
+    );
+  };
 
-  const isLoading = useMemo(
-    () =>
-      isLoadingGetTransacoes || isLoadingGetRelatorioTransacoes || isPending,
-    [isLoadingGetTransacoes, isLoadingGetRelatorioTransacoes, isPending],
-  );
+  const handleDuplicate = () =>
+    toast.info("Duplicar chega com o lançamento rápido (Fatia 2).");
+
+  const goToEdit = (id: string) =>
+    navigate(
+      `${urlRouters.editTransactions.replace(":id", id)}${window.location.search}`,
+    );
 
   return (
-    <Box display="flex" height="100%" flexDirection="column" gap="$s">
-      <Breadcrumb crumbs={["transactions"]} />
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        flexDirection={{ xs: "column", md: "row" }}
-        gap="$2xs"
-      >
-        <Box display="flex" flexDirection="column" gap="$3xs">
-          <Box display="flex" gap="$2xs" width={{ xs: "100%", md: "400px" }}>
-            <IconButton
-              source={<ArrowLeftIcon size="medium" />}
-              onClick={() => navigateMonth("prev")}
-            />
-            <Datepicker
-              id="month"
-              dateFormat="MMMM d, yyyy"
-              startDate={queryParams.startDate}
-              endDate={queryParams.endDate as Date}
-              onChange={(dates) => handleDateChange(dates as [Date, Date])}
-              selected={queryParams.startDate}
-              selectsRange
-            />
-            <IconButton
-              source={<ArrowRightIcon size="medium" />}
-              onClick={() => navigateMonth("next")}
-            />
-          </Box>
-        </Box>
-
-        <Box
-          display="flex"
-          gap="$2xs"
-          flexDirection={{ xs: "column", md: "row" }}
-        >
-          <Button
-            variant="outlined"
-            onClick={() => setOpenFilters(!openFilters)}
-            full={isMobile}
-          >
-            Filtros
-            <Icon source={<FilterAltOutlinedIcon />} />
-          </Button>
-          <Button
-            as={Link}
-            to={`${urlRouters.createTransactions}${currentSearch}`}
-            full={isMobile}
-          >
-            Nova Transação
-          </Button>
-        </Box>
-      </Box>
-
-      <Table
-        columns={columns}
-        rows={data?.data?.rows ?? []}
-        total={data?.data?.meta?.total ?? 0}
-        isLoading={isLoading}
-        enableDynamicHeight
-      >
-        <TableFooter
-          total={data?.data?.resume?.total ?? "R$ 0.00"}
-          handleResume={handleResume}
+    <div className="flex flex-col gap-5">
+      {/* Header: título + seletor de mês */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
+          Transações
+        </h1>
+        <MonthSelector
+          date={queryParams.startDate}
+          onPrev={() => navigateMonth("prev")}
+          onNext={() => navigateMonth("next")}
         />
-      </Table>
-      <Filters open={openFilters} onRemove={() => setOpenFilters(false)} />
-    </Box>
+      </div>
+
+      <ActionBar
+        search={searchInput}
+        onSearchChange={setSearchInput}
+        activeFilterCount={activeFilterCount}
+        onOpenFilters={() => setFiltersOpen(true)}
+        onNew={openQuickAdd}
+      />
+
+      <ActiveFilterChips
+        filters={filters}
+        onRemove={removeFilter}
+        onClearAll={clearFilters}
+      />
+
+      <TransactionsList
+        rows={rows}
+        total={periodTotal}
+        totalItems={totalItems}
+        page={page}
+        pageSize={pageSize}
+        isLoading={isLoading}
+        isExporting={isExporting}
+        onEdit={goToEdit}
+        onDuplicate={handleDuplicate}
+        onDelete={handleDelete}
+        onChangePage={(p) => onChangePage({ page: p, pageSize })}
+        onChangePageSize={(size) => onChangePageSize(size)}
+        onExport={handleExport}
+      />
+
+      <FiltersSheet
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        value={filters}
+        onApply={applyFilters}
+        onClear={clearFilters}
+      />
+    </div>
   );
 };
 

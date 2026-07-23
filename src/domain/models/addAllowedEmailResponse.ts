@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AllowedEmail } from "./allowedEmail";
+import type { AllowedEmail } from "./allowedEmail";
 
 export interface AddAllowedEmailResponse {
   message: string;

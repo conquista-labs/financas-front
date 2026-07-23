@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CalendarioData } from "./calendarioData";
+import type { CalendarioData } from "./calendarioData";
 
 export interface GetCalendarioResponse {
   message: string;

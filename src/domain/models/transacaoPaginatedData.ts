@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PaginationMeta } from "./paginationMeta";
-import { TransacaoResponse } from "./transacaoResponse";
-import { TransacoesResume } from "./transacoesResume";
+import type { PaginationMeta } from "./paginationMeta";
+import type { TransacaoResponse } from "./transacaoResponse";
+import type { TransacoesResume } from "./transacoesResume";
 
 export interface TransacaoPaginatedData {
   meta: PaginationMeta;

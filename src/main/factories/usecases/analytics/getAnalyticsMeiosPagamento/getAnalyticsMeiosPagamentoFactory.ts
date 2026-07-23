@@ -1,7 +1,7 @@
-import { makeApiUrl } from "@/main/factories/http";
-import { makeAuthorizeHttpClient } from "@/main/factories/decorators";
 import { RemoteGetAnalyticsMeiosPagamento } from "@/data/usecases";
-import { GetAnalyticsMeiosPagamentoUsecase } from "@/domain/usecases";
+import type { GetAnalyticsMeiosPagamentoUsecase } from "@/domain/usecases";
+import { makeAuthorizeHttpClient } from "@/main/factories/decorators";
+import { makeApiUrl } from "@/main/factories/http";
 
 export const makeGetAnalyticsMeiosPagamentoFactory =
   (): GetAnalyticsMeiosPagamentoUsecase =>

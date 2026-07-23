@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Transacao } from "./transacao";
+import type { Transacao } from "./transacao";
 
 export interface CreateTransacaoResponse {
   message: string;

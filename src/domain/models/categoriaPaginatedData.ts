@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Categoria } from "./categoria";
-import { PaginationMeta } from "./paginationMeta";
+import type { Categoria } from "./categoria";
+import type { PaginationMeta } from "./paginationMeta";
 
 export interface CategoriaPaginatedData {
   meta: PaginationMeta;

@@ -23,4 +23,8 @@ export interface CreatePessoaRequest {
    * Email da pessoa
    */
   email?: string;
+  /**
+   * Se a pessoa é favorita
+   */
+  favorito?: boolean;
 }

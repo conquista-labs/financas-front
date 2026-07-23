@@ -17,6 +17,14 @@ export interface Categoria {
   icone: string;
   tetoGasto: number;
   cor: string;
+  /**
+   * Se a categoria é favorita
+   */
+  favorito: boolean;
+  /**
+   * Número de transações usando esta categoria
+   */
+  totalLancamentos: number;
   createdAt: string;
 }
 export namespace Categoria {

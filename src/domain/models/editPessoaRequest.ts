@@ -23,4 +23,8 @@ export interface EditPessoaRequest {
    * Email da pessoa
    */
   email?: string;
+  /**
+   * Se a pessoa é favorita
+   */
+  favorito?: boolean;
 }

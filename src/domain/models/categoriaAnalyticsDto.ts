@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { MaiorTransacaoDto } from "./maiorTransacaoDto";
-import { MesAnteriorDto } from "./mesAnteriorDto";
+import type { MaiorTransacaoDto } from "./maiorTransacaoDto";
+import type { MesAnteriorDto } from "./mesAnteriorDto";
 
 export interface CategoriaAnalyticsDto {
   /**

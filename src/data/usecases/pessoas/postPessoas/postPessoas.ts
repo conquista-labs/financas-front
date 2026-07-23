@@ -1,8 +1,8 @@
 import { type HttpClient, HttpStatusCode } from "@/data/protocols";
 import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
 import type {
-  PostPessoasRequest,
   PostPessoasModel,
+  PostPessoasRequest,
   PostPessoasUseCase,
 } from "@/domain/usecases";
 

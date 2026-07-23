@@ -1,10 +1,11 @@
-import { HttpClient, HttpStatusCode } from "@/data/protocols/http";
-import {
+import type { HttpClient } from "@/data/protocols/http";
+import { HttpStatusCode } from "@/data/protocols/http";
+import { UnexpectedError } from "@/domain/errors";
+import type {
   GetQuickStatsModel,
   GetQuickStatsParams,
   GetQuickStatsUsecase,
 } from "@/domain/usecases";
-import { UnexpectedError } from "@/domain/errors";
 
 export class GetQuickStats implements GetQuickStatsUsecase {
   constructor(

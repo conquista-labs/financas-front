@@ -1,4 +1,4 @@
-import { GetAnalyticsCategoriasResponse } from "@/domain/models/getAnalyticsCategoriasResponse";
+import type { GetAnalyticsCategoriasResponse } from "@/domain/models/getAnalyticsCategoriasResponse";
 
 export interface GetAnalyticsCategoriasUsecase {
   get: (

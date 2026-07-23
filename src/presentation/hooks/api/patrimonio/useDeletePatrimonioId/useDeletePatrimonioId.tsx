@@ -1,13 +1,14 @@
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
-  useQueryClient,
   type UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { useToast } from "@rarui-react/components/dist/Toast";
 
-import { makeDeletePatrimonioFactory } from "@/main/factories/usecases";
 import type { DeletePatrimonioIdParams } from "@/domain/usecases";
+import { makeDeletePatrimonioFactory } from "@/main/factories/usecases";
+
 import type { UseDeletePatrimonioIdOptions } from "./useDeletePatrimonioId.types";
 
 export const useDeletePatrimonioId = (

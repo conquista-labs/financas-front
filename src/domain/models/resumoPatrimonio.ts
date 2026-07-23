@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EvolucaoDetalhada } from "./evolucaoDetalhada";
-import { EvolucaoItem } from "./evolucaoItem";
-import { DistribuicaoItem } from "./distribuicaoItem";
+import type { DistribuicaoItem } from "./distribuicaoItem";
+import type { EvolucaoDetalhada } from "./evolucaoDetalhada";
+import type { EvolucaoItem } from "./evolucaoItem";
 
 export interface ResumoPatrimonio {
   dataReferencia: string;

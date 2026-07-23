@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Enums } from "./enums";
+import type { Enums } from "./enums";
 
 export interface EnumsResponse {
   message: string;

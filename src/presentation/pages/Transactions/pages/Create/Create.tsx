@@ -1,29 +1,26 @@
-import React from "react";
-import { Box, Title } from "@rarui-react/components";
-
-import { Form } from "@/presentation/pages/Transactions/components";
-import { Breadcrumb } from "@/presentation/components";
 import { usePostTransacoes } from "@/presentation/hooks/api";
 
-const Create: React.FC = () => {
+import {
+  TransactionForm,
+  type TransactionFormValues,
+} from "../../components/TransactionForm";
+import { toRequest } from "../../components/TransactionForm/toRequest";
+
+/** Tela de criar transação (form completo, nova identidade). */
+const Create = () => {
   const { mutate, isPending } = usePostTransacoes();
 
+  const handleSubmit = (
+    values: TransactionFormValues,
+    { onSuccess }: { onSuccess: () => void },
+  ) => mutate(toRequest(values), { onSuccess });
+
   return (
-    <Box
-      display="flex"
-      height="100%"
-      flexDirection="column"
-      gap="$2xs"
-      alignItems="center"
-    >
-      <Breadcrumb crumbs={["transactions", "createTransactions"]} />
-      <Title as="h4" color="$brand">
-        Criar transação
-      </Title>
-      <Box width={{ xs: "100%", lg: "1110px" }}>
-        <Form isPending={isPending} onSubmit={mutate} />
-      </Box>
-    </Box>
+    <TransactionForm
+      isPending={isPending}
+      onSubmit={handleSubmit}
+      allowAddAnother
+    />
   );
 };
 

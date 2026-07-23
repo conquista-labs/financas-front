@@ -1,5 +1,6 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
+import { DAY_TIME } from "@/app.definitions";
 import type {
   GetResumoFinanceiroModel,
   GetResumoFinanceiroParams,
@@ -7,7 +8,6 @@ import type {
 import { makeGetResumoFinanceiroFactory } from "@/main/factories/usecases";
 
 import type { UseGetResumoFinanceiroOptions } from "./useGetResumoFinanceiro.types";
-import { DAY_TIME } from "@/app.definitions";
 
 export const useGetResumoFinanceiro = (
   params: GetResumoFinanceiroParams,

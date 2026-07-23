@@ -1,9 +1,10 @@
-import type {
-  PostPatrimonioRequest,
-  PostPatrimonioModel,
-} from "@/domain/usecases";
 import { type UseMutationOptions } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
+
+import type {
+  PostPatrimonioModel,
+  PostPatrimonioRequest,
+} from "@/domain/usecases";
 
 export type UsePostPatrimonioOptions = Omit<
   UseMutationOptions<

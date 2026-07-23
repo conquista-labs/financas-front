@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { QuickStatDtoValor } from "./quickStatDtoValor";
-import { VariacaoQuickStatDto } from "./variacaoQuickStatDto";
+import type { QuickStatDtoValor } from "./quickStatDtoValor";
+import type { VariacaoQuickStatDto } from "./variacaoQuickStatDto";
 
 export interface QuickStatDto {
   /**

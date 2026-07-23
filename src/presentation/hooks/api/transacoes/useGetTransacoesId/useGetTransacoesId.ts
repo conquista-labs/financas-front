@@ -15,7 +15,7 @@ export const useGetTransacoesId = (
   const getTransacoesId = makeGetTransacoesIdFactory();
 
   return useQuery({
-    queryKey: ["get-pessoa", params],
+    queryKey: ["get-transacao-id", params],
     queryFn: async () => {
       try {
         return await getTransacoesId.get(params);

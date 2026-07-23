@@ -9,11 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DespesaPorCategoriaAno } from "./despesaPorCategoriaAno";
-import { DespesaPorMes } from "./despesaPorMes";
-import { SaldosPorMes } from "./saldosPorMes";
-import { DespesaPorCategoriaMes } from "./despesaPorCategoriaMes";
-import { ReceitaPorMes } from "./receitaPorMes";
+import type { DespesaPorCategoriaAno } from "./despesaPorCategoriaAno";
+import type { DespesaPorCategoriaMes } from "./despesaPorCategoriaMes";
+import type { DespesaPorMes } from "./despesaPorMes";
+import type { ReceitaPorMes } from "./receitaPorMes";
+import type { SaldosPorMes } from "./saldosPorMes";
 
 export interface GetResumoFinanceiro {
   /**

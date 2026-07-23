@@ -1,15 +1,16 @@
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
-  useQueryClient,
   type UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@rarui-react/components/dist/Toast";
 
-import { urlRouters } from "@/presentation/router/router.definitions";
+import type { PostPessoasModel, PostPessoasRequest } from "@/domain/usecases";
 import { makePostPessoasFactory } from "@/main/factories/usecases";
-import type { PostPessoasRequest, PostPessoasModel } from "@/domain/usecases";
+import { urlRouters } from "@/presentation/router/router.definitions";
+
 import type { UsePostPessoasOptions } from "./usePostPessoas.types";
 
 export const usePostPessoas = (
@@ -24,7 +25,7 @@ export const usePostPessoas = (
     mutationKey: ["post-pessoas"],
     mutationFn: (body: PostPessoasRequest) => postPessoas.post(body),
     onSuccess: () => {
-      navigate(urlRouters.peoples);
+      navigate(urlRouters.registers);
       queryClient.invalidateQueries({ queryKey: ["get-pessoas"] });
     },
     onError: (error) => {

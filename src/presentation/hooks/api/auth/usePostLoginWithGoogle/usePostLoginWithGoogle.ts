@@ -1,7 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { makePostLoginWithGoogleFactory } from "@/main/factories/usecases";
+
 import type { PostLoginWithGoogleRequest } from "@/domain/usecases";
-import { UsePostLoginWithGoogle } from "./usePostLoginWithGoogle.types";
+import { makePostLoginWithGoogleFactory } from "@/main/factories/usecases";
+
+import type { UsePostLoginWithGoogle } from "./usePostLoginWithGoogle.types";
 
 export const usePostLoginWithGoogle = (options?: UsePostLoginWithGoogle) => {
   const loginWithGoogle = makePostLoginWithGoogleFactory();

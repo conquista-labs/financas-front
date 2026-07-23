@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CategoriaPaginatedData } from "./categoriaPaginatedData";
+import type { CategoriaPaginatedData } from "./categoriaPaginatedData";
 
 export interface GetCategoriasResponse {
   message: string;

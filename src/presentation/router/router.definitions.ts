@@ -20,17 +20,13 @@ export const urlRouters = {
   transactions: "/transactions",
   createTransactions: "/transactions/create",
   editTransactions: "/transactions/edit/:id",
-  peoples: "/peoples",
-  createPeoples: "/peoples/create",
-  editPeoples: "/peoples/edit/:id",
-  categories: "/categories",
-  createCategories: "/categories/create",
-  editCategories: "/categories/edit/:id",
-  meansOfPayment: "/means-of-payment",
-  createMeansOfPayment: "/means-of-payment/create",
-  editMeansOfPayment: "/means-of-payment/edit/:id",
+  // Patrimônio (nova identidade): página-hub com KPIs/gráficos/lista; criar e
+  // editar via modal na própria página (sem rotas create/edit separadas).
   patrimony: "/patrimony",
-  createPatrimony: "/patrimony/create",
-  editPatrimony: "/patrimony/edit/:id",
+  // Rebrand "Nossa Grana": Cadastros agrupa Categorias/Pessoas/Meios numa
+  // página-hub com abas. Criar/editar via modal na própria página.
+  registers: "/cadastros",
+  // Importar extrato — wizard analisar/confirmar (POST /importacoes/*).
+  import: "/importar",
   error: "/error",
 };

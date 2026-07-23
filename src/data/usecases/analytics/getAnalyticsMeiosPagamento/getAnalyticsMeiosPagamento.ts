@@ -1,10 +1,11 @@
-import { HttpClient, HttpStatusCode } from "@/data/protocols/http";
-import {
+import type { HttpClient } from "@/data/protocols/http";
+import { HttpStatusCode } from "@/data/protocols/http";
+import { UnexpectedError } from "@/domain/errors";
+import type {
   GetAnalyticsMeiosPagamentoModel,
   GetAnalyticsMeiosPagamentoParams,
   GetAnalyticsMeiosPagamentoUsecase,
 } from "@/domain/usecases";
-import { UnexpectedError } from "@/domain/errors";
 
 export class RemoteGetAnalyticsMeiosPagamento
   implements GetAnalyticsMeiosPagamentoUsecase

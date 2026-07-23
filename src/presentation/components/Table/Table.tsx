@@ -1,21 +1,23 @@
-import { Fragment, useMemo, type JSX } from "react";
+import "./table.css";
+
 import {
   Box,
-  Text,
   Pagination,
   Select,
   Skeleton,
+  Text,
 } from "@rarui-react/components";
+import { Fragment, type JSX, useMemo } from "react";
 
 import {
+  useIsMobile,
   usePagination,
   useTableHeight,
-  useIsMobile,
 } from "@/presentation/hooks/core";
-import type { TableProps } from "./table.types";
-import { pageSizeOptions } from "./table.definitions";
+
 import { Loading } from "../Loading";
-import "./table.css";
+import { pageSizeOptions } from "./table.definitions";
+import type { TableProps } from "./table.types";
 
 function Table<T>({
   columns,

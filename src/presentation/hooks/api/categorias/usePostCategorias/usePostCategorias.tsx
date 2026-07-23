@@ -1,18 +1,19 @@
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
-  useQueryClient,
   type UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@rarui-react/components/dist/Toast";
 
-import { urlRouters } from "@/presentation/router/router.definitions";
-import { makePostCategoriasFactory } from "@/main/factories/usecases";
 import type {
-  PostCategoriasRequest,
   PostCategoriasModel,
+  PostCategoriasRequest,
 } from "@/domain/usecases";
+import { makePostCategoriasFactory } from "@/main/factories/usecases";
+import { urlRouters } from "@/presentation/router/router.definitions";
+
 import type { UsePostCategoriasOptions } from "./usePostCategorias.types";
 
 export const usePostCategorias = (
@@ -31,7 +32,7 @@ export const usePostCategorias = (
     mutationKey: ["post-categorias"],
     mutationFn: (body: PostCategoriasRequest) => postCategorias.post(body),
     onSuccess: () => {
-      navigate(urlRouters.categories);
+      navigate(urlRouters.registers);
       queryClient.invalidateQueries({ queryKey: ["get-categorias"] });
     },
     onError: (error) => {

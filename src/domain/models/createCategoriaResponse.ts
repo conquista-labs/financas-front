@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Categoria } from "./categoria";
+import type { Categoria } from "./categoria";
 
 export interface CreateCategoriaResponse {
   message: string;

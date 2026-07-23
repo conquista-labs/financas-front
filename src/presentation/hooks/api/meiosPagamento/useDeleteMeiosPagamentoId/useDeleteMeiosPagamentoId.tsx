@@ -1,19 +1,19 @@
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
-  useQueryClient,
   type UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import type { AxiosError } from "axios";
-
-import { useToast } from "@rarui-react/components/dist/Toast";
-import { urlRouters } from "@/presentation/router/router.definitions";
-import { makeDeleteMeiosPagamentoIdFactory } from "@/main/factories/usecases";
+import { useNavigate } from "react-router-dom";
 
 import type {
-  DeleteMeiosPagamentoIdParams,
   DeleteMeiosPagamentoIdModel,
+  DeleteMeiosPagamentoIdParams,
 } from "@/domain/usecases";
+import { makeDeleteMeiosPagamentoIdFactory } from "@/main/factories/usecases";
+import { urlRouters } from "@/presentation/router/router.definitions";
+
 import type { UseDeleteMeiosPagamentoIdOptions } from "./useDeleteMeiosPagamentoId.types";
 
 export const useDeleteMeiosPagamentoId = (
@@ -34,7 +34,7 @@ export const useDeleteMeiosPagamentoId = (
       return deleteMeiosPagamentoId.delete(params);
     },
     onSuccess: () => {
-      navigate(urlRouters.meansOfPayment);
+      navigate(urlRouters.registers);
       queryClient.invalidateQueries({ queryKey: ["get-meios-pagamento"] });
     },
     onError: (error) => {

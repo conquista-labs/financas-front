@@ -1,10 +1,11 @@
-import { HttpClient, HttpStatusCode } from "@/data/protocols/http";
-import {
+import type { HttpClient } from "@/data/protocols/http";
+import { HttpStatusCode } from "@/data/protocols/http";
+import { UnexpectedError } from "@/domain/errors";
+import type {
   GetAnalyticsTendenciasModel,
   GetAnalyticsTendenciasParams,
   GetAnalyticsTendenciasUsecase,
 } from "@/domain/usecases/analytics";
-import { UnexpectedError } from "@/domain/errors";
 
 export class RemoteGetAnalyticsTendencias
   implements GetAnalyticsTendenciasUsecase

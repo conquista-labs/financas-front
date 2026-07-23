@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { useController } from "react-hook-form";
+import { SearchIcon } from "@rarui/icons";
 import {
   Box,
-  Text,
-  Label,
   Divider,
   Icon,
   Input,
+  Label,
   Select as RaruiSelect,
+  Text,
 } from "@rarui-react/components";
+import React, { useState } from "react";
+import { useController } from "react-hook-form";
 
 import { type SelectProps } from "./select.types.ts";
-import { SearchIcon } from "@rarui/icons";
 
 const Select: React.FC<SelectProps> = ({
   label,

@@ -25,41 +25,9 @@ export const crumbsMapper: Partial<
     label: "Editar",
     link: urlRouters.editTransactions,
   },
-  peoples: {
-    label: "Pessoas",
-    link: urlRouters.peoples,
-  },
-  createPeoples: {
-    label: "Criar",
-    link: urlRouters.createPeoples,
-  },
-  editPeoples: {
-    label: "Editar",
-    link: urlRouters.editPeoples,
-  },
-  categories: {
-    label: "Categorias",
-    link: urlRouters.categories,
-  },
-  createCategories: {
-    label: "Criar",
-    link: urlRouters.createCategories,
-  },
-  editCategories: {
-    label: "Editar",
-    link: urlRouters.editCategories,
-  },
-  meansOfPayment: {
-    label: "Meios de pagamento",
-    link: urlRouters.meansOfPayment,
-  },
-  createMeansOfPayment: {
-    label: "Criar",
-    link: urlRouters.createMeansOfPayment,
-  },
-  editMeansOfPayment: {
-    label: "Editar",
-    link: urlRouters.editMeansOfPayment,
+  registers: {
+    label: "Cadastros",
+    link: urlRouters.registers,
   },
   patrimony: {
     label: "Patrimônio",

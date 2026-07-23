@@ -1,29 +1,12 @@
-// Shared Components
-export { Card, QuickStatCard, Header } from "./shared";
-
-// Analytics Components
-export {
-  SaudeFinanceiraCard,
-  PadroesTemporaisCard,
-  MeiosPagamentoChart,
-} from "./analytics";
-
-// Categorias Components
-export {
-  TopCategoriasCard,
-  DespesasPorCategoria,
-  ResumoPorCategoriaTable,
-} from "./categorias";
-
-// Resumo Financeiro Components
-export {
-  ResumoMensalTable,
-  ResumoFinanceiroChart,
-  TendenciasChart,
-} from "./resumo";
-
-// Patrimônio Components
-export { PatrimonyCards } from "./patrimonio";
-
-// Tabs
-export { VisaoGeralTab, PatrimonioTab, AnalisesDetalhadasTab } from "./tabs";
+export { BalanceHero } from "./BalanceHero";
+export { BudgetList } from "./BudgetList";
+export { CategoryMatrix } from "./CategoryMatrix";
+export type { DonutCategoria } from "./ExpenseDonut";
+export { ExpenseDonut } from "./ExpenseDonut";
+export { HealthCard } from "./HealthCard";
+export { IncomeExpenseChart } from "./IncomeExpenseChart";
+export { KpiCards } from "./KpiCards";
+export { MeiosPagamentoCard } from "./MeiosPagamentoCard";
+export { RecentTransactions } from "./RecentTransactions";
+export { TopCategoriasCard } from "./TopCategoriasCard";
+export { YearTable } from "./YearTable";

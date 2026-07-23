@@ -31,6 +31,10 @@ export interface CreateCategoriaRequest {
    * Cor da categoria em hexadecimal
    */
   cor?: string;
+  /**
+   * Se a categoria é favorita
+   */
+  favorito?: boolean;
 }
 export namespace CreateCategoriaRequest {
   export type TipoEnum = "despesa" | "receita";

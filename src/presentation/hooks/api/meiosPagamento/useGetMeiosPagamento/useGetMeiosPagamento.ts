@@ -1,5 +1,6 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
+import { DAY_TIME } from "@/app.definitions";
 import type {
   GetMeiosPagamentoModel,
   GetMeiosPagamentoParams,
@@ -7,7 +8,6 @@ import type {
 import { makeGetMeiosPagamentoFactory } from "@/main/factories/usecases";
 
 import type { UseGetMeiosPagamentoOptions } from "./useGetMeiosPagamento.types";
-import { DAY_TIME } from "@/app.definitions";
 
 export const useGetMeiosPagamento = (
   params: GetMeiosPagamentoParams,

@@ -1,5 +1,5 @@
 export * from "./deleteCategoriasFactory";
-export * from "./getCategoriasIdFactory";
 export * from "./getCategoriasFactory";
-export * from "./postCategoriasFactory";
+export * from "./getCategoriasIdFactory";
 export * from "./patchCategoriasFactory";
+export * from "./postCategoriasFactory";

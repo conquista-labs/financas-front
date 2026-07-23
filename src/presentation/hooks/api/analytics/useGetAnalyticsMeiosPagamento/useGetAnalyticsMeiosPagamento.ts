@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+
+import type { GetAnalyticsMeiosPagamentoParams } from "@/domain/usecases";
 import { makeGetAnalyticsMeiosPagamentoFactory } from "@/main/factories/usecases";
-import { GetAnalyticsMeiosPagamentoParams } from "@/domain/usecases";
-import { UseGetAnalyticsMeiosPagamentoOptions } from "./useGetAnalyticsMeiosPagamento.types";
+
+import type { UseGetAnalyticsMeiosPagamentoOptions } from "./useGetAnalyticsMeiosPagamento.types";
 
 export const useGetAnalyticsMeiosPagamento = (
   params: GetAnalyticsMeiosPagamentoParams,

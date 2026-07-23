@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { GoogleAuth } from "./googleAuth";
+import type { GoogleAuth } from "./googleAuth";
 
 export interface GoogleLoginResponse {
   message: string;

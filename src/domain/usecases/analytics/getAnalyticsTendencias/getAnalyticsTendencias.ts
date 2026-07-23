@@ -1,4 +1,4 @@
-import { GetAnalyticsTendenciasResponse } from "@/domain/models/getAnalyticsTendenciasResponse";
+import type { GetAnalyticsTendenciasResponse } from "@/domain/models/getAnalyticsTendenciasResponse";
 
 export interface GetAnalyticsTendenciasUsecase {
   get: (

@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { GetResumoFinanceiro } from "./getResumoFinanceiro";
+import type { GetResumoFinanceiro } from "./getResumoFinanceiro";
 
 export interface GetResumoFinanceiroResponse {
   message: string;

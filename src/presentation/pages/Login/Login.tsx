@@ -1,37 +1,15 @@
-import React from "react";
-import { Box } from "@rarui-react/components";
+import { BrandPanel, LoginCard } from "./components";
 
-import { Banner, Header, Form } from "./components";
-
+/**
+ * Tela de login "Nossa Grana" — split em duas colunas: painel de marca
+ * (foto + cards glass + headline) à esquerda e cartão de login à direita.
+ * Abaixo de 860px o painel de marca some e fica só o cartão centralizado.
+ */
 const Login: React.FC = () => (
-  <Box minHeight="100vh" backgroundColor="$primary">
-    <Box
-      display="flex"
-      alignItems="stretch"
-      minHeight="100vh"
-      flexDirection={{ md: "row-reverse" }}
-    >
-      <Banner />
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        width={{ xs: "100%", md: "50%" }}
-        flex="1"
-        backgroundColor="$primary"
-      >
-        <Box width="360px">
-          <Header
-            title="Bem-vindos de volta!"
-            subtitle="Faça login para gerenciar seus gastos e acompanhar suas finanças."
-          />
-
-          <Form />
-        </Box>
-      </Box>
-    </Box>
-  </Box>
+  <div className="flex min-h-screen bg-bg">
+    <BrandPanel />
+    <LoginCard />
+  </div>
 );
 
 export default Login;

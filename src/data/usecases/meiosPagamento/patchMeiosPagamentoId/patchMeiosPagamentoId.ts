@@ -1,10 +1,10 @@
 import { type HttpClient, HttpStatusCode } from "@/data/protocols";
 import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
 import type {
-  PatchMeiosPagamentoIdRequest,
   PatchMeiosPagamentoIdModel,
-  PatchMeiosPagamentoIdUseCase,
   PatchMeiosPagamentoIdParams,
+  PatchMeiosPagamentoIdRequest,
+  PatchMeiosPagamentoIdUseCase,
 } from "@/domain/usecases";
 
 export class PatchMeiosPagamentoId implements PatchMeiosPagamentoIdUseCase {

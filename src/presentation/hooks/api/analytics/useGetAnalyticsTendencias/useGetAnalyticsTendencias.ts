@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+
+import type { GetAnalyticsTendenciasParams } from "@/domain/usecases";
 import { makeGetAnalyticsTendenciasFactory } from "@/main/factories/usecases";
-import { GetAnalyticsTendenciasParams } from "@/domain/usecases";
 
 export const useGetAnalyticsTendencias = (
   params: GetAnalyticsTendenciasParams,

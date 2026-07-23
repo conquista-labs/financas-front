@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { RelatorioTrasacoesPaginatedData } from "./relatorioTrasacoesPaginatedData";
+import type { RelatorioTrasacoesPaginatedData } from "./relatorioTrasacoesPaginatedData";
 
 export interface GetRelatorioTransacoesResponse {
   message: string;

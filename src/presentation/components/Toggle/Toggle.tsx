@@ -1,6 +1,6 @@
+import { Box, Text, Toggle as RaruiToggle } from "@rarui-react/components";
 import React from "react";
 import { useController } from "react-hook-form";
-import { Box, Text, Toggle as RaruiToggle } from "@rarui-react/components";
 
 import { type ToggleProps } from "./toggle.types";
 

@@ -15,4 +15,8 @@ export interface CreateMeioPagamentoRequest {
    * Nome do meio de pagamento
    */
   nome: string;
+  /**
+   * Se o meio de pagamento é favorito
+   */
+  favorito?: boolean;
 }

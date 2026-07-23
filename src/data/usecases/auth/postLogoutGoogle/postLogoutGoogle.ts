@@ -1,8 +1,8 @@
 import { type HttpClient, HttpStatusCode } from "@/data/protocols";
 import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
 import type {
-  PostLogoutGoogleUseCase,
   PostLogoutGoogleModel,
+  PostLogoutGoogleUseCase,
 } from "@/domain/usecases";
 
 export class PostLogoutGoogle implements PostLogoutGoogleUseCase {

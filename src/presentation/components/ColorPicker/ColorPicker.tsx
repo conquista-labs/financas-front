@@ -1,11 +1,11 @@
-import React from "react";
-import { useController } from "react-hook-form";
 import {
   Box,
-  Text,
-  Label,
   ColorPicker as RaruiColorPicker,
+  Label,
+  Text,
 } from "@rarui-react/components";
+import React from "react";
+import { useController } from "react-hook-form";
 
 import { type ColorPickerProps } from "./colorPicker.types";
 

@@ -1,5 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
-import {
+import { useCallback, useEffect, useState } from "react";
+
+import type {
   UseTableHeightOptions,
   UseTableHeightReturn,
 } from "./useTableHeight.types";

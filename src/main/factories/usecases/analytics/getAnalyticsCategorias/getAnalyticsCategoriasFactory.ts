@@ -1,7 +1,7 @@
 import { GetAnalyticsCategorias } from "@/data/usecases";
+import type { GetAnalyticsCategoriasUsecase } from "@/domain/usecases/analytics/getAnalyticsCategorias/getAnalyticsCategorias";
 import { makeAuthorizeHttpClient } from "@/main/factories/decorators";
 import { makeApiUrl } from "@/main/factories/http";
-import { GetAnalyticsCategoriasUsecase } from "@/domain/usecases/analytics/getAnalyticsCategorias/getAnalyticsCategorias";
 
 export const makeGetAnalyticsCategoriasFactory =
   (): GetAnalyticsCategoriasUsecase =>

@@ -1,6 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+
 import { makePostLogoutGoogleFactory } from "@/main/factories/usecases";
-import { UsePostLogoutGoogle } from "./usePostLogoutGoogle.types";
+
+import type { UsePostLogoutGoogle } from "./usePostLogoutGoogle.types";
 
 export const usePostLogoutGoogle = (options?: UsePostLogoutGoogle) => {
   const logoutGoogle = makePostLogoutGoogleFactory();

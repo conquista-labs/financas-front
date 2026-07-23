@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PaginationMeta } from "./paginationMeta";
-import { Pessoa } from "./pessoa";
+import type { PaginationMeta } from "./paginationMeta";
+import type { Pessoa } from "./pessoa";
 
 export interface PessoaPaginatedData {
   meta: PaginationMeta;

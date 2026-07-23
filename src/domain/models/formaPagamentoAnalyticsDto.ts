@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DistribuicaoParcelasDto } from "./distribuicaoParcelasDto";
-import { FormaPagamentoAvistaDto } from "./formaPagamentoAvistaDto";
-import { FormaPagamentoParceladoDto } from "./formaPagamentoParceladoDto";
+import type { DistribuicaoParcelasDto } from "./distribuicaoParcelasDto";
+import type { FormaPagamentoAvistaDto } from "./formaPagamentoAvistaDto";
+import type { FormaPagamentoParceladoDto } from "./formaPagamentoParceladoDto";
 
 export interface FormaPagamentoAnalyticsDto {
   /**

@@ -1,10 +1,10 @@
 import { type HttpClient, HttpStatusCode } from "@/data/protocols";
 import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
 import type {
-  PatchTransacoesIdRequest,
   PatchTransacoesIdModel,
-  PatchTransacoesIdUseCase,
   PatchTransacoesIdParams,
+  PatchTransacoesIdRequest,
+  PatchTransacoesIdUseCase,
 } from "@/domain/usecases";
 
 export class PatchTransacoesId implements PatchTransacoesIdUseCase {

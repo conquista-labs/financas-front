@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Patrimonio } from "./patrimonio";
+import type { Patrimonio } from "./patrimonio";
 
 export interface EditPatrimonioResponse {
   message: string;

@@ -1,19 +1,20 @@
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
-  useQueryClient,
   type UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import type { AxiosError } from "axios";
-import { useToast } from "@rarui-react/components/dist/Toast";
+import { useNavigate } from "react-router-dom";
 
-import { urlRouters } from "@/presentation/router/router.definitions";
-import { makePatchCategoriasIdFactory } from "@/main/factories/usecases";
 import type {
+  PatchCategoriasIdModel,
   PatchCategoriasIdParams,
   PatchCategoriasIdRequest,
-  PatchCategoriasIdModel,
 } from "@/domain/usecases";
+import { makePatchCategoriasIdFactory } from "@/main/factories/usecases";
+import { urlRouters } from "@/presentation/router/router.definitions";
+
 import type { UsePatchCategoriasIdOptions } from "./usePatchCategoriasId.types";
 
 export const usePatchCategoriasId = (
@@ -35,7 +36,7 @@ export const usePatchCategoriasId = (
       return patchCategoriasId.patch(body, params);
     },
     onSuccess: () => {
-      navigate(urlRouters.categories);
+      navigate(urlRouters.registers);
       queryClient.invalidateQueries({ queryKey: ["get-categorias"] });
     },
     onError: (error) => {

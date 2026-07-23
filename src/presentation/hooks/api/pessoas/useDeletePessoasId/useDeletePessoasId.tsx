@@ -1,19 +1,19 @@
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
-  useQueryClient,
   type UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import type { AxiosError } from "axios";
-
-import { useToast } from "@rarui-react/components/dist/Toast";
-import { urlRouters } from "@/presentation/router/router.definitions";
-import { makeDeletePessoasIdFactory } from "@/main/factories/usecases";
+import { useNavigate } from "react-router-dom";
 
 import type {
-  DeletePessoasIdParams,
   DeletePessoasIdModel,
+  DeletePessoasIdParams,
 } from "@/domain/usecases";
+import { makeDeletePessoasIdFactory } from "@/main/factories/usecases";
+import { urlRouters } from "@/presentation/router/router.definitions";
+
 import type { UseDeletePessoasIdOptions } from "./useDeletePessoasId.types";
 
 export const useDeletePessoasId = (
@@ -34,7 +34,7 @@ export const useDeletePessoasId = (
       return deletePessoasId.delete(params);
     },
     onSuccess: () => {
-      navigate(urlRouters.peoples);
+      navigate(urlRouters.registers);
       queryClient.invalidateQueries({ queryKey: ["get-pessoas"] });
     },
     onError: (error) => {

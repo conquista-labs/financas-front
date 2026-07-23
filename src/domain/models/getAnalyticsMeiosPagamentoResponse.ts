@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AnalyticsMeiosPagamentoDataDto } from "./analyticsMeiosPagamentoDataDto";
+import type { AnalyticsMeiosPagamentoDataDto } from "./analyticsMeiosPagamentoDataDto";
 
 export interface GetAnalyticsMeiosPagamentoResponse {
   /**

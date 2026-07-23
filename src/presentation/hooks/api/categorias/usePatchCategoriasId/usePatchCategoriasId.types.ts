@@ -1,9 +1,10 @@
-import type {
-  PatchCategoriasIdRequest,
-  PatchCategoriasIdModel,
-} from "@/domain/usecases";
 import { type UseMutationOptions } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
+
+import type {
+  PatchCategoriasIdModel,
+  PatchCategoriasIdRequest,
+} from "@/domain/usecases";
 
 export type UsePatchCategoriasIdOptions = Omit<
   UseMutationOptions<

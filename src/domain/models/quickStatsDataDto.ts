@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { QuickStatDto } from "./quickStatDto";
+import type { QuickStatDto } from "./quickStatDto";
 
 export interface QuickStatsDataDto {
   /**

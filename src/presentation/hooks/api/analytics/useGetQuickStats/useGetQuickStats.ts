@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+
+import type { GetQuickStatsParams } from "@/domain/usecases";
 import { makeGetQuickStatsFactory } from "@/main/factories/usecases";
-import { GetQuickStatsParams } from "@/domain/usecases";
-import { UseGetQuickStatsOptions } from "./useGetQuickStats.types";
+
+import type { UseGetQuickStatsOptions } from "./useGetQuickStats.types";
 
 export const useGetQuickStats = (
   params: GetQuickStatsParams,

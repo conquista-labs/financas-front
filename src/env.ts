@@ -4,6 +4,8 @@ const envSchema = yup.object({
   MODE: yup.string().oneOf(["production", "development", "test"]).required(),
   VITE_API_URL: yup.string().required(),
   VITE_ENABLE_API_MOCK_DELAY: yup.boolean().default(false),
+  // Bypass de auth só para validação visual local (rebrand). Ver proxy-route.
+  VITE_SKIP_AUTH: yup.boolean().default(false),
 });
 
 let env: yup.InferType<typeof envSchema>;

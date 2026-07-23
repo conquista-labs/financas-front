@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { UltimaTransacaoDto } from "./ultimaTransacaoDto";
+import type { UltimaTransacaoDto } from "./ultimaTransacaoDto";
 
 export interface OrcamentoCategoriaDto {
   /**

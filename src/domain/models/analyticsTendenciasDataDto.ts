@@ -9,10 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EvolucaoMensalDto } from "./evolucaoMensalDto";
-import { MetricasAvancadasDto } from "./metricasAvancadasDto";
-import { ProjecaoMesDto } from "./projecaoMesDto";
-import { InsightFinanceiroDto } from "./insightFinanceiroDto";
+import type { EvolucaoMensalDto } from "./evolucaoMensalDto";
+import type { InsightFinanceiroDto } from "./insightFinanceiroDto";
+import type { MetricasAvancadasDto } from "./metricasAvancadasDto";
+import type { ProjecaoMesDto } from "./projecaoMesDto";
 
 export interface AnalyticsTendenciasDataDto {
   /**

@@ -1,0 +1,1 @@
+export { MeiosPagamentoCard } from "./MeiosPagamentoCard";

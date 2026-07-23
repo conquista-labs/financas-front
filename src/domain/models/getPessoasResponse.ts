@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PessoaPaginatedData } from "./pessoaPaginatedData";
+import type { PessoaPaginatedData } from "./pessoaPaginatedData";
 
 export interface GetPessoasResponse {
   message: string;

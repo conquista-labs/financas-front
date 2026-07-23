@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DespesaPorCategoriaMesCategoria } from "./despesaPorCategoriaMesCategoria";
+import type { DespesaPorCategoriaMesCategoria } from "./despesaPorCategoriaMesCategoria";
 
 export interface DespesaPorCategoriaMes {
   mes: string;

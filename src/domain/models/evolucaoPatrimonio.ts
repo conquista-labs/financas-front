@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { SerieItem } from "./serieItem";
+import type { SerieItem } from "./serieItem";
 
 export interface EvolucaoPatrimonio {
   dataInicio: string;

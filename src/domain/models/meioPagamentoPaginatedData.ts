@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PaginationMeta } from "./paginationMeta";
-import { MeioPagamento } from "./meioPagamento";
+import type { MeioPagamento } from "./meioPagamento";
+import type { PaginationMeta } from "./paginationMeta";
 
 export interface MeioPagamentoPaginatedData {
   meta: PaginationMeta;

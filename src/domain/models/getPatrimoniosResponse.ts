@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PatrimonioPaginatedData } from "./patrimonioPaginatedData";
+import type { PatrimonioPaginatedData } from "./patrimonioPaginatedData";
 
 export interface GetPatrimoniosResponse {
   message: string;

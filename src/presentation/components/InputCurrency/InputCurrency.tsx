@@ -1,7 +1,8 @@
+import { Box, Input as RaruiInput, Label, Text } from "@rarui-react/components";
 import React from "react";
 import { useController } from "react-hook-form";
-import { Box, Text, Label, Input as RaruiInput } from "@rarui-react/components";
 import { NumericFormat } from "react-number-format";
+
 import { type InputProps } from "./inputCurrency.types";
 
 const InputCurrency: React.FC<InputProps> = ({

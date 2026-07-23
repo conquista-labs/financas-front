@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DiaCalendario } from "./diaCalendario";
+import type { DiaCalendario } from "./diaCalendario";
 
 export interface CalendarioData {
   ano: number;

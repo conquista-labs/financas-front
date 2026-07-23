@@ -1,4 +1,4 @@
-import type { ColumnsDefinition, Column } from "./table.types";
+import type { Column, ColumnsDefinition } from "./table.types";
 
 export class ColumnsDefinitions<T> implements ColumnsDefinition<T> {
   private columns: Column<T>[] = [];

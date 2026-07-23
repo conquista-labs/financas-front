@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EnumOption } from "./enumOption";
+import type { EnumOption } from "./enumOption";
 
 export interface Enums {
   tipoCategoria: Array<EnumOption>;
@@ -18,4 +18,6 @@ export interface Enums {
   tipoPatrimonioEnum: Array<EnumOption>;
   categoriaPatrimonio: Array<EnumOption>;
   formaPagamento: Array<EnumOption>;
+  statusTransacao: Array<EnumOption>;
+  frequenciaRecorrencia: Array<EnumOption>;
 }

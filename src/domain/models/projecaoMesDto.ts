@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ValoresProjecaoDto } from "./valoresProjecaoDto";
-import { MesAtualDto } from "./mesAtualDto";
+import type { MesAtualDto } from "./mesAtualDto";
+import type { ValoresProjecaoDto } from "./valoresProjecaoDto";
 
 export interface ProjecaoMesDto {
   /**

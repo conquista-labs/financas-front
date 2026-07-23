@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AnalyticsOrcamentoDataDto } from "./analyticsOrcamentoDataDto";
+import type { AnalyticsOrcamentoDataDto } from "./analyticsOrcamentoDataDto";
 
 export interface GetAnalyticsOrcamentoResponse {
   /**

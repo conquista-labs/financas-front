@@ -933,6 +933,47 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "tag",
+            "required": false,
+            "in": "query",
+            "description": "Nome da tag usada para filtrar as transações",
+            "schema": {
+              "example": "mercado",
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagIds",
+            "required": false,
+            "in": "query",
+            "description": "Nomes das tags usadas para filtrar as transações (qualquer uma)",
+            "schema": {
+              "example": [
+                "mercado",
+                "lazer"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por status. \"pendente\" = todas as não-pagas (no prazo + vencidas). \"atrasada\" = só as vencidas. \"paga\" = pagas.",
+            "schema": {
+              "example": "pendente",
+              "type": "string",
+              "enum": [
+                "pendente",
+                "paga",
+                "atrasada"
+              ]
+            }
           }
         ],
         "responses": {
@@ -1152,6 +1193,19 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "escopo",
+            "required": false,
+            "in": "query",
+            "description": "Para transações de recorrência: \"apenas_esta\" (padrão) ou \"esta_e_futuras\" (propaga às futuras pendentes da mesma recorrência).",
+            "schema": {
+              "enum": [
+                "apenas_esta",
+                "esta_e_futuras"
+              ],
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -1234,6 +1288,43 @@
         ]
       }
     },
+    "/transacoes/{id}/pagar": {
+      "post": {
+        "description": "Apenas altera status para paga e registra pagaEm.",
+        "operationId": "TransacoesController_pagar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da transação",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Transação marcada como paga."
+          },
+          "404": {
+            "description": "Transação não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Marcar transação (conta a pagar) como paga",
+        "tags": [
+          "Transações"
+        ]
+      }
+    },
     "/calendar/list": {
       "get": {
         "operationId": "CalendarController_getUserCalendars",
@@ -1297,6 +1388,121 @@
         "summary": "Definir calendário preferido do usuário",
         "tags": [
           "Calendários"
+        ]
+      }
+    },
+    "/tags": {
+      "get": {
+        "operationId": "TagsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de tags retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTagsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Listar tags com contagem de uso",
+        "tags": [
+          "Tags"
+        ]
+      }
+    },
+    "/tags/{id}": {
+      "patch": {
+        "operationId": "TagsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da tag",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditTagRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag renomeada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditTagResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tag não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Renomear tag (propaga a todas as transações)",
+        "tags": [
+          "Tags"
+        ]
+      },
+      "delete": {
+        "operationId": "TagsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da tag",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag removida com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteTagResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tag não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Excluir tag (remove de todas as transações)",
+        "tags": [
+          "Tags"
         ]
       }
     },
@@ -2453,6 +2659,299 @@
           "Patrimônios"
         ]
       }
+    },
+    "/recorrencias": {
+      "get": {
+        "operationId": "RecorrenciasController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de recorrências retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRecorrenciasResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Listar recorrências (ativas e pausadas)",
+        "tags": [
+          "Recorrências"
+        ]
+      },
+      "post": {
+        "operationId": "RecorrenciasController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRecorrenciaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recorrência criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecorrenciaResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Criar recorrência (já gera as ocorrências do horizonte)",
+        "tags": [
+          "Recorrências"
+        ]
+      }
+    },
+    "/recorrencias/gerar": {
+      "post": {
+        "description": "Materializa as transações pendentes do horizonte (ano atual + próximo). Idempotente. Normalmente chamado por cron no dia 1.",
+        "operationId": "RecorrenciasController_gerar",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Ocorrências geradas."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Gerar ocorrências pendentes das recorrências ativas",
+        "tags": [
+          "Recorrências"
+        ]
+      }
+    },
+    "/recorrencias/{id}": {
+      "get": {
+        "operationId": "RecorrenciasController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da recorrência",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recorrência encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecorrenciaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recorrência não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Buscar recorrência por ID",
+        "tags": [
+          "Recorrências"
+        ]
+      },
+      "patch": {
+        "operationId": "RecorrenciasController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da recorrência",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditRecorrenciaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recorrência atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecorrenciaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recorrência não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Atualizar/pausar recorrência (propaga às futuras pendentes)",
+        "tags": [
+          "Recorrências"
+        ]
+      },
+      "delete": {
+        "operationId": "RecorrenciasController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da recorrência",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recorrência removida com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteRecorrenciaResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recorrência não encontrada."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Excluir recorrência (remove futuras pendentes; mantém pagas)",
+        "tags": [
+          "Recorrências"
+        ]
+      }
+    },
+    "/importacoes/analisar": {
+      "post": {
+        "description": "Faz o parse do arquivo, detecta duplicadas (mesma data + valor) e sugere categoria pelo histórico. Não grava nada.",
+        "operationId": "ImportacoesController_analisar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalisarResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Arquivo inválido ou sem transações reconhecíveis."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Analisar extrato (CSV/OFX) → linhas para a tela Revisar",
+        "tags": [
+          "Importações"
+        ]
+      }
+    },
+    "/importacoes/confirmar": {
+      "post": {
+        "operationId": "ImportacoesController_confirmar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmarImportacaoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmarImportacaoResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Confirmar importação: cria as transações marcadas + tag em lote",
+        "tags": [
+          "Importações"
+        ]
+      }
     }
   },
   "info": {
@@ -2518,6 +3017,16 @@
             "type": "string",
             "example": "vivi@email.com"
           },
+          "favorito": {
+            "type": "boolean",
+            "example": false,
+            "description": "Se a pessoa é favorita"
+          },
+          "totalLancamentos": {
+            "type": "number",
+            "example": 12,
+            "description": "Número de transações vinculadas a esta pessoa"
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
@@ -2528,6 +3037,8 @@
           "id",
           "nome",
           "email",
+          "favorito",
+          "totalLancamentos",
           "createdAt"
         ]
       },
@@ -2595,6 +3106,10 @@
           "email": {
             "type": "string",
             "description": "Email da pessoa"
+          },
+          "favorito": {
+            "type": "boolean",
+            "description": "Se a pessoa é favorita"
           }
         },
         "required": [
@@ -2631,6 +3146,10 @@
           "email": {
             "type": "string",
             "description": "Email da pessoa"
+          },
+          "favorito": {
+            "type": "boolean",
+            "description": "Se a pessoa é favorita"
           }
         }
       },
@@ -2841,6 +3360,16 @@
             "type": "string",
             "example": "#FF5733"
           },
+          "favorito": {
+            "type": "boolean",
+            "example": false,
+            "description": "Se a categoria é favorita"
+          },
+          "totalLancamentos": {
+            "type": "number",
+            "example": 12,
+            "description": "Número de transações usando esta categoria"
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
@@ -2854,6 +3383,8 @@
           "icone",
           "tetoGasto",
           "cor",
+          "favorito",
+          "totalLancamentos",
           "createdAt"
         ]
       },
@@ -2934,6 +3465,10 @@
           "cor": {
             "type": "string",
             "description": "Cor da categoria em hexadecimal"
+          },
+          "favorito": {
+            "type": "boolean",
+            "description": "Se a categoria é favorita"
           }
         },
         "required": [
@@ -2984,6 +3519,10 @@
           "cor": {
             "type": "string",
             "description": "Cor da categoria em hexadecimal"
+          },
+          "favorito": {
+            "type": "boolean",
+            "description": "Se a categoria é favorita"
           }
         }
       },
@@ -3030,6 +3569,16 @@
             "type": "string",
             "example": "Cartão crédito xp"
           },
+          "favorito": {
+            "type": "boolean",
+            "example": false,
+            "description": "Se o meio de pagamento é favorito"
+          },
+          "totalLancamentos": {
+            "type": "number",
+            "example": 12,
+            "description": "Número de transações usando este meio"
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
@@ -3039,6 +3588,8 @@
         "required": [
           "id",
           "nome",
+          "favorito",
+          "totalLancamentos",
           "createdAt"
         ]
       },
@@ -3098,6 +3649,10 @@
           "nome": {
             "type": "string",
             "description": "Nome do meio de pagamento"
+          },
+          "favorito": {
+            "type": "boolean",
+            "description": "Se o meio de pagamento é favorito"
           }
         },
         "required": [
@@ -3126,6 +3681,10 @@
           "nome": {
             "type": "string",
             "description": "Nome do meio de pagamento"
+          },
+          "favorito": {
+            "type": "boolean",
+            "description": "Se o meio de pagamento é favorito"
           }
         }
       },
@@ -3218,6 +3777,18 @@
             "items": {
               "$ref": "#/components/schemas/EnumOption"
             }
+          },
+          "statusTransacao": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnumOption"
+            }
+          },
+          "frequenciaRecorrencia": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnumOption"
+            }
           }
         },
         "required": [
@@ -3226,7 +3797,9 @@
           "tipoPatrimonio",
           "tipoPatrimonioEnum",
           "categoriaPatrimonio",
-          "formaPagamento"
+          "formaPagamento",
+          "statusTransacao",
+          "frequenciaRecorrencia"
         ]
       },
       "EnumsResponse": {
@@ -3309,6 +3882,43 @@
             "type": "string",
             "example": "2025-07-17T10:20:30.000Z"
           },
+          "tags": {
+            "example": [
+              "mercado",
+              "importado-julho"
+            ],
+            "description": "Nomes das tags vinculadas à transação",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pendente",
+              "paga"
+            ],
+            "example": "paga",
+            "description": "Status persistido (pendente | paga)"
+          },
+          "statusExibicao": {
+            "type": "string",
+            "example": "atrasada",
+            "enum": [
+              "pendente",
+              "paga",
+              "atrasada"
+            ],
+            "description": "Status para exibição. \"atrasada\" é derivado: pendente + data (vencimento) < hoje."
+          },
+          "pagaEm": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-07-09T18:00:00.000Z",
+            "description": "Quando foi marcada como paga (null enquanto pendente)"
+          },
           "categoria": {
             "$ref": "#/components/schemas/Categoria"
           },
@@ -3327,6 +3937,8 @@
           "valor",
           "data",
           "createdAt",
+          "status",
+          "statusExibicao",
           "categoria",
           "pessoa",
           "meioPagamento"
@@ -3337,7 +3949,8 @@
         "properties": {
           "total": {
             "type": "number",
-            "example": "R$ 10"
+            "example": 2836833.27,
+            "description": "Total do período (número cru)"
           }
         },
         "required": [
@@ -3482,6 +4095,17 @@
             "description": "Flag para mostrar transação no calendário como lembrete",
             "example": true
           },
+          "tags": {
+            "example": [
+              "mercado",
+              "importado-julho"
+            ],
+            "description": "Nomes das tags vinculadas à transação",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "tipo": {
             "type": "string",
             "enum": [
@@ -3499,6 +4123,7 @@
           "meioPagamento",
           "formaPagamento",
           "lembrarMe",
+          "tags",
           "tipo"
         ]
       },
@@ -3523,7 +4148,11 @@
           },
           "totalDespesas": {
             "type": "number",
-            "description": "Total de despesas do dia em centavos"
+            "description": "Total de despesas do dia"
+          },
+          "totalReceitas": {
+            "type": "number",
+            "description": "Total de receitas do dia"
           },
           "quantidadeTransacoes": {
             "type": "number"
@@ -3534,6 +4163,7 @@
           "data",
           "transacoes",
           "totalDespesas",
+          "totalReceitas",
           "quantidadeTransacoes"
         ]
       },
@@ -3638,6 +4268,43 @@
             "format": "date-time",
             "type": "string",
             "example": "2025-07-17T10:20:30.000Z"
+          },
+          "tags": {
+            "example": [
+              "mercado",
+              "importado-julho"
+            ],
+            "description": "Nomes das tags vinculadas à transação",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pendente",
+              "paga"
+            ],
+            "example": "paga",
+            "description": "Status persistido (pendente | paga)"
+          },
+          "statusExibicao": {
+            "type": "string",
+            "example": "atrasada",
+            "enum": [
+              "pendente",
+              "paga",
+              "atrasada"
+            ],
+            "description": "Status para exibição. \"atrasada\" é derivado: pendente + data (vencimento) < hoje."
+          },
+          "pagaEm": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-07-09T18:00:00.000Z",
+            "description": "Quando foi marcada como paga (null enquanto pendente)"
           }
         },
         "required": [
@@ -3647,7 +4314,9 @@
           "pessoaId",
           "valor",
           "data",
-          "createdAt"
+          "createdAt",
+          "status",
+          "statusExibicao"
         ]
       },
       "GetTransacaoResponse": {
@@ -3724,6 +4393,26 @@
           "meioPagamentoId": {
             "type": "string",
             "format": "uuid"
+          },
+          "tags": {
+            "example": [
+              "mercado",
+              "importado-julho"
+            ],
+            "description": "Nomes das tags. São normalizados e criados automaticamente se não existirem.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pendente",
+              "paga"
+            ],
+            "example": "paga",
+            "description": "Status. Default \"paga\" (lançamento normal). Use \"pendente\" para conta a pagar."
           }
         },
         "required": [
@@ -3809,6 +4498,26 @@
           "meioPagamentoId": {
             "type": "string",
             "format": "uuid"
+          },
+          "tags": {
+            "example": [
+              "mercado",
+              "importado-julho"
+            ],
+            "description": "Nomes das tags. São normalizados e criados automaticamente se não existirem.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pendente",
+              "paga"
+            ],
+            "example": "paga",
+            "description": "Status. Default \"paga\" (lançamento normal). Use \"pendente\" para conta a pagar."
           }
         }
       },
@@ -3842,6 +4551,95 @@
         "required": [
           "message",
           "data"
+        ]
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "nome": {
+            "type": "string",
+            "example": "importado-julho"
+          },
+          "count": {
+            "type": "number",
+            "example": 12,
+            "description": "Quantidade de transações com esta tag"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-07-17T10:20:30.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "count",
+          "createdAt"
+        ]
+      },
+      "GetTagsResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EditTagRequest": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "mercado",
+            "description": "Novo nome da tag. É normalizado (minúsculo, sem acento, espaço → hífen) e propagado a todas as transações."
+          }
+        },
+        "required": [
+          "nome"
+        ]
+      },
+      "EditTagResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Tag"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "DeleteTagResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          }
+        },
+        "required": [
+          "message"
         ]
       },
       "ReceitaPorMes": {
@@ -4174,6 +4972,43 @@
             "type": "string",
             "example": "2025-07-17T10:20:30.000Z"
           },
+          "tags": {
+            "example": [
+              "mercado",
+              "importado-julho"
+            ],
+            "description": "Nomes das tags vinculadas à transação",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pendente",
+              "paga"
+            ],
+            "example": "paga",
+            "description": "Status persistido (pendente | paga)"
+          },
+          "statusExibicao": {
+            "type": "string",
+            "example": "atrasada",
+            "enum": [
+              "pendente",
+              "paga",
+              "atrasada"
+            ],
+            "description": "Status para exibição. \"atrasada\" é derivado: pendente + data (vencimento) < hoje."
+          },
+          "pagaEm": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-07-09T18:00:00.000Z",
+            "description": "Quando foi marcada como paga (null enquanto pendente)"
+          },
           "categoria": {
             "$ref": "#/components/schemas/Categoria"
           },
@@ -4192,6 +5027,8 @@
           "valor",
           "data",
           "createdAt",
+          "status",
+          "statusExibicao",
           "categoria",
           "pessoa",
           "meioPagamento"
@@ -6555,6 +7392,421 @@
           },
           "data": {
             "$ref": "#/components/schemas/Patrimonio"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "Recorrencia": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-gerado"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Aluguel"
+          },
+          "categoriaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "valor": {
+            "type": "number",
+            "example": 1200.5
+          },
+          "diaVencimento": {
+            "type": "number",
+            "example": 10,
+            "description": "Dia do vencimento (1-31)"
+          },
+          "frequencia": {
+            "type": "string",
+            "enum": [
+              "mensal"
+            ],
+            "example": "mensal"
+          },
+          "ativa": {
+            "type": "boolean",
+            "example": true,
+            "description": "Ativa (true) ou pausada (false)"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-20T10:20:30.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "descricao",
+          "valor",
+          "diaVencimento",
+          "frequencia",
+          "ativa",
+          "createdAt"
+        ]
+      },
+      "GetRecorrenciasResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Recorrencia"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "RecorrenciaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Recorrencia"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CreateRecorrenciaRequest": {
+        "type": "object",
+        "properties": {
+          "descricao": {
+            "type": "string",
+            "example": "Aluguel"
+          },
+          "valor": {
+            "type": "number",
+            "example": 1200.5
+          },
+          "diaVencimento": {
+            "type": "number",
+            "example": 10,
+            "description": "Dia do vencimento (1-31)"
+          },
+          "frequencia": {
+            "type": "string",
+            "enum": [
+              "mensal"
+            ],
+            "default": "mensal"
+          },
+          "categoriaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Meio de pagamento (\"pagar com\")"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "descricao",
+          "valor",
+          "diaVencimento"
+        ]
+      },
+      "EditRecorrenciaRequest": {
+        "type": "object",
+        "properties": {
+          "descricao": {
+            "type": "string",
+            "example": "Aluguel"
+          },
+          "valor": {
+            "type": "number",
+            "example": 1200.5
+          },
+          "diaVencimento": {
+            "type": "number",
+            "example": 10,
+            "description": "Dia do vencimento (1-31)"
+          },
+          "frequencia": {
+            "type": "string",
+            "enum": [
+              "mensal"
+            ],
+            "default": "mensal"
+          },
+          "categoriaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Meio de pagamento (\"pagar com\")"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ativa": {
+            "type": "boolean",
+            "example": false,
+            "description": "Pausar (false) ou reativar (true) a recorrência"
+          }
+        }
+      },
+      "DeleteRecorrenciaResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "CategoriaSugerida": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid-categoria"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Alimentação"
+          }
+        },
+        "required": [
+          "id",
+          "nome"
+        ]
+      },
+      "LinhaImportacao": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "example": "2026-07-15",
+            "description": "Data (YYYY-MM-DD)"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Compra no mercado"
+          },
+          "valor": {
+            "type": "number",
+            "example": 150.5,
+            "description": "Valor absoluto (sempre positivo)"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "receita",
+              "despesa"
+            ],
+            "example": "despesa",
+            "description": "Derivado do sinal do valor no extrato"
+          },
+          "categoriaSugerida": {
+            "nullable": true,
+            "description": "Categoria sugerida pelo histórico (editável). Null se não houver palpite.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CategoriaSugerida"
+              }
+            ]
+          },
+          "possivelDuplicada": {
+            "type": "boolean",
+            "example": false,
+            "description": "True se parece já lançada (mesma data + valor). Vem desmarcada."
+          },
+          "incluir": {
+            "type": "boolean",
+            "example": true,
+            "description": "Se a linha está marcada para importar (false por padrão se duplicada)."
+          }
+        },
+        "required": [
+          "data",
+          "descricao",
+          "valor",
+          "tipo",
+          "possivelDuplicada",
+          "incluir"
+        ]
+      },
+      "ResumoAnalise": {
+        "type": "object",
+        "properties": {
+          "detectadas": {
+            "type": "number",
+            "example": 42,
+            "description": "Total de linhas detectadas"
+          },
+          "duplicadas": {
+            "type": "number",
+            "example": 3,
+            "description": "Quantas parecem duplicadas"
+          },
+          "selecionadas": {
+            "type": "number",
+            "example": 39,
+            "description": "Quantas vêm marcadas para importar"
+          },
+          "totalDespesas": {
+            "type": "number",
+            "example": 2350.9,
+            "description": "Soma das despesas detectadas"
+          }
+        },
+        "required": [
+          "detectadas",
+          "duplicadas",
+          "selecionadas",
+          "totalDespesas"
+        ]
+      },
+      "AnaliseData": {
+        "type": "object",
+        "properties": {
+          "linhas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinhaImportacao"
+            }
+          },
+          "resumo": {
+            "$ref": "#/components/schemas/ResumoAnalise"
+          }
+        },
+        "required": [
+          "linhas",
+          "resumo"
+        ]
+      },
+      "AnalisarResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AnaliseData"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "LinhaConfirmacao": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "example": "2026-07-15",
+            "description": "Data (YYYY-MM-DD)"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Compra no mercado"
+          },
+          "valor": {
+            "type": "number",
+            "example": 150.5
+          },
+          "categoriaId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Categoria escolhida/confirmada"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "data",
+          "descricao",
+          "valor"
+        ]
+      },
+      "ConfirmarImportacaoRequest": {
+        "type": "object",
+        "properties": {
+          "linhas": {
+            "description": "Linhas marcadas para importar (já revisadas)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinhaConfirmacao"
+            }
+          },
+          "tagEmLote": {
+            "type": "string",
+            "example": "importado-julho",
+            "description": "Tag aplicada a todas as transações importadas (normalizada)."
+          }
+        },
+        "required": [
+          "linhas"
+        ]
+      },
+      "ConfirmarData": {
+        "type": "object",
+        "properties": {
+          "criadas": {
+            "type": "number",
+            "example": 39,
+            "description": "Quantidade de transações criadas"
+          }
+        },
+        "required": [
+          "criadas"
+        ]
+      },
+      "ConfirmarImportacaoResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ConfirmarData"
           }
         },
         "required": [

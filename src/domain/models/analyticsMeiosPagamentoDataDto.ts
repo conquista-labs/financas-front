@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ResumoMeiosPagamentoDto } from "./resumoMeiosPagamentoDto";
-import { MeioPagamentoAnalyticsDto } from "./meioPagamentoAnalyticsDto";
-import { FormaPagamentoAnalyticsDto } from "./formaPagamentoAnalyticsDto";
+import type { FormaPagamentoAnalyticsDto } from "./formaPagamentoAnalyticsDto";
+import type { MeioPagamentoAnalyticsDto } from "./meioPagamentoAnalyticsDto";
+import type { ResumoMeiosPagamentoDto } from "./resumoMeiosPagamentoDto";
 
 export interface AnalyticsMeiosPagamentoDataDto {
   /**

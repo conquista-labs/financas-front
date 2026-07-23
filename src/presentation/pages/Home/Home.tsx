@@ -1,133 +1,203 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "@rarui/icons";
-import { Box, Datepicker, IconButton, Tabs } from "@rarui-react/components";
-import { addYears, format, getMonth, getYear, subYears } from "date-fns";
-import React, { useState } from "react";
-import {
-  NumberParam,
-  StringParam,
-  useQueryParams,
-  withDefault,
-} from "use-query-params";
+import { RefreshCw } from "lucide-react";
+import { useState } from "react";
 
-import { Loading } from "@/presentation/components";
+import { cn } from "@/lib/utils";
+import { MonthPicker } from "@/presentation/components";
+import {
+  useGetAnalyticsCategorias,
+  useGetAnalyticsMeiosPagamento,
+  useGetAnalyticsOrcamento,
+  useGetQuickStats,
+  useGetResumoFinanceiro,
+  useGetTransacoes,
+} from "@/presentation/hooks/api";
 import { useAuthStore } from "@/presentation/store";
 
 import {
-  AnalisesDetalhadasTab,
-  Header,
-  PatrimonioTab,
-  VisaoGeralTab,
+  BalanceHero,
+  BudgetList,
+  CategoryMatrix,
+  ExpenseDonut,
+  HealthCard,
+  IncomeExpenseChart,
+  KpiCards,
+  MeiosPagamentoCard,
+  RecentTransactions,
+  TopCategoriasCard,
+  YearTable,
 } from "./components";
-import { useHomeData } from "./hooks";
+import { monthNavButton, segButton } from "./home.styles";
 
-const Home: React.FC = () => {
-  const [params, setParams] = useQueryParams({
-    year: withDefault(StringParam, format(new Date(), "yyyy")),
-    month: withDefault(StringParam, format(new Date(), "MM")),
-    tab: withDefault(NumberParam, 0),
-  });
+const now = new Date();
 
+/**
+ * Dashboard "Visão geral" (nova identidade Nossa Grana). KPIs + hero de saldo +
+ * resumo do ano + gráficos (bar/donut via Recharts) + orçamentos + últimos
+ * lançamentos. Aba "Análises" fica para a próxima entrega.
+ */
+const Home = () => {
   const { auth } = useAuthStore();
+  const [ano, setAno] = useState(now.getFullYear());
+  const [mes, setMes] = useState(now.getMonth() + 1); // 1-12
+  const [tab, setTab] = useState<"geral" | "analises">("geral");
 
-  // Estado para navegação do mini calendário
-  const [miniCalendarMonth, setMiniCalendarMonth] = useState(
-    getMonth(new Date()) + 1,
-  );
-  const [miniCalendarYear, setMiniCalendarYear] = useState(Number(params.year));
+  const {
+    data: resumo,
+    isLoading: loadingResumo,
+    refetch: refetchResumo,
+  } = useGetResumoFinanceiro({ ano });
+  const {
+    data: quickStats,
+    isLoading: loadingStats,
+    refetch: refetchStats,
+  } = useGetQuickStats({ ano, mes });
+  const {
+    data: orcamento,
+    isLoading: loadingOrc,
+    refetch: refetchOrc,
+  } = useGetAnalyticsOrcamento({ ano, mes });
+  const {
+    data: transacoes,
+    isLoading: loadingTx,
+    refetch: refetchTx,
+  } = useGetTransacoes({ page: 1, limit: 6 });
 
-  // Hook simplificado - apenas para o Header e controle de refresh
-  const { isLoading, handleRefreshData } = useHomeData({
-    year: Number(params.year),
-  });
+  // Aba Análises (categorias e meios do mês).
+  const {
+    data: categorias,
+    isLoading: loadingCat,
+    refetch: refetchCat,
+  } = useGetAnalyticsCategorias({ ano, mes });
+  const {
+    data: meios,
+    isLoading: loadingMeios,
+    refetch: refetchMeios,
+  } = useGetAnalyticsMeiosPagamento({ ano, mes });
 
-  const navigateYear = (direction: "prev" | "next") => {
-    const operator = direction === "next" ? addYears : subYears;
-    const date = new Date(Number(params.year), 0);
-    const newYear = format(operator(date!, 1), "yyyy");
-    setParams({ year: newYear });
+  const [refreshing, setRefreshing] = useState(false);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([
+      refetchResumo(),
+      refetchStats(),
+      refetchOrc(),
+      refetchTx(),
+      refetchCat(),
+      refetchMeios(),
+    ]);
+    setRefreshing(false);
   };
 
-  const handleDateChange = (date: Date) => {
-    setParams({ year: format(date, "yyyy"), month: format(date, "MM") });
-    setMiniCalendarYear(getYear(date));
-  };
+  const resumoData = resumo?.data;
+  const saldosMes = resumoData?.saldosMes ?? [];
+  const mesAtual = saldosMes[mes - 1];
+  const donutCategorias =
+    resumoData?.despesasPorCategoriaMes?.[mes - 1]?.categorias ?? [];
+  const matrizData = resumoData?.despesasPorCategoriaMes ?? [];
 
-  const handleMiniCalendarNavigate = (month: number, year: number) => {
-    setMiniCalendarMonth(month);
-    setMiniCalendarYear(year);
-  };
+  const stats = quickStats?.data;
+  const orcamentoRows = orcamento?.data?.orcamentoCategorias ?? [];
+  const saude = orcamento?.data?.saudeFinanceira;
+  const categoriasRows = categorias?.data?.categorias ?? [];
+  const meiosRows = meios?.data?.meiosPagamento ?? [];
+  const primeiroNome = (auth.user?.nome ?? "").split(" ")[0];
 
   return (
-    <Box display="flex" height="100%" flexDirection="column" gap="$s" pb="$xl">
-      {/* 🎯 SEÇÃO 1: Header + Controles (FORA DAS TABS) */}
-      <Box display="flex" flexDirection="column" gap="$s">
-        <Header
-          nome={auth.user.nome ?? ""}
-          atualizadoEm={undefined}
-          onAtualizar={handleRefreshData}
-        />
-
-        <Box display="flex" justifyContent="flex-end">
-          <Box
-            display="flex"
-            alignItems="center"
-            gap="$2xs"
-            width={{ xs: "100%", md: "300px" }}
+    <div className="animate-om-fade pb-8">
+      {/* Header + seletor de mês */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-sm text-muted">Olá, {primeiroNome} 👋</p>
+          <h1 className="font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
+            Visão geral
+          </h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="Atualizar dados"
+            title="Atualizar dados"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className={cn(monthNavButton(), "disabled:opacity-60")}
           >
-            <IconButton
-              source={<ArrowLeftIcon size="medium" />}
-              onClick={() => navigateYear("prev")}
+            <RefreshCw
+              className={cn("size-[17px]", refreshing && "animate-spin")}
             />
-            <Datepicker
-              dateFormat="MM/yyyy"
-              showMonthYearPicker
-              selected={new Date(Number(params.year), Number(params.month) - 1)}
-              onChange={(date) => handleDateChange(date as Date)}
-            />
-            <IconButton
-              source={<ArrowRightIcon size="medium" />}
-              onClick={() => navigateYear("next")}
-            />
-          </Box>
-        </Box>
-      </Box>
-
-      <Tabs
-        position="left"
-        underlined
-        selectedTab={params.tab}
-        preSelectedTab={params.tab}
-      >
-        <Tabs.Item label="📊 Visão Geral" onClick={() => setParams({ tab: 0 })}>
-          <VisaoGeralTab
-            year={Number(params.year)}
-            month={Number(params.month)}
-            miniCalendarMonth={miniCalendarMonth}
-            miniCalendarYear={miniCalendarYear}
-            onNavigateMiniCalendar={handleMiniCalendarNavigate}
+          </button>
+          <MonthPicker
+            month={mes}
+            year={ano}
+            onChange={(m, y) => {
+              setMes(m);
+              setAno(y);
+            }}
           />
-        </Tabs.Item>
+        </div>
+      </div>
 
-        <Tabs.Item label="💰 Patrimônio" onClick={() => setParams({ tab: 1 })}>
-          <PatrimonioTab
-            year={Number(params.year)}
-            month={Number(params.month)}
-          />
-        </Tabs.Item>
-
-        <Tabs.Item
-          label="📈 Análises Detalhadas"
-          onClick={() => setParams({ tab: 2 })}
+      {/* Tabs segmentadas */}
+      <div className="mb-5 inline-flex max-w-[320px] gap-1 rounded-[13px] bg-track p-1">
+        <button
+          type="button"
+          onClick={() => setTab("geral")}
+          className={segButton({ active: tab === "geral" })}
         >
-          <AnalisesDetalhadasTab
-            year={Number(params.year)}
-            month={Number(params.month)}
-          />
-        </Tabs.Item>
-      </Tabs>
+          Visão geral
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("analises")}
+          className={segButton({ active: tab === "analises" })}
+        >
+          Análises
+        </button>
+      </div>
 
-      <Loading isLoading={isLoading} />
-    </Box>
+      {tab === "geral" ? (
+        <div className="flex flex-col gap-4">
+          <KpiCards
+            gastoSemana={stats?.gastoSemana}
+            economiaMes={stats?.economiaMes}
+            maiorCategoria={stats?.maiorCategoria}
+            transacaoMaior={stats?.transacaoMaior}
+            isLoading={loadingStats}
+          />
+          <BalanceHero
+            saldo={mesAtual?.valor}
+            receitas={mesAtual?.receita}
+            despesas={mesAtual?.despesa}
+            isLoading={loadingResumo}
+          />
+          <YearTable
+            rows={saldosMes}
+            currentMonth={mes}
+            isLoading={loadingResumo}
+          />
+          <IncomeExpenseChart rows={saldosMes} isLoading={loadingResumo} />
+          <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+            <BudgetList rows={orcamentoRows} isLoading={loadingOrc} />
+            <ExpenseDonut
+              categorias={donutCategorias}
+              isLoading={loadingResumo}
+            />
+          </div>
+          <RecentTransactions
+            rows={transacoes?.data?.rows}
+            isLoading={loadingTx}
+          />
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+            <TopCategoriasCard rows={categoriasRows} isLoading={loadingCat} />
+            <HealthCard saude={saude} isLoading={loadingOrc} />
+          </div>
+          <MeiosPagamentoCard rows={meiosRows} isLoading={loadingMeios} />
+          <CategoryMatrix data={matrizData} isLoading={loadingResumo} />
+        </div>
+      )}
+    </div>
   );
 };
 

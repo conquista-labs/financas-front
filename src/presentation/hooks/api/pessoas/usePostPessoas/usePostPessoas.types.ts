@@ -1,6 +1,7 @@
-import type { PostPessoasRequest, PostPessoasModel } from "@/domain/usecases";
 import { type UseMutationOptions } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
+
+import type { PostPessoasModel, PostPessoasRequest } from "@/domain/usecases";
 
 export type UsePostPessoasOptions = Omit<
   UseMutationOptions<PostPessoasModel, AxiosError, PostPessoasRequest, unknown>,

@@ -37,3 +37,9 @@ dist-ssr
 
 ./env
 CLAUDE.md
+
+# Output de screenshots do Playwright MCP (validação visual local)
+.playwright-mcp/
+
+# Extratos de teste da importação (arquivos pessoais, não versionar)
+*.ofx

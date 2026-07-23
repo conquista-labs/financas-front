@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { TransacaoPaginatedData } from "./transacaoPaginatedData";
+import type { TransacaoPaginatedData } from "./transacaoPaginatedData";
 
 export interface GetTransacoesResponse {
   message: string;

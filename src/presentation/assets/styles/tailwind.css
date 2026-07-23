@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Fundação visual "Nossa Grana" (rebrand).
+ * Tokens como canais RGB (space-separated) para funcionar com o
+ * modificador de alpha do Tailwind: rgb(var(--token) / <alpha-value>).
+ * Tema escuro via [data-theme="dark"] ou .dark na <html>.
+ */
+:root {
+  --bg: 245 244 240; /* #F5F4F0 */
+  --card: 255 255 255; /* #FFFFFF */
+  --card2: 250 249 246; /* #FAF9F6 — fundo levemente destacado (footer/matriz) */
+  --line: 233 231 225; /* #E9E7E1 */
+  --line2: 242 240 234; /* #F2F0EA */
+  --track: 240 238 232; /* #F0EEE8 */
+  --fg: 23 22 27; /* #17161B */
+  --fg2: 107 105 118; /* #6B6976 */
+  --muted: 151 147 160; /* #9793a0 */
+  --primary: 91 75 224; /* #5B4BE0 */
+  --primary-strong: 69 54 201; /* #4536c9 */
+  --accent-soft: 238 235 251; /* #EEEBFB */
+  --success: 18 166 106; /* #12A66A */
+  --danger: 229 72 77; /* #E5484D */
+  --warning: 183 110 0; /* #B76E00 */
+  --star: 245 179 1; /* #F5B301 */
+
+  /**
+   * Ponte de tokens shadcn → nossos tokens.
+   * Componentes shadcn referenciam bg-background, text-foreground, border-border,
+   * ring-ring, bg-destructive, etc. Aqui esses nomes viram aliases dos nossos
+   * tokens. Como todos apontam para vars que já mudam no bloco dark, a ponte
+   * herda o tema automaticamente — só precisa ser declarada uma vez.
+   */
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --card-foreground: var(--fg);
+  --popover: var(--card);
+  --popover-foreground: var(--fg);
+  --primary-foreground: 255 255 255;
+  --secondary: var(--track);
+  --secondary-foreground: var(--fg);
+  --muted-foreground: var(--muted);
+  --accent: var(--accent-soft);
+  --accent-foreground: var(--primary);
+  --destructive: var(--danger);
+  --destructive-foreground: 255 255 255;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--primary);
+  --radius: 0.8125rem; /* 13px — nosso raio de botão */
+}
+
+[data-theme="dark"],
+.dark {
+  /* Valores exatos do protótipo (design_handoff → :root[data-theme=dark]) */
+  --bg: 20 19 25; /* #141319 */
+  --card: 30 29 39; /* #1E1D27 */
+  --card2: 38 36 47; /* #26242F — fundo levemente destacado (footer/matriz) */
+  --line: 48 46 58; /* #302E3A */
+  --line2: 38 36 47; /* #26242F */
+  --track: 46 44 57; /* #2E2C39 */
+  --fg: 242 240 244; /* #F2F0F4 */
+  --fg2: 180 176 190; /* #B4B0BE */
+  --muted: 138 134 144; /* #8A8690 */
+  --accent-soft: 47 42 91; /* ≈ rgba(91,75,224,.28) sobre o card */
+  /* primary / success / danger / warning / star mantêm o mesmo hex */
+}
+
+@layer base {
+  body {
+    font-family: Outfit, sans-serif;
+    color: rgb(var(--fg));
+    background: rgb(var(--bg));
+  }
+
+  /**
+   * O reset.css do RarUI aplica `border: 0` em uma lista de elementos
+   * específicos (div, span, a, ...), cuja especificidade (0,0,1) vence o
+   * preflight do Tailwind (seletor universal `*`, 0,0,0). Resultado: TODA
+   * classe de borda do Tailwind (border, border-t, border-b...) aplicava só a
+   * cor, com width/style zerados → bordas invisíveis. Aqui restauramos
+   * border-style para os elementos que usam classes de borda utilitárias,
+   * casando a especificidade do reset. As classes `border-*` do Tailwind
+   * definem a largura; só o style precisa ser resgatado.
+   */
+  [class~="border"],
+  [class*="border-t"],
+  [class*="border-b"],
+  [class*="border-l"],
+  [class*="border-r"],
+  [class*="border-x"],
+  [class*="border-y"],
+  [class*="border-2"],
+  [class*="border-4"],
+  [class*="border-8"],
+  [class*="border-["] {
+    border-style: solid;
+  }
+}
+
+@layer components {
+  /**
+   * Scrollbar fina e discreta (UI Kit "Nossa Grana"). Trilha transparente,
+   * thumb rounded em muted/32 que escurece para muted/55 no hover; o respiro
+   * lateral vem da borda transparente + background-clip. Usa o token --muted,
+   * então funciona nos dois temas. Aplicar nas listas com overflow.
+   */
+  .nice-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--muted) / 0.35) transparent;
+  }
+  .nice-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .nice-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .nice-scroll::-webkit-scrollbar-thumb {
+    background: rgb(var(--muted) / 0.32);
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  .nice-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--muted) / 0.55);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+}

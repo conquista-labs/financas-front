@@ -1,19 +1,20 @@
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
-  useQueryClient,
   type UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import type { AxiosError } from "axios";
-import { useToast } from "@rarui-react/components/dist/Toast";
+import { useNavigate } from "react-router-dom";
 
-import { urlRouters } from "@/presentation/router/router.definitions";
-import { makePatchPessoasIdFactory } from "@/main/factories/usecases";
 import type {
+  PatchPessoasIdModel,
   PatchPessoasIdParams,
   PatchPessoasIdRequest,
-  PatchPessoasIdModel,
 } from "@/domain/usecases";
+import { makePatchPessoasIdFactory } from "@/main/factories/usecases";
+import { urlRouters } from "@/presentation/router/router.definitions";
+
 import type { UsePatchPessoasIdOptions } from "./usePatchPessoasId.types";
 
 export const usePatchPessoasId = (
@@ -35,7 +36,7 @@ export const usePatchPessoasId = (
       return patchPessoasId.patch(body, params);
     },
     onSuccess: () => {
-      navigate(urlRouters.peoples);
+      navigate(urlRouters.registers);
       queryClient.invalidateQueries({ queryKey: ["get-pessoas"] });
     },
     onError: (error) => {

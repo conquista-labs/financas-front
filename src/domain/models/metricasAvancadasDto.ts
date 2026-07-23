@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DiasSemGastosDto } from "./diasSemGastosDto";
-import { MaiorGastoMesDto } from "./maiorGastoMesDto";
+import type { DiasSemGastosDto } from "./diasSemGastosDto";
+import type { MaiorGastoMesDto } from "./maiorGastoMesDto";
 
 export interface MetricasAvancadasDto {
   /**

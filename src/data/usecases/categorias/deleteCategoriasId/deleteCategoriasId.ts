@@ -2,8 +2,8 @@ import { type HttpClient, HttpStatusCode } from "@/data/protocols";
 import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
 import type {
   DeleteCategoriasIdModel,
-  DeleteCategoriasIdUseCase,
   DeleteCategoriasIdParams,
+  DeleteCategoriasIdUseCase,
 } from "@/domain/usecases";
 
 export class DeleteCategoriasId implements DeleteCategoriasIdUseCase {

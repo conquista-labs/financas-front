@@ -1,5 +1,6 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
+import { DAY_TIME } from "@/app.definitions";
 import type {
   GetTransacoesModel,
   GetTransacoesParams,
@@ -7,7 +8,6 @@ import type {
 import { makeGetTransacoesFactory } from "@/main/factories/usecases";
 
 import type { UseGetTransacoesOptions } from "./useGetTransacoes.types";
-import { DAY_TIME } from "@/app.definitions";
 
 export const useGetTransacoes = (
   params: GetTransacoesParams,

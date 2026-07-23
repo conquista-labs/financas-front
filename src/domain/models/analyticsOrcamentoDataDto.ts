@@ -9,10 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { OrcamentoCategoriaDto } from "./orcamentoCategoriaDto";
-import { OrcamentoGeralDto } from "./orcamentoGeralDto";
-import { SaudeFinanceiraDto } from "./saudeFinanceiraDto";
-import { AlertaOrcamentoDto } from "./alertaOrcamentoDto";
+import type { AlertaOrcamentoDto } from "./alertaOrcamentoDto";
+import type { OrcamentoCategoriaDto } from "./orcamentoCategoriaDto";
+import type { OrcamentoGeralDto } from "./orcamentoGeralDto";
+import type { SaudeFinanceiraDto } from "./saudeFinanceiraDto";
 
 export interface AnalyticsOrcamentoDataDto {
   /**

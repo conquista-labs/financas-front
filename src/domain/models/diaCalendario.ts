@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { TransacaoCalendario } from "./transacaoCalendario";
+import type { TransacaoCalendario } from "./transacaoCalendario";
 
 export interface DiaCalendario {
   /**
@@ -22,8 +22,12 @@ export interface DiaCalendario {
   data: string;
   transacoes: Array<TransacaoCalendario>;
   /**
-   * Total de despesas do dia em centavos
+   * Total de despesas do dia
    */
   totalDespesas: number;
+  /**
+   * Total de receitas do dia
+   */
+  totalReceitas: number;
   quantidadeTransacoes: number;
 }

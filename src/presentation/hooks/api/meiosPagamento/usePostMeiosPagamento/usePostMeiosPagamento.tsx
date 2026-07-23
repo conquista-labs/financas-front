@@ -1,18 +1,19 @@
+import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
-  useQueryClient,
   type UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@rarui-react/components/dist/Toast";
 
-import { urlRouters } from "@/presentation/router/router.definitions";
-import { makePostMeiosPagamentoFactory } from "@/main/factories/usecases";
 import type {
-  PostMeiosPagamentoRequest,
   PostMeiosPagamentoModel,
+  PostMeiosPagamentoRequest,
 } from "@/domain/usecases";
+import { makePostMeiosPagamentoFactory } from "@/main/factories/usecases";
+import { urlRouters } from "@/presentation/router/router.definitions";
+
 import type { UsePostMeiosPagamentoOptions } from "./usePostMeiosPagamento.types";
 
 export const usePostMeiosPagamento = (
@@ -32,7 +33,7 @@ export const usePostMeiosPagamento = (
     mutationFn: (body: PostMeiosPagamentoRequest) =>
       postMeiosPagamento.post(body),
     onSuccess: () => {
-      navigate(urlRouters.meansOfPayment);
+      navigate(urlRouters.registers);
       queryClient.invalidateQueries({ queryKey: ["get-meios-pagamento"] });
     },
     onError: (error) => {

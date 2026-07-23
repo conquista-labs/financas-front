@@ -1,10 +1,11 @@
-import React from "react";
+import "./loading.css";
+
 import { Box, Icon } from "@rarui-react/components";
+import React from "react";
 
 import Logo from "@/presentation/assets/images/short_logo.svg?react";
 
 import { type LoadingProps } from "./loading.types";
-import "./loading.css";
 
 const Loading: React.FC<LoadingProps> = ({ isLoading }) => (
   <>

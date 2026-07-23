@@ -1,4 +1,4 @@
-import { GoogleAuth } from "@/domain/models";
+import type { GoogleAuth } from "@/domain/models";
 
 export interface AuthProvider {
   getAuth: () => GoogleAuth;

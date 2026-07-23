@@ -1,11 +1,11 @@
-import React from "react";
-import { useController } from "react-hook-form";
 import {
   Box,
-  Text,
-  Label,
   Datepicker as RaruiDatepicker,
+  Label,
+  Text,
 } from "@rarui-react/components";
+import React from "react";
+import { useController } from "react-hook-form";
 
 import { type DatepickerProps } from "./datePicker.types.ts";
 

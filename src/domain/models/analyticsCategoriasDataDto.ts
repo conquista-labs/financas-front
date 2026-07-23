@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { CategoriaAnalyticsDto } from "./categoriaAnalyticsDto";
-import { TotalMesAnteriorDto } from "./totalMesAnteriorDto";
+import type { CategoriaAnalyticsDto } from "./categoriaAnalyticsDto";
+import type { TotalMesAnteriorDto } from "./totalMesAnteriorDto";
 
 export interface AnalyticsCategoriasDataDto {
   /**

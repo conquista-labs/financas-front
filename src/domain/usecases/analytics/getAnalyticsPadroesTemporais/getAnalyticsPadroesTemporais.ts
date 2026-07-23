@@ -1,4 +1,4 @@
-import { GetAnalyticsPadroesTemporaisResponse } from "@/domain/models/getAnalyticsPadroesTemporaisResponse";
+import type { GetAnalyticsPadroesTemporaisResponse } from "@/domain/models/getAnalyticsPadroesTemporaisResponse";
 
 export interface GetAnalyticsPadroesTemporaisUsecase {
   get: (

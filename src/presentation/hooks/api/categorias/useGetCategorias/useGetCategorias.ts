@@ -1,5 +1,6 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
+import { DAY_TIME } from "@/app.definitions";
 import type {
   GetCategoriasModel,
   GetCategoriasParams,
@@ -7,7 +8,6 @@ import type {
 import { makeGetCategoriasFactory } from "@/main/factories/usecases";
 
 import type { UseGetCategoriasOptions } from "./useGetCategorias.types";
-import { DAY_TIME } from "@/app.definitions";
 
 export const useGetCategorias = (
   params: GetCategoriasParams,

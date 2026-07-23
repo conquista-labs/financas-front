@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AnalyticsCategoriasDataDto } from "./analyticsCategoriasDataDto";
+import type { AnalyticsCategoriasDataDto } from "./analyticsCategoriasDataDto";
 
 export interface GetAnalyticsCategoriasResponse {
   /**

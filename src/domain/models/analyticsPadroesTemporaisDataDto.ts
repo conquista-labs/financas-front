@@ -9,10 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ParcelaAbertaDto } from "./parcelaAbertaDto";
-import { LembreteTransacaoDto } from "./lembreteTransacaoDto";
-import { PadraoDiarioDto } from "./padraoDiarioDto";
-import { TransacaoRecorrenteDto } from "./transacaoRecorrenteDto";
+import type { LembreteTransacaoDto } from "./lembreteTransacaoDto";
+import type { PadraoDiarioDto } from "./padraoDiarioDto";
+import type { ParcelaAbertaDto } from "./parcelaAbertaDto";
+import type { TransacaoRecorrenteDto } from "./transacaoRecorrenteDto";
 
 export interface AnalyticsPadroesTemporaisDataDto {
   /**
