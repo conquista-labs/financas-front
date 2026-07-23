@@ -11,7 +11,12 @@ export type HttpRequest = {
   method?: HttpMethod;
   body?: unknown;
   headers?: Record<string, string>;
-  params?: Record<string, string | number>;
+  // Arrays são serializados pelo axios client via qs (arrayFormat: "repeat"),
+  // ex.: `pessoaIds` nos filtros de transações. `undefined` = param omitido.
+  params?: Record<
+    string,
+    string | number | boolean | Array<string | number> | undefined
+  >;
   responseType?: ResponseType;
 };
 export interface HttpClient {

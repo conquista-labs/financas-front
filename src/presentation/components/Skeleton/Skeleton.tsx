@@ -1,5 +1,5 @@
 import { Box } from "@rarui-react/components";
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 
 interface SkeletonProps {
   width?: string | number;
@@ -12,18 +12,25 @@ interface SkeletonProps {
 export const Skeleton = ({
   width = "100%",
   height = "16px",
-  borderRadius = "$xs",
+  borderRadius = "8px",
   marginBottom,
   animation = true,
 }: SkeletonProps) => {
+  const baseStyle: CSSProperties = {
+    width,
+    height,
+    borderRadius,
+    marginBottom,
+  };
   const animationStyle: CSSProperties = animation
     ? {
+        ...baseStyle,
         background:
           "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
         backgroundSize: "200% 100%",
         animation: "loading 1.5s infinite",
       }
-    : {};
+    : { ...baseStyle, backgroundColor: "var(--track, #e0e0e0)" };
 
   return (
     <>
@@ -41,14 +48,7 @@ export const Skeleton = ({
           `}
         </style>
       )}
-      <Box
-        width={width}
-        height={height}
-        backgroundColor={animation ? undefined : "$secondary"}
-        borderRadius={borderRadius}
-        marginBottom={marginBottom}
-        style={animationStyle}
-      />
+      <Box style={animationStyle} />
     </>
   );
 };

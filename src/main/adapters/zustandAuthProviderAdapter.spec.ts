@@ -11,7 +11,10 @@ vi.mock("@/presentation/store", () => ({
 }));
 
 describe("ZustandAuthProviderAdapter", () => {
-  const authMock = { token: "valid_token", user: { name: "John Doe" } };
+  const authMock = {
+    token: "valid_token",
+    user: { nome: "John Doe", email: "john@doe.com", isGoogleUser: true },
+  };
   const resetStateMock = vi.fn();
 
   beforeEach(() => {
@@ -19,7 +22,8 @@ describe("ZustandAuthProviderAdapter", () => {
     vi.mocked(useAuthStore.getState).mockReturnValue({
       auth: authMock,
       resetState: resetStateMock,
-      setAuth: vitest.fn(),
+      setAuth: vi.fn(),
+      isAuthenticated: vi.fn(),
     });
   });
 

@@ -4,7 +4,7 @@ export interface GetMeiosPagamentoUseCase {
   get: (params: GetMeiosPagamentoParams) => Promise<GetMeiosPagamentoModel>;
 }
 
-export type GetMeiosPagamentoModel = GetMeiosPagamentoResponse;
+export type GetMeiosPagamentoModel = GetMeiosPagamentosResponse;
 
 export type GetMeiosPagamentoParams = {
   page?: number;
