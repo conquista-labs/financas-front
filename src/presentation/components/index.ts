@@ -1,17 +1,8 @@
 export { Breadcrumb } from "./Breadcrumb";
-export { ColorPicker } from "./ColorPicker";
-export { DatePicker } from "./DatePicker";
-export { Input } from "./Input";
-export { InputCurrency } from "./InputCurrency";
 export { Loading } from "./Loading";
 export { Logo } from "./Logo";
-export { Select } from "./Select";
 export { Skeleton } from "./Skeleton";
 export { Suspense } from "./Suspense";
-export { ColumnsDefinitions, Table } from "./Table";
-export { TableSkeleton } from "./TableSkeleton";
-export { Textarea } from "./Textarea";
-export { Toggle } from "./Toggle";
 
 /* Nova identidade "Nossa Grana" (shadcn/ui) — wrappers no padrão do projeto.
    Compostos (Dialog/Sheet/DropdownMenu/Tooltip) ficam em ./ui. */

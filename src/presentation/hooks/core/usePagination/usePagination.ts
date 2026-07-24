@@ -31,7 +31,7 @@ const usePagination = (totalItems = 0): UsePaginationProps => {
         pageSize,
       });
     },
-    [setParam],
+    [setParam, param.page],
   );
 
   return {

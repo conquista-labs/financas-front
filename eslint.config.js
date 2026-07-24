@@ -7,7 +7,19 @@ import { globalIgnores } from "eslint/config";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 
 export default tseslint.config([
-  globalIgnores(["dist"]),
+  // Ignora artefatos gerados/descartáveis que não devem ser lintados:
+  // - "dist": build de produção.
+  // - "src/domain/models": tipos gerados pelo OpenAPI Generator (usam
+  //   `export namespace`, que dispara no-namespace — não editamos à mão).
+  // - ".mock/src": output do generate:types (não versionado; só serve de
+  //   fonte antes de mover os models para src/domain/models).
+  // - "public/mockServiceWorker.js": gerado pelo MSW.
+  globalIgnores([
+    "dist",
+    "src/domain/models/**",
+    ".mock/**",
+    "public/mockServiceWorker.js",
+  ]),
   {
     files: ["**/*.{ts,tsx}"],
     plugins: {

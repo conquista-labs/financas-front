@@ -24,7 +24,7 @@ export const parseAmount = (
   if (typeof value === "number") return Number.isFinite(value) ? value : 0;
   if (!value) return 0;
   const normalized = value
-    .replace(/\s| /g, "")
+    .replace(/\s|\u00A0/g, "")
     .replace(/R\$/gi, "")
     .replace(/\./g, "")
     .replace(",", ".");
@@ -40,7 +40,7 @@ export const formatCurrency = (
   value: number | string | null | undefined,
 ): string => {
   if (typeof value === "string" && /R\$/i.test(value)) {
-    return value.replace(/ /g, " ").trim();
+    return value.replace(/\u00A0/g, " ").trim();
   }
   return BRL.format(parseAmount(value));
 };
