@@ -7635,6 +7635,11 @@
             "example": "despesa",
             "description": "Derivado do sinal do valor no extrato"
           },
+          "formaPagamento": {
+            "type": "string",
+            "example": "parcela3x",
+            "description": "Forma de pagamento sugerida quando a fatura traz parcela (\"1 de 3\" → parcela3x). Ausente = à vista. Editável na revisão."
+          },
           "categoriaSugerida": {
             "nullable": true,
             "description": "Categoria sugerida pelo histórico (editável). Null se não houver palpite.",
@@ -7757,6 +7762,26 @@
           "meioPagamentoId": {
             "type": "string",
             "format": "uuid"
+          },
+          "formaPagamento": {
+            "type": "string",
+            "enum": [
+              "avista",
+              "parcela1x",
+              "parcela2x",
+              "parcela3x",
+              "parcela4x",
+              "parcela5x",
+              "parcela6x",
+              "parcela7x",
+              "parcela8x",
+              "parcela9x",
+              "parcela10x",
+              "parcela11x",
+              "parcela12x"
+            ],
+            "example": "avista",
+            "description": "Forma de pagamento escolhida na revisão (default: sem valor)"
           }
         },
         "required": [

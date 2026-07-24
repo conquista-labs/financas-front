@@ -41,21 +41,23 @@ export const toReviewLines = (linhas: LinhaImportacao[]): ReviewLine[] =>
 /**
  * Monta o payload de confirmação a partir das linhas marcadas para importar.
  * IDs vazios são omitidos (o backend valida como uuid — nunca enviar "").
- *
- * `formaPagamento` (sugerida pelo /analisar ou editada pelo usuário) vai no
- * payload — o backend aceita e persiste. O cast cobre o campo, que ainda não
- * está no tipo gerado `LinhaConfirmacao`.
+ * `formaPagamento` (sugerida pelo /analisar ou editada pelo usuário) vai junto
+ * — o backend aceita e persiste.
  */
-export const toConfirmacao = (line: ReviewLine): LinhaConfirmacao =>
-  ({
-    data: line.data,
-    descricao: line.descricao,
-    valor: line.valor,
-    ...(line.categoriaId ? { categoriaId: line.categoriaId } : {}),
-    ...(line.pessoaId ? { pessoaId: line.pessoaId } : {}),
-    ...(line.meioPagamentoId ? { meioPagamentoId: line.meioPagamentoId } : {}),
-    ...(line.formaPagamento ? { formaPagamento: line.formaPagamento } : {}),
-  }) as LinhaConfirmacao;
+export const toConfirmacao = (line: ReviewLine): LinhaConfirmacao => ({
+  data: line.data,
+  descricao: line.descricao,
+  valor: line.valor,
+  ...(line.categoriaId ? { categoriaId: line.categoriaId } : {}),
+  ...(line.pessoaId ? { pessoaId: line.pessoaId } : {}),
+  ...(line.meioPagamentoId ? { meioPagamentoId: line.meioPagamentoId } : {}),
+  ...(line.formaPagamento
+    ? {
+        formaPagamento:
+          line.formaPagamento as LinhaConfirmacao.FormaPagamentoEnum,
+      }
+    : {}),
+});
 
 /** "2026-07-05" (ISO) ou "05/07/2026" (BR) → "05/07". */
 export const shortDate = (value: string): string => {

@@ -23,4 +23,39 @@ export interface LinhaConfirmacao {
   categoriaId?: string;
   pessoaId?: string;
   meioPagamentoId?: string;
+  /**
+   * Forma de pagamento escolhida na revisão (default: sem valor)
+   */
+  formaPagamento?: LinhaConfirmacao.FormaPagamentoEnum;
+}
+export namespace LinhaConfirmacao {
+  export type FormaPagamentoEnum =
+    | "avista"
+    | "parcela1x"
+    | "parcela2x"
+    | "parcela3x"
+    | "parcela4x"
+    | "parcela5x"
+    | "parcela6x"
+    | "parcela7x"
+    | "parcela8x"
+    | "parcela9x"
+    | "parcela10x"
+    | "parcela11x"
+    | "parcela12x";
+  export const FormaPagamentoEnum = {
+    Avista: "avista" as FormaPagamentoEnum,
+    Parcela1x: "parcela1x" as FormaPagamentoEnum,
+    Parcela2x: "parcela2x" as FormaPagamentoEnum,
+    Parcela3x: "parcela3x" as FormaPagamentoEnum,
+    Parcela4x: "parcela4x" as FormaPagamentoEnum,
+    Parcela5x: "parcela5x" as FormaPagamentoEnum,
+    Parcela6x: "parcela6x" as FormaPagamentoEnum,
+    Parcela7x: "parcela7x" as FormaPagamentoEnum,
+    Parcela8x: "parcela8x" as FormaPagamentoEnum,
+    Parcela9x: "parcela9x" as FormaPagamentoEnum,
+    Parcela10x: "parcela10x" as FormaPagamentoEnum,
+    Parcela11x: "parcela11x" as FormaPagamentoEnum,
+    Parcela12x: "parcela12x" as FormaPagamentoEnum,
+  };
 }

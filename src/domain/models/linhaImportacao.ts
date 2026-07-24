@@ -30,8 +30,8 @@ export interface LinhaImportacao {
    */
   categoriaSugerida?: CategoriaSugerida | null;
   /**
-   * Forma de pagamento sugerida (avista, parcela1x…parcela12x). Ausente quando
-   * for à vista.
+   * Forma de pagamento sugerida quando a fatura traz parcela (\"1 de 3\" →
+   * parcela3x). Ausente = à vista. Editável na revisão.
    */
   formaPagamento?: string;
   /**
