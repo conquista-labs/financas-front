@@ -2,10 +2,13 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import type { Tag } from "@/domain/models";
 import {
   useGetCategorias,
   useGetMeiosPagamento,
   useGetPessoas,
+  useGetTags,
+  useTagMutations,
 } from "@/presentation/hooks/api";
 
 import {
@@ -14,6 +17,7 @@ import {
   PessoaList,
   RegisterFormDialog,
   type RegisterItem,
+  TagList,
 } from "./components";
 import { registerTab } from "./registers.styles";
 import {
@@ -53,22 +57,44 @@ const Registers = () => {
   const categorias = useGetCategorias(OPT_LIMIT);
   const pessoas = useGetPessoas(OPT_LIMIT);
   const meios = useGetMeiosPagamento(OPT_LIMIT);
+  const tags = useGetTags();
 
   // Mutations da aba ativa (fallback categoria nas abas sem CRUD).
   const activeKind: RegisterKind = isRegisterKind(tab) ? tab : "categoria";
   const { remove, toggleFavorito } = useRegisterMutations(activeKind);
+  const tagMutations = useTagMutations();
 
   const openNew = () => {
+    if (tab === "tag") {
+      toast.info("Tags são criadas ao lançar uma transação.");
+      return;
+    }
     if (!isRegisterKind(tab)) {
-      toast.info(
-        tab === "tag"
-          ? "Tags são criadas ao lançar uma transação."
-          : "Recorrentes chegam em breve.",
-      );
+      toast.info("Recorrentes chegam em breve.");
       return;
     }
     setDialog({ open: true, kind: tab, item: null });
   };
+
+  const handleRenameTag = (id: string, nome: string) =>
+    tagMutations.rename.mutate(
+      { id, nome },
+      {
+        onSuccess: () => toast.success("Tag renomeada."),
+        onError: (e) => toast.error(e.message),
+      },
+    );
+
+  const handleDeleteTag = (tag: Tag) =>
+    tagMutations.remove.mutate(tag.id, {
+      onSuccess: () =>
+        toast.success(
+          tag.count > 0
+            ? `Tag "${tag.nome}" removida de ${tag.count} transaç${tag.count === 1 ? "ão" : "ões"}.`
+            : `Tag "${tag.nome}" excluída.`,
+        ),
+      onError: (e) => toast.error(e.message),
+    });
 
   const openEdit = (kind: RegisterKind) => (item: RegisterItem) =>
     setDialog({ open: true, kind, item });
@@ -100,14 +126,16 @@ const Registers = () => {
             {t.label}
           </button>
         ))}
-        <button
-          type="button"
-          onClick={openNew}
-          className="ml-auto flex items-center gap-[7px] rounded-[12px] bg-primary px-[17px] py-[11px] text-sm font-semibold text-white shadow-primary transition-colors hover:bg-primary-strong"
-        >
-          <Plus className="size-4" strokeWidth={2.4} />
-          Novo
-        </button>
+        {tab !== "tag" && (
+          <button
+            type="button"
+            onClick={openNew}
+            className="ml-auto flex items-center gap-[7px] rounded-[12px] bg-primary px-[17px] py-[11px] text-sm font-semibold text-white shadow-primary transition-colors hover:bg-primary-strong"
+          >
+            <Plus className="size-4" strokeWidth={2.4} />
+            Novo
+          </button>
+        )}
       </div>
 
       {/* Conteúdo da aba */}
@@ -138,15 +166,19 @@ const Registers = () => {
           onToggleFavorito={handleFavorito}
         />
       )}
-      {(tab === "recorrente" || tab === "tag") && (
+      {tab === "tag" && (
+        <TagList
+          rows={tags.data?.data ?? []}
+          isLoading={tags.isLoading}
+          onRename={handleRenameTag}
+          onDelete={handleDeleteTag}
+        />
+      )}
+      {tab === "recorrente" && (
         <div className="rounded-card border border-dashed border-line bg-card/50 px-6 py-16 text-center">
-          <p className="text-sm font-semibold text-fg">
-            {tab === "tag" ? "Tags" : "Contas recorrentes"}
-          </p>
+          <p className="text-sm font-semibold text-fg">Contas recorrentes</p>
           <p className="mt-1 text-sm text-muted">
-            {tab === "tag"
-              ? "As tags são criadas ao lançar uma transação. Em breve você poderá gerenciá-las aqui."
-              : "Contas a pagar recorrentes chegam em breve."}
+            Contas a pagar recorrentes chegam em breve.
           </p>
         </div>
       )}

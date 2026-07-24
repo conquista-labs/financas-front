@@ -10,3 +10,4 @@ export * from "./pessoas";
 export * from "./relatorios";
 export * from "./resumoFinanceiro";
 export * from "./transacoes";
+export * from "./tags";
