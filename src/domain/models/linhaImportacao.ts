@@ -30,6 +30,11 @@ export interface LinhaImportacao {
    */
   categoriaSugerida?: CategoriaSugerida | null;
   /**
+   * Forma de pagamento sugerida (avista, parcela1x…parcela12x). Ausente quando
+   * for à vista.
+   */
+  formaPagamento?: string;
+  /**
    * True se parece já lançada (mesma data + valor). Vem desmarcada.
    */
   possivelDuplicada: boolean;

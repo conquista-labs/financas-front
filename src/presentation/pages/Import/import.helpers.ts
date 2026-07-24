@@ -33,17 +33,18 @@ export const toReviewLines = (linhas: LinhaImportacao[]): ReviewLine[] =>
     categoriaId: l.categoriaSugerida?.id ?? "",
     pessoaId: "",
     meioPagamentoId: "",
-    // Toda transação tem uma forma; "à vista" é o padrão (sem opção "limpar").
-    formaPagamento: "avista",
+    // Usa a forma sugerida pelo backend (ex.: "parcela4x"); "à vista" é o
+    // padrão só quando o campo vem ausente (compra à vista).
+    formaPagamento: l.formaPagamento || "avista",
   }));
 
 /**
  * Monta o payload de confirmação a partir das linhas marcadas para importar.
  * IDs vazios são omitidos (o backend valida como uuid — nunca enviar "").
  *
- * `formaPagamento` ainda NÃO faz parte do contrato `LinhaConfirmacao` (o
- * backend não persiste a forma na importação). Enviamos via cast para já
- * funcionar quando o back adicionar o campo; hoje é ignorado no servidor.
+ * `formaPagamento` (sugerida pelo /analisar ou editada pelo usuário) vai no
+ * payload — o backend aceita e persiste. O cast cobre o campo, que ainda não
+ * está no tipo gerado `LinhaConfirmacao`.
  */
 export const toConfirmacao = (line: ReviewLine): LinhaConfirmacao =>
   ({

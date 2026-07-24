@@ -43,3 +43,7 @@ CLAUDE.md
 
 # Extratos de teste da importação (arquivos pessoais, não versionar)
 *.ofx
+
+# Protótipos de design (HTML de handoff, não são código-fonte)
+Nossa Grana*.html
+*.dc.html
