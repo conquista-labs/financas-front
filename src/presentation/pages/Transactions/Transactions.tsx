@@ -44,6 +44,7 @@ const Transactions = () => {
     pessoaId: withDefault(StringParam, ""),
     meioPagamentoId: withDefault(StringParam, ""),
     formaPagamento: withDefault(StringParam, ""),
+    tag: withDefault(StringParam, ""),
     search: withDefault(StringParam, ""),
     tipo: withDefault(StringParam, ""),
   });
@@ -96,6 +97,7 @@ const Transactions = () => {
     queryParams.pessoaId,
     queryParams.meioPagamentoId,
     queryParams.formaPagamento,
+    queryParams.tag,
     queryParams.tipo,
   ].filter(Boolean).length;
 
@@ -106,6 +108,7 @@ const Transactions = () => {
     pessoaId: queryParams.pessoaId,
     meioPagamentoId: queryParams.meioPagamentoId,
     formaPagamento: queryParams.formaPagamento,
+    tag: queryParams.tag,
     startDate: formattedParams.startDate,
     endDate: formattedParams.endDate,
   };
@@ -117,6 +120,7 @@ const Transactions = () => {
       pessoaId: next.pessoaId,
       meioPagamentoId: next.meioPagamentoId,
       formaPagamento: next.formaPagamento,
+      tag: next.tag,
       startDate: next.startDate
         ? new Date(`${next.startDate}T00:00:00`)
         : undefined,
@@ -133,6 +137,7 @@ const Transactions = () => {
       pessoaId: "",
       meioPagamentoId: "",
       formaPagamento: "",
+      tag: "",
     });
     onChangePage({ page: 1, pageSize });
     setFiltersOpen(false);

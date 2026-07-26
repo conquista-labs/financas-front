@@ -69,6 +69,8 @@ export const ActiveFilterChips = ({
       label: forma?.label ?? filters.formaPagamento,
     });
   }
+  // A tag é filtrada por nome, então o próprio valor já é o rótulo (com #).
+  if (filters.tag) chips.push({ key: "tag", label: `#${filters.tag}` });
 
   if (chips.length === 0) return null;
 

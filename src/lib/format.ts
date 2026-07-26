@@ -15,19 +15,23 @@ const BRL = new Intl.NumberFormat("pt-BR", {
 });
 
 /**
- * Converte para número um valor que pode vir como number ou string BRL
- * ("R$ 1.234,56"). Retorna 0 se não for parseável.
+ * Converte para número um valor que pode vir como number, string BRL
+ * ("R$ 1.234,56") OU string ISO com ponto decimal ("0.16", "1234.56" — como o
+ * backend às vezes entrega). Retorna 0 se não for parseável.
  */
 export const parseAmount = (
   value: number | string | null | undefined,
 ): number => {
   if (typeof value === "number") return Number.isFinite(value) ? value : 0;
   if (!value) return 0;
-  const normalized = value
-    .replace(/\s|\u00A0/g, "")
-    .replace(/R\$/gi, "")
-    .replace(/\./g, "")
-    .replace(",", ".");
+  const clean = value.replace(/\s|\u00A0/g, "").replace(/R\$/gi, "");
+  // Formato ISO ("0.16", "1234.56"): ponto decimal, sem vírgula. Trata direto.
+  if (/^-?\d+\.\d{1,2}$/.test(clean)) {
+    const iso = Number.parseFloat(clean);
+    return Number.isFinite(iso) ? iso : 0;
+  }
+  // Formato BR ("1.234,56"): ponto = milhar, vírgula = decimal.
+  const normalized = clean.replace(/\./g, "").replace(",", ".");
   const n = Number.parseFloat(normalized);
   return Number.isFinite(n) ? n : 0;
 };
@@ -104,4 +108,21 @@ export const formatFormaPagamento = (formaPagamento?: string): string => {
   if (formaPagamento === "avista") return "à vista";
   const match = /^parcela(\d+)x$/.exec(formaPagamento);
   return match ? `${match[1]}x` : formaPagamento;
+};
+
+const BRL_DECIMAL = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Máscara monetária para inputs (digitação): considera só os dígitos como
+ * centavos e formata com milhares em pt-BR. "" → ""; "1" → "0,01";
+ * "123456" → "1.234,56". Combina com `parseAmount` no submit.
+ */
+export const maskCurrencyInput = (raw: string): string => {
+  const digits = raw.replace(/\D/g, "").slice(0, 15);
+  if (!digits) return "";
+  const cents = Number(digits) / 100;
+  return BRL_DECIMAL.format(cents);
 };

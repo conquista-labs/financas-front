@@ -5,7 +5,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
 
 import type {
   PatchTransacoesIdModel,
@@ -13,7 +12,6 @@ import type {
   PatchTransacoesIdRequest,
 } from "@/domain/usecases";
 import { makePatchTransacoesIdFactory } from "@/main/factories/usecases";
-import { urlRouters } from "@/presentation/router/router.definitions";
 
 import type { UsePatchTransacoesIdOptions } from "./usePatchTransacoesId.types";
 
@@ -25,10 +23,7 @@ export const usePatchTransacoesId = (
   AxiosError,
   PatchTransacoesIdRequest
 > => {
-  const navigate = useNavigate();
   const { addToast } = useToast();
-  const location = useLocation();
-  const currentSearch = location.search;
 
   const patchTransacoesId = makePatchTransacoesIdFactory();
   const queryClient = useQueryClient();
@@ -39,7 +34,8 @@ export const usePatchTransacoesId = (
       return patchTransacoesId.patch(body, params);
     },
     onSuccess: () => {
-      navigate(`${urlRouters.transactions}${currentSearch}`);
+      // A navegação de volta (preservando os filtros) é feita pelo
+      // TransactionForm via location.search; aqui só invalidamos o cache.
       queryClient.invalidateQueries({ queryKey: ["get-transacoes"] });
     },
     onError: (error) => {

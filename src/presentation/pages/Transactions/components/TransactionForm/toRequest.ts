@@ -1,5 +1,5 @@
 import type { CreateTransacaoRequest, Transacao } from "@/domain/models";
-import { parseAmount } from "@/lib/format";
+import { maskCurrencyInput, parseAmount } from "@/lib/format";
 
 import type { TransactionFormValues } from "./TransactionForm";
 
@@ -17,7 +17,8 @@ export const fromTransacao = (
   formaPagamento: t.formaPagamento ?? "",
   data: (t.data ?? "").slice(0, 10) || new Date().toISOString().slice(0, 10),
   descricao: t.descricao,
-  valor: String(parseAmount(t.valor)).replace(".", ","),
+  // Mascarado ("1.234,56") para casar com a máscara do input no form.
+  valor: maskCurrencyInput(String(Math.round(parseAmount(t.valor) * 100))),
   observacoes: t.observacoes ?? "",
   lembrarMe: !!t.lembrarMe,
   status: t.status ?? "paga",

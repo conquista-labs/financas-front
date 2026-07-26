@@ -1,11 +1,12 @@
 import { format } from "date-fns";
 import { Star, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { CreateTransacaoRequest } from "@/domain/models";
 import { enhance } from "@/lib/color";
+import { maskCurrencyInput, parseAmount } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { DateField } from "@/presentation/components";
 import {
@@ -37,10 +38,13 @@ const OPT_LIMIT = { page: 1, limit: 100 };
 export const QuickAddModal = () => {
   const { open, setOpen, closeQuickAdd } = useQuickAdd();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const openFullForm = () => {
     closeQuickAdd();
-    navigate(urlRouters.createTransactions);
+    // Preserva os filtros ativos (query params) ao abrir o form completo,
+    // para não perder o que estava filtrando na lista de transações.
+    navigate(`${urlRouters.createTransactions}${location.search}`);
   };
 
   const [tipo, setTipo] = useState<Tipo>("despesa");
@@ -72,7 +76,7 @@ export const QuickAddModal = () => {
   const hiddenCount = catsForTipo.length - visibleCats.length;
 
   const pessoaRows = pessoas?.data?.rows ?? [];
-  const valorNumber = Number(valor.replace(/\./g, "").replace(",", ".")) || 0;
+  const valorNumber = parseAmount(valor);
 
   const reset = () => {
     setTipo("despesa");
@@ -189,7 +193,7 @@ export const QuickAddModal = () => {
             </span>
             <input
               value={valor}
-              onChange={(e) => setValor(e.target.value)}
+              onChange={(e) => setValor(maskCurrencyInput(e.target.value))}
               inputMode="decimal"
               placeholder="0,00"
               className="w-[180px] bg-transparent text-center font-display text-[40px] font-bold -tracking-[0.03em] outline-none placeholder:text-muted"

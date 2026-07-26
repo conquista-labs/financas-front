@@ -2,9 +2,13 @@ import { AlertTriangle, Check, Pencil } from "lucide-react";
 
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Combobox, type ComboboxOption } from "@/presentation/components";
+import {
+  Combobox,
+  type ComboboxOption,
+  DateField,
+} from "@/presentation/components";
 
-import { type ReviewLine, shortDate } from "../import.helpers";
+import { isoDate, type ReviewLine } from "../import.helpers";
 
 interface ReviewRowProps {
   line: ReviewLine;
@@ -65,9 +69,11 @@ export const ReviewRow = ({
           {line.incluir && <Check className="size-[13px]" strokeWidth={3} />}
         </button>
 
-        <span className="w-[42px] shrink-0 text-[12.5px] font-semibold text-muted">
-          {shortDate(line.data)}
-        </span>
+        <DateField
+          value={isoDate(line.data)}
+          onChange={(v) => onChange({ data: v })}
+          className="w-[132px] shrink-0 !py-[7px] text-[12.5px]"
+        />
 
         <div className="min-w-0 flex-1">
           {/* Descrição editável — input com ícone de lápis */}

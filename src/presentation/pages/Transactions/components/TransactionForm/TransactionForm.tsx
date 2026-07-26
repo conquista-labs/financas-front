@@ -2,9 +2,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Controller, type Resolver, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import type { MeioPagamento } from "@/domain/models";
+import { maskCurrencyInput } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Combobox, DateField } from "@/presentation/components";
 import { Switch, Textarea } from "@/presentation/components/ui";
@@ -66,6 +67,10 @@ export const TransactionForm = ({
   onSubmit,
 }: TransactionFormProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Preserva os filtros (query params na URL) ao voltar para a lista.
+  const backToList = () =>
+    navigate(`${urlRouters.transactions}${location.search}`);
 
   const { data: enums } = useGetEnums();
   const { data: categorias } = useGetCategorias(OPT_LIMIT);
@@ -95,7 +100,7 @@ export const TransactionForm = ({
       onSubmit(values, {
         onSuccess: () => {
           if (keepOpen) reset({ ...defaultForm, pessoaId: values.pessoaId });
-          else navigate(urlRouters.transactions);
+          else backToList();
         },
       }),
     );
@@ -279,6 +284,9 @@ export const TransactionForm = ({
                     {...field}
                     inputMode="decimal"
                     placeholder="0,00"
+                    onChange={(e) =>
+                      field.onChange(maskCurrencyInput(e.target.value))
+                    }
                     className="flex-1 bg-transparent px-2 py-[11px] text-[15px] text-fg outline-none"
                   />
                 )}
@@ -374,7 +382,7 @@ export const TransactionForm = ({
         <div className="mt-[26px] flex flex-wrap items-center justify-between gap-3">
           <button
             type="button"
-            onClick={() => navigate(urlRouters.transactions)}
+            onClick={backToList}
             className="rounded-[12px] border border-danger bg-card px-[26px] py-[13px] font-semibold text-danger transition-colors hover:bg-danger/5"
           >
             Cancelar

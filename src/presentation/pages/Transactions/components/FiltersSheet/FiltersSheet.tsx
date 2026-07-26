@@ -14,6 +14,7 @@ import {
   useGetEnums,
   useGetMeiosPagamento,
   useGetPessoas,
+  useGetTags,
 } from "@/presentation/hooks/api";
 
 import { filterChip, filterLabel, filterPill } from "./filters.styles";
@@ -25,6 +26,7 @@ export interface TransactionFilters {
   pessoaId: string;
   meioPagamentoId: string;
   formaPagamento: string;
+  tag: string;
   startDate: string;
   endDate: string;
 }
@@ -63,6 +65,7 @@ export const FiltersSheet = ({
   const { data: categorias } = useGetCategorias(OPT_LIMIT);
   const { data: pessoas } = useGetPessoas(OPT_LIMIT);
   const { data: meios } = useGetMeiosPagamento(OPT_LIMIT);
+  const { data: tags } = useGetTags();
 
   const set = (patch: Partial<TransactionFilters>) =>
     setDraft((prev) => ({ ...prev, ...patch }));
@@ -74,6 +77,7 @@ export const FiltersSheet = ({
   const pessoaRows = pessoas?.data?.rows ?? [];
   const meioRows = meios?.data?.rows ?? [];
   const formaOptions = enums?.data?.formaPagamento ?? [];
+  const tagRows = tags?.data ?? [];
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -159,6 +163,15 @@ export const FiltersSheet = ({
             value: f.value,
             label: f.label,
           }))}
+        />
+
+        {/* Tag */}
+        <FilterSelect
+          label="Tag"
+          placeholder="Todas"
+          value={draft.tag}
+          onValueChange={(v) => set({ tag: v })}
+          options={tagRows.map((t) => ({ value: t.nome, label: t.nome }))}
         />
 
         {/* Período */}

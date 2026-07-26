@@ -45,7 +45,7 @@ export const toReviewLines = (linhas: LinhaImportacao[]): ReviewLine[] =>
  * — o backend aceita e persiste.
  */
 export const toConfirmacao = (line: ReviewLine): LinhaConfirmacao => ({
-  data: line.data,
+  data: isoDate(line.data),
   descricao: line.descricao,
   valor: line.valor,
   ...(line.categoriaId ? { categoriaId: line.categoriaId } : {}),
@@ -59,12 +59,12 @@ export const toConfirmacao = (line: ReviewLine): LinhaConfirmacao => ({
     : {}),
 });
 
-/** "2026-07-05" (ISO) ou "05/07/2026" (BR) → "05/07". */
-export const shortDate = (value: string): string => {
-  const br = /^(\d{2})\/(\d{2})\/\d{4}$/.exec(value);
-  if (br) return `${br[1]}/${br[2]}`;
+/** Normaliza para "yyyy-MM-dd" (formato do <input type="date">). BR ou ISO. */
+export const isoDate = (value: string): string => {
+  const br = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+  if (br) return `${br[3]}-${br[2]}-${br[1]}`;
   const iso = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
-  if (iso) return `${iso[3]}/${iso[2]}`;
+  if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
   return value;
 };
 
