@@ -1,15 +1,18 @@
 import { array, boolean, object, string } from "yup";
 
 /**
- * Schema de validação do formulário completo de transação. Reaproveita as
- * regras do form legado (pessoaId/meio obrigatórios evitam o bug de ID vazio
- * que quebra a API — ver memória rebrand-gaps-backend).
+ * Schema de validação do formulário completo de transação. Só categoria,
+ * data, descrição e valor são obrigatórios — como no backend
+ * (EditTransacaoRequest.required = []; no create só categoria/valor/data/
+ * descrição). Pessoa e meio ficam opcionais: transações importadas vêm sem
+ * eles e precisam ser editáveis. O `toRequest` omite IDs vazios (spread
+ * condicional), então não recai no antigo bug de "ID vazio → 500".
  */
 export const schema = object({
   categoriaId: string().required("Categoria é obrigatória"),
-  pessoaId: string().required("Pessoa é obrigatória"),
-  meioPagamentoId: string().required("Meio de pagamento é obrigatório"),
-  formaPagamento: string().optional(),
+  pessoaId: string().nullable().optional(),
+  meioPagamentoId: string().nullable().optional(),
+  formaPagamento: string().nullable().optional(),
   data: string().required("Data é obrigatória"),
   descricao: string().required("Descrição é obrigatória"),
   valor: string().required("Valor é obrigatório"),

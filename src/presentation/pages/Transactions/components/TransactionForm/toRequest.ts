@@ -11,8 +11,8 @@ import type { TransactionFormValues } from "./TransactionForm";
 export const fromTransacao = (
   t: Transacao,
 ): Partial<TransactionFormValues> => ({
-  categoriaId: t.categoriaId,
-  pessoaId: t.pessoaId,
+  categoriaId: t.categoriaId ?? "",
+  pessoaId: t.pessoaId ?? "",
   meioPagamentoId: t.meioPagamentoId ?? "",
   formaPagamento: t.formaPagamento ?? "",
   data: (t.data ?? "").slice(0, 10) || new Date().toISOString().slice(0, 10),
