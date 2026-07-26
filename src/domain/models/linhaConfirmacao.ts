@@ -27,6 +27,12 @@ export interface LinhaConfirmacao {
    * Forma de pagamento escolhida na revisão (default: sem valor)
    */
   formaPagamento?: LinhaConfirmacao.FormaPagamentoEnum;
+  /**
+   * Se true e formaPagamento for parcelada (parcelaNx), cria as N parcelas: a
+   * 1ª como \"paga\" (esta fatura) e as futuras como \"pendente\" (projeção),
+   * uma por mês. Se false/ausente, cria só esta linha.
+   */
+  propagarParcelas?: boolean;
 }
 export namespace LinhaConfirmacao {
   export type FormaPagamentoEnum =

@@ -8,7 +8,7 @@ import {
   DateField,
 } from "@/presentation/components";
 
-import { isoDate, type ReviewLine } from "../import.helpers";
+import { isoDate, numParcelas, type ReviewLine } from "../import.helpers";
 
 interface ReviewRowProps {
   line: ReviewLine;
@@ -42,6 +42,9 @@ export const ReviewRow = ({
   onChange,
 }: ReviewRowProps) => {
   const isReceita = line.tipo === "receita";
+  // Nº total de parcelas (a linha da fatura é sempre a 1ª; futuras = projeção).
+  const parcelas = numParcelas(line.formaPagamento);
+  const futuras = parcelas > 1 ? parcelas - 1 : 0;
 
   return (
     <div
@@ -153,6 +156,48 @@ export const ReviewRow = ({
           contentClassName={dropdownCls}
         />
       </div>
+
+      {/* Fileira 3: propagação de parcelas (só quando parcelado, N≥2) */}
+      {parcelas >= 2 && (
+        <div className="mt-2 flex flex-wrap items-center gap-[10px] pl-[76px]">
+          <span className="rounded-full bg-primary/soft px-[9px] py-1 text-[11px] font-bold text-primary-strong">
+            Parcela 1/{parcelas}
+          </span>
+
+          <div className="flex gap-[5px] rounded-[11px] bg-track p-1">
+            <button
+              type="button"
+              onClick={() => onChange({ propagarParcelas: false })}
+              className={cn(
+                "rounded-[9px] px-3 py-[7px] text-[12px] font-semibold transition-colors",
+                !line.propagarParcelas
+                  ? "bg-card text-primary-strong shadow-[0_2px_6px_rgba(0,0,0,.08)]"
+                  : "text-muted",
+              )}
+            >
+              Só a deste mês
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange({ propagarParcelas: true })}
+              className={cn(
+                "rounded-[9px] px-3 py-[7px] text-[12px] font-semibold transition-colors",
+                line.propagarParcelas
+                  ? "bg-card text-primary-strong shadow-[0_2px_6px_rgba(0,0,0,.08)]"
+                  : "text-muted",
+              )}
+            >
+              Criar as {futuras} futuras
+            </button>
+          </div>
+
+          <span className="text-[11.5px] text-muted">
+            {line.propagarParcelas
+              ? `Cria ${futuras} lançamento${futuras === 1 ? "" : "s"} futuro${futuras === 1 ? "" : "s"} de ${formatCurrency(line.valor)} como pendentes, um por mês.`
+              : "Só a parcela deste mês. As futuras podem ser importadas depois."}
+          </span>
+        </div>
+      )}
     </div>
   );
 };

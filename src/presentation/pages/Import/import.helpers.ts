@@ -17,7 +17,16 @@ export interface ReviewLine {
   pessoaId: string;
   meioPagamentoId: string;
   formaPagamento: string;
+  /** Propagar as parcelas futuras (só faz efeito se parcelada). */
+  propagarParcelas: boolean;
 }
+
+/** Nº de parcelas se a forma for "parcelaNx" com N≥2; senão 0 (não parcelada). */
+export const numParcelas = (formaPagamento: string): number => {
+  const m = /^parcela(\d+)x$/.exec(formaPagamento);
+  const n = m ? Number(m[1]) : 0;
+  return n >= 2 ? n : 0;
+};
 
 /** Converte as linhas cruas da análise em linhas editáveis de revisão. */
 export const toReviewLines = (linhas: LinhaImportacao[]): ReviewLine[] =>
@@ -36,6 +45,8 @@ export const toReviewLines = (linhas: LinhaImportacao[]): ReviewLine[] =>
     // Usa a forma sugerida pelo backend (ex.: "parcela4x"); "à vista" é o
     // padrão só quando o campo vem ausente (compra à vista).
     formaPagamento: l.formaPagamento || "avista",
+    // Propagar é escolha consciente do usuário → desligado por padrão.
+    propagarParcelas: false,
   }));
 
 /**
@@ -57,6 +68,7 @@ export const toConfirmacao = (line: ReviewLine): LinhaConfirmacao => ({
           line.formaPagamento as LinhaConfirmacao.FormaPagamentoEnum,
       }
     : {}),
+  ...(line.propagarParcelas ? { propagarParcelas: true } : {}),
 });
 
 /** Normaliza para "yyyy-MM-dd" (formato do <input type="date">). BR ou ISO. */
