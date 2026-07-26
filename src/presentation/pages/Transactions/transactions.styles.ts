@@ -17,7 +17,7 @@ export const actionButton = cva(
 
 /** Botão de ação da linha (editar, duplicar, excluir) — 34x34. */
 export const rowAction = cva(
-  "grid size-[34px] shrink-0 place-items-center rounded-[10px] transition-colors",
+  "grid size-[34px] shrink-0 place-items-center rounded-[10px] transition-colors disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       tone: {

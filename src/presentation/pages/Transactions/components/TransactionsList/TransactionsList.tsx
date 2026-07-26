@@ -24,6 +24,8 @@ interface TransactionsListProps {
   pageSize: number;
   isLoading: boolean;
   isExporting?: boolean;
+  /** Id da transação sendo excluída (spinner na linha). */
+  deletingId?: string;
   onEdit: (id: string) => void;
   onDuplicate: (transacao: TransacaoResponse) => void;
   onDelete: (transacao: TransacaoResponse) => void;
@@ -48,6 +50,7 @@ export const TransactionsList = ({
   pageSize,
   isLoading,
   isExporting,
+  deletingId,
   onEdit,
   onDuplicate,
   onDelete,
@@ -155,6 +158,7 @@ export const TransactionsList = ({
           onEdit={onEdit}
           onDuplicate={onDuplicate}
           onDelete={onDelete}
+          isDeleting={deletingId === transacao.id}
         />
       ))}
     </ScrollListCard>

@@ -86,7 +86,13 @@ const Transactions = () => {
       { enabled: false },
     );
 
-  const { mutate: deleteTransacao } = useDeleteTransacoesId();
+  const {
+    mutate: deleteTransacao,
+    isPending: isDeleting,
+    variables: deletingVars,
+  } = useDeleteTransacoesId();
+  // Id da transação em exclusão (para o spinner na linha certa).
+  const deletingId = isDeleting ? deletingVars?.id : undefined;
 
   const rows = data?.data?.rows ?? [];
   const totalItems = data?.data?.meta?.total ?? 0;
@@ -236,6 +242,7 @@ const Transactions = () => {
         pageSize={pageSize}
         isLoading={isLoading}
         isExporting={isExporting}
+        deletingId={deletingId}
         onEdit={goToEdit}
         onDuplicate={handleDuplicate}
         onDelete={handleDelete}

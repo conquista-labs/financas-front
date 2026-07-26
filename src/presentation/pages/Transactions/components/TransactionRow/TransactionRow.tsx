@@ -1,4 +1,4 @@
-import { Copy, Pencil, Trash2 } from "lucide-react";
+import { Copy, Loader2, Pencil, Trash2 } from "lucide-react";
 
 import type { TransacaoResponse } from "@/domain/models";
 import { enhance } from "@/lib/color";
@@ -8,6 +8,7 @@ import {
   formatFormaPagamento,
   parseParcela,
 } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 import { rowAction } from "../../transactions.styles";
 
@@ -16,6 +17,8 @@ interface TransactionRowProps {
   onEdit: (id: string) => void;
   onDuplicate: (transacao: TransacaoResponse) => void;
   onDelete: (transacao: TransacaoResponse) => void;
+  /** Exclusão desta linha em andamento (mostra spinner e trava as ações). */
+  isDeleting?: boolean;
 }
 
 /**
@@ -29,6 +32,7 @@ export const TransactionRow = ({
   onEdit,
   onDuplicate,
   onDelete,
+  isDeleting = false,
 }: TransactionRowProps) => {
   const { categoria, pessoa, meioPagamento, formaPagamento, valor, data } =
     transacao;
@@ -100,6 +104,7 @@ export const TransactionRow = ({
           aria-label="Editar"
           className={rowAction()}
           onClick={() => onEdit(transacao.id)}
+          disabled={isDeleting}
         >
           <Pencil className="size-4" strokeWidth={1.9} />
         </button>
@@ -108,16 +113,27 @@ export const TransactionRow = ({
           aria-label="Duplicar"
           className={rowAction()}
           onClick={() => onDuplicate(transacao)}
+          disabled={isDeleting}
         >
           <Copy className="size-4" strokeWidth={1.9} />
         </button>
         <button
           type="button"
           aria-label="Excluir"
-          className={rowAction({ tone: "danger" })}
+          className={cn(
+            rowAction({ tone: "danger" }),
+            // Mantém o botão em exclusão com opacidade cheia para o spinner
+            // ficar nítido (só as outras ações apagam).
+            isDeleting && "!opacity-100",
+          )}
           onClick={() => onDelete(transacao)}
+          disabled={isDeleting}
         >
-          <Trash2 className="size-4" strokeWidth={1.9} />
+          {isDeleting ? (
+            <Loader2 className="size-4 animate-spin" strokeWidth={2} />
+          ) : (
+            <Trash2 className="size-4" strokeWidth={1.9} />
+          )}
         </button>
       </div>
     </div>
