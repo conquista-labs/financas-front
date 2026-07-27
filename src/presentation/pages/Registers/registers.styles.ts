@@ -16,7 +16,7 @@ export const registerTab = cva(
 
 /** Botão de ação da linha/card (estrela e editar). Excluir tem estilo próprio. */
 export const rowAction = cva(
-  "grid place-items-center rounded-[9px] border-none bg-bg text-fg2 transition-colors hover:bg-track",
+  "grid place-items-center rounded-[9px] border-none bg-bg text-fg2 transition-colors hover:bg-track disabled:cursor-not-allowed",
   {
     variants: {
       size: {

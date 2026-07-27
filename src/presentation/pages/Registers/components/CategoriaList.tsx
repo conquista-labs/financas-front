@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 
 import type { Categoria } from "@/domain/models";
 import { enhance } from "@/lib/color";
@@ -14,6 +14,8 @@ import type { RegisterItem } from "./RegisterFormDialog";
 interface CategoriaListProps {
   rows: Categoria[];
   isLoading?: boolean;
+  /** Id do item sendo excluído (spinner na linha). */
+  deletingId?: string;
   onEdit: (item: RegisterItem) => void;
   onDelete: (id: string) => void;
   onToggleFavorito: (id: string, favorito: boolean) => void;
@@ -23,6 +25,7 @@ interface CategoriaListProps {
 export const CategoriaList = ({
   rows,
   isLoading,
+  deletingId,
   onEdit,
   onDelete,
   onToggleFavorito,
@@ -100,12 +103,17 @@ export const CategoriaList = ({
               type="button"
               aria-label="Excluir"
               onClick={() => onDelete(cat.id)}
+              disabled={deletingId === cat.id}
               className={cn(
                 rowAction(),
                 "bg-danger/10 text-danger hover:bg-danger/15",
               )}
             >
-              <Trash2 className="size-4" strokeWidth={1.9} />
+              {deletingId === cat.id ? (
+                <Loader2 className="size-4 animate-spin" strokeWidth={2} />
+              ) : (
+                <Trash2 className="size-4" strokeWidth={1.9} />
+              )}
             </button>
           </div>
         </div>

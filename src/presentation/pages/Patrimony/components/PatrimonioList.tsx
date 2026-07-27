@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 
 import type { Patrimonio } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
@@ -10,12 +10,14 @@ import { delta, mesAno } from "../patrimony.helpers";
 interface PatrimonioListProps {
   rows: Patrimonio[];
   isLoading?: boolean;
+  /** Id do item sendo excluído (spinner na linha). */
+  deletingId?: string;
   onEdit: (item: Patrimonio) => void;
   onDelete: (item: Patrimonio) => void;
 }
 
 const actionBtn =
-  "grid size-8 place-items-center rounded-[9px] transition-colors";
+  "grid size-8 place-items-center rounded-[9px] transition-colors disabled:cursor-not-allowed";
 
 /**
  * Lista de itens de patrimônio (card único). Cada linha: tag Ativo/Passivo,
@@ -25,6 +27,7 @@ const actionBtn =
 export const PatrimonioList = ({
   rows,
   isLoading,
+  deletingId,
   onEdit,
   onDelete,
 }: PatrimonioListProps) => {
@@ -114,12 +117,17 @@ export const PatrimonioList = ({
                 type="button"
                 aria-label="Excluir"
                 onClick={() => onDelete(item)}
+                disabled={deletingId === item.id}
                 className={cn(
                   actionBtn,
                   "bg-danger/10 text-danger hover:bg-danger/15",
                 )}
               >
-                <Trash2 className="size-4" strokeWidth={1.9} />
+                {deletingId === item.id ? (
+                  <Loader2 className="size-4 animate-spin" strokeWidth={2} />
+                ) : (
+                  <Trash2 className="size-4" strokeWidth={1.9} />
+                )}
               </button>
             </div>
           </div>

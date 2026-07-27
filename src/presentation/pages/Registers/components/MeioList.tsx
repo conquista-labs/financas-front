@@ -1,4 +1,4 @@
-import { CreditCard, Pencil, Trash2 } from "lucide-react";
+import { CreditCard, Loader2, Pencil, Trash2 } from "lucide-react";
 
 import type { MeioPagamento } from "@/domain/models";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,8 @@ import type { RegisterItem } from "./RegisterFormDialog";
 interface MeioListProps {
   rows: MeioPagamento[];
   isLoading?: boolean;
+  /** Id do item sendo excluído (spinner na linha). */
+  deletingId?: string;
   onEdit: (item: RegisterItem) => void;
   onDelete: (id: string) => void;
   onToggleFavorito: (id: string, favorito: boolean) => void;
@@ -20,6 +22,7 @@ interface MeioListProps {
 export const MeioList = ({
   rows,
   isLoading,
+  deletingId,
   onEdit,
   onDelete,
   onToggleFavorito,
@@ -82,12 +85,17 @@ export const MeioList = ({
               type="button"
               aria-label="Excluir"
               onClick={() => onDelete(meio.id)}
+              disabled={deletingId === meio.id}
               className={cn(
                 rowAction({ size: "sm" }),
                 "bg-danger/10 text-danger hover:bg-danger/15",
               )}
             >
-              <Trash2 className="size-[15px]" strokeWidth={1.9} />
+              {deletingId === meio.id ? (
+                <Loader2 className="size-[15px] animate-spin" strokeWidth={2} />
+              ) : (
+                <Trash2 className="size-[15px]" strokeWidth={1.9} />
+              )}
             </button>
           </div>
         </div>

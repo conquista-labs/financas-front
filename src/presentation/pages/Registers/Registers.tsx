@@ -64,6 +64,13 @@ const Registers = () => {
   const { remove, toggleFavorito } = useRegisterMutations(activeKind);
   const tagMutations = useTagMutations();
 
+  // Id do item em exclusão (spinner na linha certa). O `remove` é o da aba
+  // ativa; as tags têm mutation própria.
+  const deletingId = remove.isPending ? remove.variables : undefined;
+  const deletingTagId = tagMutations.remove.isPending
+    ? tagMutations.remove.variables
+    : undefined;
+
   const openNew = () => {
     if (tab === "tag") {
       toast.info("Tags são criadas ao lançar uma transação.");
@@ -143,6 +150,7 @@ const Registers = () => {
         <CategoriaList
           rows={categorias.data?.data?.rows ?? []}
           isLoading={categorias.isLoading}
+          deletingId={deletingId}
           onEdit={openEdit("categoria")}
           onDelete={handleDelete}
           onToggleFavorito={handleFavorito}
@@ -152,6 +160,7 @@ const Registers = () => {
         <PessoaList
           rows={pessoas.data?.data?.rows ?? []}
           isLoading={pessoas.isLoading}
+          deletingId={deletingId}
           onEdit={openEdit("pessoa")}
           onDelete={handleDelete}
           onToggleFavorito={handleFavorito}
@@ -161,6 +170,7 @@ const Registers = () => {
         <MeioList
           rows={meios.data?.data?.rows ?? []}
           isLoading={meios.isLoading}
+          deletingId={deletingId}
           onEdit={openEdit("meio")}
           onDelete={handleDelete}
           onToggleFavorito={handleFavorito}
@@ -170,6 +180,7 @@ const Registers = () => {
         <TagList
           rows={tags.data?.data ?? []}
           isLoading={tags.isLoading}
+          deletingId={deletingTagId}
           onRename={handleRenameTag}
           onDelete={handleDeleteTag}
         />

@@ -1,4 +1,4 @@
-import { Check, Hash, Pencil, Trash2, X } from "lucide-react";
+import { Check, Hash, Loader2, Pencil, Trash2, X } from "lucide-react";
 import { useState } from "react";
 
 import type { Tag } from "@/domain/models";
@@ -9,6 +9,8 @@ import { rowAction } from "../registers.styles";
 interface TagListProps {
   rows: Tag[];
   isLoading?: boolean;
+  /** Id da tag sendo excluída (spinner na linha). */
+  deletingId?: string;
   onRename: (id: string, nome: string) => void;
   onDelete: (tag: Tag) => void;
 }
@@ -21,6 +23,7 @@ interface TagListProps {
 export const TagList = ({
   rows,
   isLoading,
+  deletingId,
   onRename,
   onDelete,
 }: TagListProps) => {
@@ -134,12 +137,20 @@ export const TagList = ({
                     type="button"
                     aria-label="Excluir"
                     onClick={() => onDelete(tag)}
+                    disabled={deletingId === tag.id}
                     className={cn(
                       rowAction({ size: "sm" }),
                       "bg-danger/10 text-danger hover:bg-danger/15",
                     )}
                   >
-                    <Trash2 className="size-[15px]" strokeWidth={1.9} />
+                    {deletingId === tag.id ? (
+                      <Loader2
+                        className="size-[15px] animate-spin"
+                        strokeWidth={2}
+                      />
+                    ) : (
+                      <Trash2 className="size-[15px]" strokeWidth={1.9} />
+                    )}
                   </button>
                 </>
               )}

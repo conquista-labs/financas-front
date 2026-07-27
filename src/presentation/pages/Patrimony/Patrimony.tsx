@@ -94,6 +94,7 @@ const Patrimony = () => {
         <PatrimonioList
           rows={rows}
           isLoading={patrimonios.isLoading}
+          deletingId={remove.isPending ? remove.variables : undefined}
           onEdit={openEdit}
           onDelete={handleDelete}
         />

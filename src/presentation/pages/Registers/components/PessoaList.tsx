@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 
 import type { Pessoa } from "@/domain/models";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,8 @@ import type { RegisterItem } from "./RegisterFormDialog";
 interface PessoaListProps {
   rows: Pessoa[];
   isLoading?: boolean;
+  /** Id do item sendo excluído (spinner na linha). */
+  deletingId?: string;
   onEdit: (item: RegisterItem) => void;
   onDelete: (id: string) => void;
   onToggleFavorito: (id: string, favorito: boolean) => void;
@@ -30,6 +32,7 @@ const initials = (nome: string) =>
 export const PessoaList = ({
   rows,
   isLoading,
+  deletingId,
   onEdit,
   onDelete,
   onToggleFavorito,
@@ -100,12 +103,17 @@ export const PessoaList = ({
               type="button"
               aria-label="Excluir"
               onClick={() => onDelete(pes.id)}
+              disabled={deletingId === pes.id}
               className={cn(
                 rowAction(),
                 "bg-danger/10 text-danger hover:bg-danger/15",
               )}
             >
-              <Trash2 className="size-4" strokeWidth={1.9} />
+              {deletingId === pes.id ? (
+                <Loader2 className="size-4 animate-spin" strokeWidth={2} />
+              ) : (
+                <Trash2 className="size-4" strokeWidth={1.9} />
+              )}
             </button>
           </div>
         </div>
