@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import type { MeioPagamento } from "@/domain/models";
 import { enhance } from "@/lib/color";
-import { Combobox, DateField } from "@/presentation/components";
+import { Combobox } from "@/presentation/components";
 import {
   Sheet,
   SheetContent,
@@ -174,23 +174,9 @@ export const FiltersSheet = ({
           options={tagRows.map((t) => ({ value: t.nome, label: t.nome }))}
         />
 
-        {/* Período */}
-        <div>
-          <span className={filterLabel()}>Período</span>
-          <div className="flex items-center gap-2">
-            <DateField
-              value={draft.startDate}
-              onChange={(v) => set({ startDate: v })}
-              placeholder="De"
-            />
-            <span className="text-muted">–</span>
-            <DateField
-              value={draft.endDate}
-              onChange={(v) => set({ endDate: v })}
-              placeholder="Até"
-            />
-          </div>
-        </div>
+        {/* Período (De/Até) fica no seletor de mês do header — clicar no rótulo
+            abre um calendário de intervalo. Evita dois controles para o mesmo
+            estado. */}
 
         {/* Ações */}
         <div className="mt-auto flex gap-[10px] pt-2">

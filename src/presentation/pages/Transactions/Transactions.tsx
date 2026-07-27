@@ -156,9 +156,16 @@ const Transactions = () => {
 
   const navigateMonth = (direction: "prev" | "next") => {
     const multiplier = direction === "prev" ? -1 : 1;
-    const newStart = addMonths(queryParams.startDate, multiplier);
-    const newEnd = endOfMonth(newStart);
-    setQueryParams({ startDate: newStart, endDate: newEnd });
+    // Navega sempre para o mês inteiro (1º ao último dia), independente de um
+    // recorte de dias que estivesse ativo.
+    const newStart = startOfMonth(addMonths(queryParams.startDate, multiplier));
+    setQueryParams({ startDate: newStart, endDate: endOfMonth(newStart) });
+    onChangePage({ page: 1, pageSize });
+  };
+
+  // Range de dias escolhido no calendário do seletor de período.
+  const applyRange = (start: Date, end: Date) => {
+    setQueryParams({ startDate: start, endDate: end });
     onChangePage({ page: 1, pageSize });
   };
 
@@ -214,9 +221,11 @@ const Transactions = () => {
           Transações
         </h1>
         <MonthSelector
-          date={queryParams.startDate}
+          startDate={queryParams.startDate}
+          endDate={queryParams.endDate ?? undefined}
           onPrev={() => navigateMonth("prev")}
           onNext={() => navigateMonth("next")}
+          onRangeChange={applyRange}
         />
       </div>
 
