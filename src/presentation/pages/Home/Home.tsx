@@ -10,6 +10,7 @@ import {
   useGetQuickStats,
   useGetResumoFinanceiro,
   useGetTransacoes,
+  usePostResumoFinanceiro,
 } from "@/presentation/hooks/api";
 import { useAuthStore } from "@/presentation/store";
 
@@ -74,9 +75,18 @@ const Home = () => {
     refetch: refetchMeios,
   } = useGetAnalyticsMeiosPagamento({ ano, mes });
 
+  const { mutateAsync: recalcularResumo } = usePostResumoFinanceiro();
+
   const [refreshing, setRefreshing] = useState(false);
   const handleRefresh = async () => {
     setRefreshing(true);
+    try {
+      // Recalcula o resumo do ano no backend (saldos por mês) e só então
+      // recarrega as queries, para os dados virem já atualizados.
+      await recalcularResumo({ year: ano });
+    } catch {
+      // O hook já mostra o toast de erro; segue para o refetch mesmo assim.
+    }
     await Promise.all([
       refetchResumo(),
       refetchStats(),
