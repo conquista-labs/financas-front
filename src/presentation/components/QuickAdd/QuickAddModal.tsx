@@ -8,7 +8,7 @@ import type { CreateTransacaoRequest } from "@/domain/models";
 import { enhance } from "@/lib/color";
 import { maskCurrencyInput, parseAmount } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { DateField } from "@/presentation/components";
+import { Combobox, DateField } from "@/presentation/components";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,8 @@ import {
 } from "@/presentation/components/ui";
 import {
   useGetCategorias,
+  useGetEnums,
+  useGetMeiosPagamento,
   useGetPessoas,
   usePostTransacoes,
 } from "@/presentation/hooks/api";
@@ -52,6 +54,8 @@ export const QuickAddModal = () => {
   const [categoriaId, setCategoriaId] = useState("");
   const [descricao, setDescricao] = useState("");
   const [pessoaId, setPessoaId] = useState("");
+  const [meioPagamentoId, setMeioPagamentoId] = useState("");
+  const [formaManual, setFormaManual] = useState("");
   const [data, setData] = useState(() => format(new Date(), "yyyy-MM-dd"));
   const [repeticao, setRepeticao] = useState<Repeticao>("unico");
   const [parcelas, setParcelas] = useState("2");
@@ -62,7 +66,23 @@ export const QuickAddModal = () => {
 
   const { data: categorias } = useGetCategorias(OPT_LIMIT);
   const { data: pessoas } = useGetPessoas(OPT_LIMIT);
+  const { data: meios } = useGetMeiosPagamento(OPT_LIMIT);
+  const { data: enums } = useGetEnums();
   const { mutate: createTransacao, isPending } = usePostTransacoes();
+
+  const meioOpts = useMemo(
+    () =>
+      (meios?.data?.rows ?? []).map((m) => ({ value: m.id, label: m.nome })),
+    [meios],
+  );
+  const formaOpts = useMemo(
+    () =>
+      (enums?.data?.formaPagamento ?? []).map((f) => ({
+        value: f.value ?? "",
+        label: f.label ?? "",
+      })),
+    [enums],
+  );
 
   // Categorias do tipo atual, favoritas primeiro; limita a 6 até "ver todas".
   const catsForTipo = useMemo(
@@ -84,6 +104,8 @@ export const QuickAddModal = () => {
     setCategoriaId("");
     setDescricao("");
     setPessoaId("");
+    setMeioPagamentoId("");
+    setFormaManual("");
     setData(format(new Date(), "yyyy-MM-dd"));
     setRepeticao("unico");
     setParcelas("2");
@@ -104,8 +126,10 @@ export const QuickAddModal = () => {
     setTagInput("");
   };
 
+  // Parcelar tem prioridade (define parcelaNx); senão usa a forma escolhida no
+  // select; sem nada, "avista".
   const formaPagamento = (
-    repeticao === "parcelar" ? `parcela${parcelas}x` : "avista"
+    repeticao === "parcelar" ? `parcela${parcelas}x` : formaManual || "avista"
   ) as CreateTransacaoRequest.FormaPagamentoEnum;
 
   const handleSave = () => {
@@ -124,6 +148,7 @@ export const QuickAddModal = () => {
         formaPagamento,
         status,
         ...(pessoaId ? { pessoaId } : {}),
+        ...(meioPagamentoId ? { meioPagamentoId } : {}),
         ...(tags.length ? { tags } : {}),
       } as CreateTransacaoRequest,
       {
@@ -276,13 +301,50 @@ export const QuickAddModal = () => {
           </div>
         </div>
 
-        {/* Data */}
-        <div className="mt-[14px]">
-          <label className="mb-[7px] block text-[12.5px] font-semibold text-muted">
-            Data
-          </label>
-          <DateField value={data} onChange={setData} placeholder="Selecionar" />
+        {/* Data + Meio de pagamento */}
+        <div className="mt-[14px] grid grid-cols-2 gap-[10px]">
+          <div>
+            <label className="mb-[7px] block text-[12.5px] font-semibold text-muted">
+              Data
+            </label>
+            <DateField
+              value={data}
+              onChange={setData}
+              placeholder="Selecionar"
+            />
+          </div>
+          <div>
+            <label className="mb-[7px] block text-[12.5px] font-semibold text-muted">
+              Meio de pagamento
+            </label>
+            <Combobox
+              inline
+              options={meioOpts}
+              value={meioPagamentoId || undefined}
+              onChange={setMeioPagamentoId}
+              placeholder="Selecione"
+              clearLabel="Não informado"
+              searchPlaceholder="Buscar meio…"
+            />
+          </div>
         </div>
+
+        {/* Forma de pagamento (quando parcelado, vem do parcelamento abaixo) */}
+        {repeticao !== "parcelar" && (
+          <div className="mt-[14px]">
+            <label className="mb-[7px] block text-[12.5px] font-semibold text-muted">
+              Forma de pagamento
+            </label>
+            <Combobox
+              inline
+              options={formaOpts}
+              value={formaManual || undefined}
+              onChange={setFormaManual}
+              placeholder="À vista"
+              searchPlaceholder="Buscar forma…"
+            />
+          </div>
+        )}
 
         {/* Repetir */}
         <div className="mt-4">
