@@ -1,4 +1,5 @@
 export { Calendar } from "./Calendar";
+export * from "./Goals";
 export { Home } from "./Home";
 export * from "./Import";
 export { Login } from "./Login";

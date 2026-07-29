@@ -6,6 +6,7 @@ import {
   Calendar,
   CreateTransactions,
   EditTransactions,
+  Goals,
   Home,
   Import,
   NotFound,
@@ -88,6 +89,14 @@ const PrivateRoute: React.FC = () => (
         element={
           <Suspense>
             <Patrimony />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.goals}
+        element={
+          <Suspense>
+            <Goals />
           </Suspense>
         }
       />

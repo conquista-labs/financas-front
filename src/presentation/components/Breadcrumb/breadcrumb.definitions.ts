@@ -33,4 +33,8 @@ export const crumbsMapper: Partial<
     label: "Patrimônio",
     link: urlRouters.patrimony,
   },
+  goals: {
+    label: "Metas & desejos",
+    link: urlRouters.goals,
+  },
 };

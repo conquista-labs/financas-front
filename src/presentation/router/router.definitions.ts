@@ -23,6 +23,9 @@ export const urlRouters = {
   // Patrimônio (nova identidade): página-hub com KPIs/gráficos/lista; criar e
   // editar via modal na própria página (sem rotas create/edit separadas).
   patrimony: "/patrimony",
+  // Metas & Desejos: página-hub com abas (Metas/Desejos), KPIs e grids.
+  // Criar/editar/aportar via modal na própria página.
+  goals: "/metas",
   // Rebrand "Nossa Grana": Cadastros agrupa Categorias/Pessoas/Meios numa
   // página-hub com abas. Criar/editar via modal na própria página.
   registers: "/cadastros",
