@@ -1,9 +1,11 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { StringParam, useQueryParam, withDefault } from "use-query-params";
 
 import type { DesejoResponse, MetaResponse } from "@/domain/models";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/presentation/components/ui";
 import {
   useGetDesejos,
   useGetMetas,
@@ -33,7 +35,13 @@ type Tab = "metas" | "desejos";
  * Criar/editar/aportar via modais; arquivar com desfazer (restaurar/recriar).
  */
 const Goals = () => {
-  const [tab, setTab] = useState<Tab>("metas");
+  // Aba persistida na URL (?tab=metas|desejos) — sobrevive ao F5.
+  const [tabParam, setTabParam] = useQueryParam(
+    "tab",
+    withDefault(StringParam, "metas"),
+  );
+  const tab: Tab = tabParam === "desejos" ? "desejos" : "metas";
+  const setTab = (t: Tab) => setTabParam(t);
 
   // Modais.
   const [detalhe, setDetalhe] = useState<MetaResponse | null>(null);
@@ -192,10 +200,7 @@ const Goals = () => {
           {metas.isLoading ? (
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-[124px] animate-pulse rounded-[20px] border border-line bg-card"
-                />
+                <Skeleton key={i} className="h-[124px] rounded-[20px]" />
               ))}
             </div>
           ) : metasRows.length === 0 ? (
@@ -230,10 +235,7 @@ const Goals = () => {
           {desejos.isLoading ? (
             <div className="grid gap-4 lg:grid-cols-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-[168px] animate-pulse rounded-[20px] border border-line bg-card"
-                />
+                <Skeleton key={i} className="h-[168px] rounded-[20px]" />
               ))}
             </div>
           ) : desejosRows.length === 0 ? (
@@ -303,7 +305,7 @@ const EmptyState = ({
   title: string;
   subtitle: string;
 }) => (
-  <div className="rounded-[20px] border border-dashed border-line bg-card/50 px-6 py-16 text-center">
+  <div className="mt-4 rounded-[20px] border border-dashed border-line bg-card/50 px-6 py-16 text-center">
     <p className="text-sm font-semibold text-fg">{title}</p>
     <p className="mt-1 text-sm text-muted">{subtitle}</p>
   </div>
