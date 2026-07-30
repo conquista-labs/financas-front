@@ -7,25 +7,30 @@ import type { DesejoResponse, MetaResponse } from "@/domain/models";
 import { maskCurrencyInput } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
-  Combobox,
-  type ComboboxOption,
-  DateField,
-} from "@/presentation/components";
-import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/presentation/components/ui";
 import { useGetPessoas } from "@/presentation/hooks/api";
 
 import { useGoalsMutations } from "../../useGoalsMutations";
 import {
   emptyForm,
+  fromDesejo,
   fromMeta,
   type MetaFormValues,
   schema,
   toRequest,
 } from "./metaForm.definitions";
+import { MonthField } from "./MonthField";
+
+/** Sentinela p/ "Casal" — Radix Select não aceita value="" (reservado). */
+const CASAL = "__casal__";
 
 interface MetaFormDialogProps {
   /** Meta para editar; ausência = criar. */
@@ -66,23 +71,11 @@ export const MetaFormDialog = ({
   const isPromote = !!desejo;
 
   const { data: pessoasData } = useGetPessoas(OPT_LIMIT);
-  const pessoaOpts: ComboboxOption[] = [
-    { value: "", label: "Casal (os dois)" },
-    ...(pessoasData?.data?.rows ?? []).map((p) => ({
-      value: p.id,
-      label: p.nome,
-    })),
-  ];
 
   const initial: MetaFormValues = meta
     ? fromMeta(meta)
     : desejo
-      ? {
-          ...emptyForm,
-          titulo: desejo.titulo,
-          valorAlvo:
-            desejo.valorEstimado != null ? String(desejo.valorEstimado) : "",
-        }
+      ? fromDesejo(desejo.titulo, desejo.valorEstimado)
       : emptyForm;
 
   const {
@@ -285,11 +278,7 @@ export const MetaFormDialog = ({
                 name="dataAlvo"
                 control={control}
                 render={({ field }) => (
-                  <DateField
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="mês/ano"
-                  />
+                  <MonthField value={field.value} onChange={field.onChange} />
                 )}
               />
               {errors.dataAlvo && (
@@ -325,14 +314,22 @@ export const MetaFormDialog = ({
                 name="pessoaId"
                 control={control}
                 render={({ field }) => (
-                  <Combobox
-                    options={pessoaOpts}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Casal (os dois)"
-                    searchPlaceholder="Buscar pessoa…"
-                    inline
-                  />
+                  <Select
+                    value={field.value || CASAL}
+                    onValueChange={(v) => field.onChange(v === CASAL ? "" : v)}
+                  >
+                    <SelectTrigger className="rounded-[11px] border-line">
+                      <SelectValue placeholder="Casal (os dois)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={CASAL}>Casal (os dois)</SelectItem>
+                      {(pessoasData?.data?.rows ?? []).map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
               />
             </div>

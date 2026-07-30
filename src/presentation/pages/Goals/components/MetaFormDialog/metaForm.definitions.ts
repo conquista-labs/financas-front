@@ -5,7 +5,11 @@ import type {
   EditMetaRequest,
   MetaResponse,
 } from "@/domain/models";
-import { parseAmount } from "@/lib/format";
+import { maskCurrencyInput, parseAmount } from "@/lib/format";
+
+/** number → string mascarada ("4200" → "4.200,00"); vazio se null. */
+const money = (n?: number | null): string =>
+  n != null ? maskCurrencyInput(String(Math.round(n * 100))) : "";
 
 /** Valores do form de meta (strings p/ inputs; convertidos no submit). */
 export interface MetaFormValues {
@@ -48,12 +52,19 @@ export const schema = object({
 export const fromMeta = (m: MetaResponse): MetaFormValues => ({
   titulo: m.titulo,
   tipo: m.tipo,
-  valorAlvo: String(m.valorAlvo ?? ""),
-  valorInicial: m.valorAtual != null ? String(m.valorAtual) : "",
-  aporteMensal: m.aporteMensal != null ? String(m.aporteMensal) : "",
+  valorAlvo: money(m.valorAlvo),
+  valorInicial: money(m.valorAtual),
+  aporteMensal: money(m.aporteMensal),
   dataAlvo: (m.dataAlvo ?? "").slice(0, 10),
   tag: m.tag.nome,
   pessoaId: m.pessoa?.id ?? "",
+});
+
+/** Pré-preenche o form ao promover um desejo (título + valor estimado). */
+export const fromDesejo = (titulo: string, valorEstimado?: number | null) => ({
+  ...emptyForm,
+  titulo,
+  valorAlvo: money(valorEstimado),
 });
 
 /**
