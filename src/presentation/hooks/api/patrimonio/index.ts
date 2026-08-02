@@ -4,4 +4,5 @@ export * from "./useGetPatrimonioId";
 export * from "./useGetPatrimonios";
 export * from "./useGetResumoPatrimonio";
 export * from "./usePatchPatrimonioId";
+export * from "./usePatrimonioMutations";
 export * from "./usePostPatrimonio";

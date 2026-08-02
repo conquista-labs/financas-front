@@ -2952,6 +2952,517 @@
           "Importações"
         ]
       }
+    },
+    "/metas": {
+      "get": {
+        "operationId": "MetasController_findAll",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "ativa",
+                "concluida",
+                "arquivada"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "pessoaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetaResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Listar metas com progresso calculado",
+        "tags": [
+          "Metas"
+        ]
+      },
+      "post": {
+        "operationId": "MetasController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMetaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Criar meta (resolve a tag; arquiva o desejo se vier)",
+        "tags": [
+          "Metas"
+        ]
+      }
+    },
+    "/metas/resumo": {
+      "get": {
+        "operationId": "MetasController_resumo",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Resumo agregado das metas (cards do topo/dashboard)",
+        "tags": [
+          "Metas"
+        ]
+      }
+    },
+    "/metas/{id}": {
+      "get": {
+        "operationId": "MetasController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da meta",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Detalhe da meta + histórico de 6 meses",
+        "tags": [
+          "Metas"
+        ]
+      },
+      "patch": {
+        "operationId": "MetasController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da meta",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditMetaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Editar plano da meta",
+        "tags": [
+          "Metas"
+        ]
+      },
+      "delete": {
+        "operationId": "MetasController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da meta",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Arquivar meta (soft delete — tem Desfazer)",
+        "tags": [
+          "Metas"
+        ]
+      }
+    },
+    "/metas/{id}/restaurar": {
+      "post": {
+        "operationId": "MetasController_restaurar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da meta",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Restaurar meta arquivada (Desfazer)",
+        "tags": [
+          "Metas"
+        ]
+      }
+    },
+    "/metas/{id}/aportes": {
+      "post": {
+        "operationId": "MetasController_aportar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID da meta",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAporteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Registrar aporte (cria Transacao despesa com a tag da meta)",
+        "tags": [
+          "Metas"
+        ]
+      }
+    },
+    "/desejos": {
+      "get": {
+        "operationId": "DesejosController_findAll",
+        "parameters": [
+          {
+            "name": "arquivados",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Listar desejos (votos desc, prioridade, valor)",
+        "tags": [
+          "Desejos"
+        ]
+      },
+      "post": {
+        "operationId": "DesejosController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDesejoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Criar desejo",
+        "tags": [
+          "Desejos"
+        ]
+      }
+    },
+    "/desejos/{id}": {
+      "patch": {
+        "operationId": "DesejosController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do desejo",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditDesejoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Editar desejo",
+        "tags": [
+          "Desejos"
+        ]
+      },
+      "delete": {
+        "operationId": "DesejosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do desejo",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Arquivar desejo (soft delete — tem Desfazer)",
+        "tags": [
+          "Desejos"
+        ]
+      }
+    },
+    "/desejos/{id}/votos/{pessoaId}": {
+      "put": {
+        "operationId": "DesejosController_votar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do desejo",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pessoaId",
+            "required": true,
+            "in": "path",
+            "description": "ID da pessoa",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Votar no desejo (idempotente)",
+        "tags": [
+          "Desejos"
+        ]
+      },
+      "delete": {
+        "operationId": "DesejosController_desvotar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do desejo",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pessoaId",
+            "required": true,
+            "in": "path",
+            "description": "ID da pessoa",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Remover voto (idempotente)",
+        "tags": [
+          "Desejos"
+        ]
+      }
+    },
+    "/desejos/{id}/promover": {
+      "post": {
+        "operationId": "DesejosController_promover",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do desejo",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Promover desejo a meta (cria a meta e arquiva o desejo)",
+        "tags": [
+          "Desejos"
+        ]
+      }
     }
   },
   "info": {
@@ -7843,6 +8354,343 @@
           "message",
           "data"
         ]
+      },
+      "TagResumo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid"
+          },
+          "nome": {
+            "type": "string",
+            "example": "meta-cozinha"
+          }
+        },
+        "required": [
+          "id",
+          "nome"
+        ]
+      },
+      "PessoaResumo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid"
+          },
+          "nome": {
+            "type": "string",
+            "example": "Vivi"
+          }
+        },
+        "required": [
+          "id",
+          "nome"
+        ]
+      },
+      "MetaResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "uuid"
+          },
+          "titulo": {
+            "type": "string",
+            "example": "Reforma da cozinha"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "acumular",
+              "quitar"
+            ],
+            "example": "acumular"
+          },
+          "valorAlvo": {
+            "type": "number",
+            "example": 28000
+          },
+          "valorAtual": {
+            "type": "number",
+            "example": 16400,
+            "description": "Derivado: valorInicial + Σ transações da tag"
+          },
+          "falta": {
+            "type": "number",
+            "example": 11600,
+            "description": "max(0, valorAlvo - valorAtual)"
+          },
+          "percentual": {
+            "type": "number",
+            "example": 59,
+            "description": "0-100 (capado)"
+          },
+          "aporteMensal": {
+            "type": "number",
+            "example": 1200
+          },
+          "aporteNecessario": {
+            "type": "number",
+            "example": 1450,
+            "description": "falta / mesesRestantes"
+          },
+          "noRitmo": {
+            "type": "boolean",
+            "example": false
+          },
+          "statusProgresso": {
+            "type": "string",
+            "enum": [
+              "no_ritmo",
+              "atrasada",
+              "concluida"
+            ],
+            "example": "atrasada",
+            "description": "Status de progresso derivado (≠ status persistido)."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ativa",
+              "concluida",
+              "arquivada"
+            ],
+            "example": "ativa",
+            "description": "Status persistido (ativa | concluida | arquivada)."
+          },
+          "etaMeses": {
+            "type": "object",
+            "example": 10,
+            "nullable": true,
+            "description": "ceil(falta/aporteMensal); null se aporte 0"
+          },
+          "dataAlvo": {
+            "type": "string",
+            "example": "2027-03-01T00:00:00.000Z"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/TagResumo"
+          },
+          "pessoa": {
+            "nullable": true,
+            "description": "null = Casal",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PessoaResumo"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "titulo",
+          "tipo",
+          "valorAlvo",
+          "valorAtual",
+          "falta",
+          "percentual",
+          "aporteMensal",
+          "aporteNecessario",
+          "noRitmo",
+          "statusProgresso",
+          "status",
+          "dataAlvo",
+          "tag"
+        ]
+      },
+      "CreateMetaRequest": {
+        "type": "object",
+        "properties": {
+          "titulo": {
+            "type": "string",
+            "example": "Reforma da cozinha"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "acumular",
+              "quitar"
+            ],
+            "example": "acumular"
+          },
+          "valorAlvo": {
+            "type": "number",
+            "example": 28000,
+            "description": "Valor alvo (> 0)"
+          },
+          "valorInicial": {
+            "type": "number",
+            "example": 16400,
+            "description": "Saldo já existente antes do app (>= 0 e <= valorAlvo)"
+          },
+          "aporteMensal": {
+            "type": "number",
+            "example": 1200,
+            "description": "Aporte mensal planejado"
+          },
+          "dataAlvo": {
+            "type": "string",
+            "example": "2027-03-01",
+            "description": "Data alvo. Normalizada para o dia 1º do mês."
+          },
+          "tag": {
+            "type": "string",
+            "example": "meta-cozinha",
+            "description": "Nome da tag que alimenta o progresso (slug em string). Se vazio, gerado do título. connectOrCreate pelo nome."
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "null = Casal"
+          },
+          "patrimonioId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Lastro opcional (informativo)"
+          },
+          "desejoId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Se vier, vincula e arquiva o desejo de origem."
+          }
+        },
+        "required": [
+          "titulo",
+          "tipo",
+          "valorAlvo",
+          "dataAlvo"
+        ]
+      },
+      "EditMetaRequest": {
+        "type": "object",
+        "properties": {
+          "titulo": {
+            "type": "string",
+            "example": "Reforma da cozinha"
+          },
+          "valorAlvo": {
+            "type": "number",
+            "example": 28000
+          },
+          "valorInicial": {
+            "type": "number",
+            "example": 16400
+          },
+          "aporteMensal": {
+            "type": "number",
+            "example": 1200
+          },
+          "dataAlvo": {
+            "type": "string",
+            "example": "2027-03-01"
+          },
+          "tag": {
+            "type": "string",
+            "example": "meta-cozinha"
+          },
+          "pessoaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patrimonioId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "CreateAporteRequest": {
+        "type": "object",
+        "properties": {
+          "valor": {
+            "type": "number",
+            "example": 1200
+          },
+          "data": {
+            "type": "string",
+            "example": "2026-07-26",
+            "description": "Data do aporte (YYYY-MM-DD)"
+          },
+          "meioPagamentoId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Meio de pagamento usado"
+          },
+          "descricao": {
+            "type": "string",
+            "example": "Aporte reforma",
+            "description": "Default: \"Aporte · \" + título da meta."
+          }
+        },
+        "required": [
+          "valor",
+          "data"
+        ]
+      },
+      "CreateDesejoRequest": {
+        "type": "object",
+        "properties": {
+          "titulo": {
+            "type": "string",
+            "example": "Sofá novo pra sala"
+          },
+          "nota": {
+            "type": "string",
+            "example": "Aquele seccional cinza"
+          },
+          "valorEstimado": {
+            "type": "number",
+            "example": 4500
+          },
+          "prioridade": {
+            "type": "string",
+            "enum": [
+              "alta",
+              "media",
+              "baixa"
+            ],
+            "example": "media"
+          },
+          "votos": {
+            "example": [
+              "uuid-pessoa-1"
+            ],
+            "description": "IDs das pessoas que já votam neste desejo ao criar.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "titulo"
+        ]
+      },
+      "EditDesejoRequest": {
+        "type": "object",
+        "properties": {
+          "titulo": {
+            "type": "string",
+            "example": "Sofá novo pra sala"
+          },
+          "nota": {
+            "type": "string",
+            "example": "Aquele seccional cinza"
+          },
+          "valorEstimado": {
+            "type": "number",
+            "example": 4500
+          },
+          "prioridade": {
+            "type": "string",
+            "enum": [
+              "alta",
+              "media",
+              "baixa"
+            ]
+          }
+        }
       }
     }
   }

@@ -1,5 +1,5 @@
-import { useToast } from "@rarui-react/components/dist/Toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import type {
   PatchPatrimonioIdParams,
@@ -13,8 +13,6 @@ export const usePatchPatrimonioId = (
   params: PatchPatrimonioIdParams,
   options?: UsePatchPatrimonioIdOptions,
 ) => {
-  const { addToast } = useToast();
-
   const patchPatrimonio = makePatchPatrimonioFactory();
   const queryClient = useQueryClient();
 
@@ -29,12 +27,7 @@ export const usePatchPatrimonioId = (
       queryClient.invalidateQueries({ queryKey: ["get-resumo-patrimonio"] });
     },
     onError: (error) => {
-      addToast({
-        title: error.message,
-        appearance: "error",
-        variant: "solid",
-        duration: 4000,
-      });
+      toast.error(error.message);
     },
   });
 };

@@ -1,7 +1,4 @@
-export { Breadcrumb } from "./Breadcrumb";
 export { Loading } from "./Loading";
-export { Logo } from "./Logo";
-export { Skeleton } from "./Skeleton";
 export { Suspense } from "./Suspense";
 
 /* Nova identidade "Nossa Grana" (shadcn/ui) — wrappers no padrão do projeto.

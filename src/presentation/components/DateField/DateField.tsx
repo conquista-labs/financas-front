@@ -22,7 +22,6 @@ interface DateFieldProps {
  * Campo de data da nova identidade "Nossa Grana": botão que abre um calendário
  * shadcn (react-day-picker) em popover. Trabalha com datas ISO "yyyy-MM-dd" (o
  * formato dos query params/API) e exibe em pt-BR "dd/MM/yyyy".
- * (Nomeado DateField para não colidir com o DatePicker legado RarUI.)
  */
 export const DateField = ({
   value,

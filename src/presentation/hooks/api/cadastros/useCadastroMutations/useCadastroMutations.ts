@@ -20,13 +20,13 @@ import {
   makePostPessoasFactory,
 } from "@/main/factories/usecases";
 
-export type RegisterKind = "categoria" | "pessoa" | "meio";
+export type CadastroKind = "categoria" | "pessoa" | "meio";
 
-export type CreateBody =
+export type CreateCadastroBody =
   | CreateCategoriaRequest
   | CreatePessoaRequest
   | CreateMeioPagamentoRequest;
-export type EditBody =
+export type EditCadastroBody =
   | EditCategoriaRequest
   | EditPessoaRequest
   | EditMeioPagamentoRequest;
@@ -54,12 +54,16 @@ const config = {
 } as const;
 
 /**
- * CRUD dos cadastros (categoria/pessoa/meio) para o hub de Cadastros. Usa as
- * factories direto — os hooks `usePost*`/`usePatch*Id` do projeto carregam
- * efeitos RarUI (useToast) e navegam para rotas que este hub substituiu; aqui
- * só invalidamos a lista e deixamos a tela decidir o resto (toast sonner etc).
+ * CRUD dinâmico dos cadastros (categoria/pessoa/meio) para o hub de Cadastros.
+ *
+ * Os hooks `usePost*`/`usePatch*Id`/`useDelete*Id` do projeto são estáticos por
+ * entidade (e os de patch/delete recebem o id na montagem, servindo às telas
+ * dedicadas por rota). A UI de Cadastros é dinâmica por aba (`kind`) com edição
+ * via modal, onde o id só existe no submit — então este hook seleciona a
+ * factory por `kind` e monta as mutations. Só invalida a lista; a view decide
+ * navegação/toast via onSuccess/onError do `mutate`.
  */
-export const useRegisterMutations = (kind: RegisterKind) => {
+export const useCadastroMutations = (kind: CadastroKind) => {
   const queryClient = useQueryClient();
   const { queryKey, post, patch, del } = config[kind];
 
@@ -67,14 +71,14 @@ export const useRegisterMutations = (kind: RegisterKind) => {
     queryClient.invalidateQueries({ queryKey: [queryKey] });
 
   const create = useMutation({
-    mutationFn: (body: CreateBody) =>
+    mutationFn: (body: CreateCadastroBody) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       post().post(body as any),
     onSuccess: invalidate,
   });
 
   const update = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: EditBody }) =>
+    mutationFn: ({ id, body }: { id: string; body: EditCadastroBody }) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       patch().patch(body as any, { id }),
     onSuccess: invalidate,

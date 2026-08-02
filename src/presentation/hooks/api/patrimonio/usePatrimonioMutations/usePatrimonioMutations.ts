@@ -11,12 +11,16 @@ import {
 } from "@/main/factories/usecases";
 
 /**
- * CRUD de patrimônio via factories diretas. Os hooks `usePostPatrimonio` etc.
- * do projeto carregam efeitos RarUI (useToast) e navegam para as rotas
- * Create/Edit que esta tela-hub substituiu; aqui só invalidamos as queries e
- * deixamos a tela cuidar de toast (sonner) e do modal.
+ * CRUD de patrimônio para a tela-hub (lista + modal único).
+ *
+ * Os hooks `usePost*`/`usePatch*Id`/`useDelete*Id` de patrimônio são estáticos
+ * por operação e o patch/delete recebem o id na montagem (servem às telas
+ * dedicadas por rota); além disso invalidam só parte das queries. Este hub é
+ * dinâmico (edita via modal, id só no submit) e precisa revalidar também a
+ * evolução (gráfico). Por isso consolidamos as mutations aqui, invalidando
+ * lista + resumo + evolução. A view decide toast/modal via onSuccess/onError.
  */
-export const usePatrimonyMutations = () => {
+export const usePatrimonioMutations = () => {
   const queryClient = useQueryClient();
 
   const invalidate = () => {

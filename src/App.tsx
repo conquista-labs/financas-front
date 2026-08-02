@@ -1,9 +1,6 @@
-import "react-datepicker/dist/react-datepicker.css";
 import "./presentation/assets/styles/reset.css";
-import "./presentation/assets/styles/theme.css";
 import "./presentation/assets/styles/tailwind.css";
 
-import { ThemeProvider, Toast } from "@rarui-react/components";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -30,7 +27,6 @@ const App = () => {
 
   // Sincroniza o tema (Tailwind/tokens da nova identidade) no elemento raiz:
   // data-theme="dark" + classe .dark na <html>, e persiste a preferência.
-  // Convive com o RarUI ThemeProvider durante a migração progressiva.
   useEffect(() => {
     const root = document.documentElement;
     root.setAttribute("data-theme", darkMode ? "dark" : "light");
@@ -50,12 +46,8 @@ const App = () => {
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <ThemeProviderContext.Provider value={contextValue}>
-          <ThemeProvider theme={darkMode ? "dark" : "base"}>
-            <Toast.Provider placement="topRight">
-              <Router />
-              <Toaster />
-            </Toast.Provider>
-          </ThemeProvider>
+          <Router />
+          <Toaster />
         </ThemeProviderContext.Provider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

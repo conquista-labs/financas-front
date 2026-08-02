@@ -2,11 +2,10 @@ import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 
 /**
- * Fundação visual "Nossa Grana" (rebrand).
+ * Fundação visual "Nossa Grana".
  * Tokens em CSS vars (RGB channels) definidos em
  * src/presentation/assets/styles/tailwind.css, com variante dark via
- * [data-theme="dark"] / .dark na <html>. Convive com o RarUI (prefixo
- * --rarui-*) durante a migração progressiva.
+ * [data-theme="dark"] / .dark na <html>.
  */
 export default {
   darkMode: ["class", '[data-theme="dark"]'],

@@ -23,9 +23,11 @@ import {
 } from "@/main/factories/usecases";
 
 /**
- * CRUD de Metas e Desejos via factories diretas (mesmo motivo do
- * `usePatrimonyMutations`: os hooks genéricos carregam efeitos RarUI). A tela
- * cuida de toast (sonner) e modais; aqui só invalidamos as queries.
+ * CRUD de Metas e Desejos. As mutations dessas entidades não têm hooks React
+ * Query individuais (só as factories + os hooks GET existem), então este hook
+ * consolida as 11 operações das duas entidades relacionadas, invalidando as
+ * queries afetadas. A tela cuida de toast (sonner) e modais via
+ * onSuccess/onError do `mutate`.
  */
 export const useGoalsMutations = () => {
   const queryClient = useQueryClient();
