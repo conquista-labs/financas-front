@@ -1,10 +1,10 @@
-import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
   type UseMutationResult,
   useQueryClient,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
+import { toast } from "sonner";
 
 import type {
   PatchTransacoesIdModel,
@@ -23,8 +23,6 @@ export const usePatchTransacoesId = (
   AxiosError,
   PatchTransacoesIdRequest
 > => {
-  const { addToast } = useToast();
-
   const patchTransacoesId = makePatchTransacoesIdFactory();
   const queryClient = useQueryClient();
 
@@ -39,12 +37,7 @@ export const usePatchTransacoesId = (
       queryClient.invalidateQueries({ queryKey: ["get-transacoes"] });
     },
     onError: (error) => {
-      addToast({
-        title: error.message,
-        appearance: "error",
-        variant: "solid",
-        duration: 4000,
-      });
+      toast.error(error.message);
     },
     ...options,
   });

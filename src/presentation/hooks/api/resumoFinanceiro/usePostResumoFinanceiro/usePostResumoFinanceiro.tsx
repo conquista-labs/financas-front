@@ -1,10 +1,10 @@
-import { useToast } from "@rarui-react/components/dist/Toast";
 import {
   useMutation,
   type UseMutationResult,
   useQueryClient,
 } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
+import { toast } from "sonner";
 
 import type {
   PostResumoFinanceiroModel,
@@ -21,7 +21,6 @@ export const usePostResumoFinanceiro = (
   AxiosError,
   PostResumoFinanceiroParms
 > => {
-  const { addToast } = useToast();
   const postResumoFinanceiro = makePostResumoFinanceiroFactory();
   const queryClient = useQueryClient();
 
@@ -35,12 +34,7 @@ export const usePostResumoFinanceiro = (
       });
     },
     onError: (error) => {
-      addToast({
-        title: error.message,
-        appearance: "error",
-        variant: "solid",
-        duration: 4000,
-      });
+      toast.error(error.message);
     },
     ...options,
   });

@@ -11,9 +11,12 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/presentation/components/ui";
-import { useGetEnums, useGetPessoas } from "@/presentation/hooks/api";
+import {
+  useGetEnums,
+  useGetPessoas,
+  usePatrimonioMutations,
+} from "@/presentation/hooks/api";
 
-import { usePatrimonyMutations } from "../../usePatrimonyMutations";
 import {
   emptyForm,
   fromPatrimonio,
@@ -38,14 +41,14 @@ const OPT_LIMIT = { page: 1, limit: 100 };
 /**
  * Modal de criar/editar patrimônio. Tipo em pills (Ativo/Passivo), categoria e
  * pessoa com busca (Combobox), valores monetários, campos de passivo revelados
- * condicionalmente e observações. RHF + Yup; persiste via usePatrimonyMutations.
+ * condicionalmente e observações. RHF + Yup; persiste via usePatrimonioMutations.
  */
 export const PatrimonyFormDialog = ({
   item,
   open,
   onOpenChange,
 }: PatrimonyFormDialogProps) => {
-  const { create, update } = usePatrimonyMutations();
+  const { create, update } = usePatrimonioMutations();
   const isEdit = !!item;
 
   const { data: enums } = useGetEnums();

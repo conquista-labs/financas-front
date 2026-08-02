@@ -3,7 +3,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import type { Tag } from "@/domain/models";
+import type { CadastroKind } from "@/presentation/hooks/api";
 import {
+  useCadastroMutations,
   useGetCategorias,
   useGetMeiosPagamento,
   useGetPessoas,
@@ -20,10 +22,9 @@ import {
   TagList,
 } from "./components";
 import { registerTab } from "./registers.styles";
-import {
-  type RegisterKind,
-  useRegisterMutations,
-} from "./useRegisterMutations";
+
+/** Aba de cadastro com CRUD (categoria/pessoa/meio). */
+type RegisterKind = CadastroKind;
 
 const OPT_LIMIT = { page: 1, limit: 100 };
 
@@ -61,7 +62,7 @@ const Registers = () => {
 
   // Mutations da aba ativa (fallback categoria nas abas sem CRUD).
   const activeKind: RegisterKind = isRegisterKind(tab) ? tab : "categoria";
-  const { remove, toggleFavorito } = useRegisterMutations(activeKind);
+  const { remove, toggleFavorito } = useCadastroMutations(activeKind);
   const tagMutations = useTagMutations();
 
   // Id do item em exclusão (spinner na linha certa). O `remove` é o da aba

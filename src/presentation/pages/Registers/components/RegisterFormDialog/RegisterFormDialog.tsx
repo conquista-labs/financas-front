@@ -10,9 +10,9 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/presentation/components/ui";
+import type { CadastroKind } from "@/presentation/hooks/api";
+import { useCadastroMutations } from "@/presentation/hooks/api";
 
-import type { RegisterKind } from "../../useRegisterMutations";
-import { useRegisterMutations } from "../../useRegisterMutations";
 import { ColorPickerField } from "./ColorPickerField";
 import {
   emptyForm,
@@ -32,14 +32,14 @@ export interface RegisterItem {
 }
 
 interface RegisterFormDialogProps {
-  kind: RegisterKind;
+  kind: CadastroKind;
   /** Item para editar; ausência = criar. */
   item?: RegisterItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const TITLES: Record<RegisterKind, { novo: string; editar: string }> = {
+const TITLES: Record<CadastroKind, { novo: string; editar: string }> = {
   categoria: { novo: "Nova categoria", editar: "Editar categoria" },
   pessoa: { novo: "Nova pessoa", editar: "Editar pessoa" },
   meio: { novo: "Novo meio de pagamento", editar: "Editar meio de pagamento" },
@@ -52,7 +52,7 @@ const fieldCls =
 /**
  * Modal único de criar/editar cadastro (categoria/pessoa/meio) — campos
  * condicionais por `kind`, fiel ao protótipo. RHF + Yup; converte teto
- * (string "1.000,00" → number) e persiste via useRegisterMutations.
+ * (string "1.000,00" → number) e persiste via useCadastroMutations.
  */
 export const RegisterFormDialog = ({
   kind,
@@ -60,7 +60,7 @@ export const RegisterFormDialog = ({
   open,
   onOpenChange,
 }: RegisterFormDialogProps) => {
-  const { create, update } = useRegisterMutations(kind);
+  const { create, update } = useCadastroMutations(kind);
   const isEdit = !!item;
 
   const {

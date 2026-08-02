@@ -14,6 +14,7 @@ import {
   useGetEnums,
   useGetMeiosPagamento,
   useGetPessoas,
+  useGetTags,
 } from "@/presentation/hooks/api";
 import { urlRouters } from "@/presentation/router/router.definitions";
 
@@ -76,6 +77,7 @@ export const TransactionForm = ({
   const { data: categorias } = useGetCategorias(OPT_LIMIT);
   const { data: pessoas } = useGetPessoas(OPT_LIMIT);
   const { data: meios } = useGetMeiosPagamento(OPT_LIMIT);
+  const { data: tagsData } = useGetTags();
 
   const {
     control,
@@ -93,7 +95,8 @@ export const TransactionForm = ({
   });
 
   const [tagInput, setTagInput] = useState("");
-  const tags = watch("tags") ?? [];
+  const watchedTags = watch("tags");
+  const tags = useMemo(() => watchedTags ?? [], [watchedTags]);
 
   const submit = (keepOpen: boolean) =>
     handleSubmit((values) =>
@@ -105,8 +108,8 @@ export const TransactionForm = ({
       }),
     );
 
-  const addTag = () => {
-    const normalized = tagInput
+  const addTag = (raw?: string) => {
+    const normalized = (raw ?? tagInput)
       .trim()
       .toLowerCase()
       .replace(/\s+/g, "-")
@@ -115,6 +118,19 @@ export const TransactionForm = ({
       setValue("tags", [...tags, normalized]);
     setTagInput("");
   };
+
+  // Tags já existentes (Cadastros) que ainda não foram adicionadas, filtradas
+  // pelo texto digitado — permite escolher em vez de digitar do zero.
+  const tagSuggestions = useMemo(() => {
+    const query = tagInput.trim().toLowerCase();
+    return (tagsData?.data ?? [])
+      .filter(
+        (t) =>
+          !tags.includes(t.nome) &&
+          (!query || t.nome.toLowerCase().includes(query)),
+      )
+      .slice(0, 8);
+  }, [tagsData?.data, tags, tagInput]);
 
   const selectOptions = useMemo(
     () => ({
@@ -353,12 +369,36 @@ export const TransactionForm = ({
             />
             <button
               type="button"
-              onClick={addTag}
+              onClick={() => addTag()}
               className="rounded-[11px] border border-line bg-track px-4 text-sm font-semibold text-fg"
             >
               Adicionar
             </button>
           </div>
+
+          {/* Sugestões: tags existentes (Cadastros) — clique para adicionar */}
+          {tagSuggestions.length > 0 && (
+            <div className="mt-[10px] max-w-[420px]">
+              <span className="mb-[6px] block text-[11.5px] font-medium text-muted">
+                Tags existentes
+              </span>
+              <div className="flex flex-wrap gap-[6px]">
+                {tagSuggestions.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => addTag(t.nome)}
+                    className="flex items-center gap-[5px] rounded-pill border border-line bg-track py-[5px] pl-[11px] pr-[10px] text-[12.5px] font-semibold text-fg transition-colors hover:border-primary hover:text-primary"
+                  >
+                    {t.nome}
+                    <span className="text-[10.5px] font-medium text-muted">
+                      {t.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Lembrar-me no calendário */}

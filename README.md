@@ -8,7 +8,8 @@ A organização do código é baseada em boas práticas que incluem separação 
 
 ## Tecnologias Principais Utilizadas
 
-- **RarUI**: Estamos usando o [RarUI](https://rarui.rarolabs.com.br/) como design system para garantir uma interface padronizada e consistente.
+- **Tailwind CSS + shadcn/ui**: A interface usa [Tailwind CSS](https://tailwindcss.com/) com componentes [shadcn/ui](https://ui.shadcn.com/) (identidade "Nossa Grana"), com tokens próprios e suporte a tema claro/escuro via `data-theme`.
+- **lucide-react**: Biblioteca de ícones ([lucide](https://lucide.dev/)).
 - **Vitest**: Utilizamos [Vitest](https://vitest.dev/) para testes unitários eficientes e fáceis de manter.
 - **React Query**: A camada HTTP é gerenciada com [React Query](https://tanstack.com/query/latest/docs/framework/react/overview) para cache e sincronização de dados.
 - **Axios**: Utilizado para realizar chamadas à API, [Axios](https://axios-http.com/ptbr) oferece uma interface simples e poderosa.

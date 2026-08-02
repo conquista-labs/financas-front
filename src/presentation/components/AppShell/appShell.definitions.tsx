@@ -5,6 +5,7 @@ import {
   Landmark,
   LayoutDashboard,
   type LucideIcon,
+  Target,
   Upload,
 } from "lucide-react";
 
@@ -48,6 +49,12 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Patrimônio",
     to: urlRouters.patrimony,
     icon: Landmark,
+  },
+  {
+    id: "goals",
+    label: "Metas & desejos",
+    to: urlRouters.goals,
+    icon: Target,
   },
   {
     id: "registers",

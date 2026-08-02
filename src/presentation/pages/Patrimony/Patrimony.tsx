@@ -7,6 +7,7 @@ import {
   useGetEvolucaoPatrimonio,
   useGetPatrimonios,
   useGetResumoPatrimonio,
+  usePatrimonioMutations,
 } from "@/presentation/hooks/api";
 
 import {
@@ -17,7 +18,6 @@ import {
   PatrimonyKpis,
 } from "./components";
 import { evolucaoRange, toEvolucaoPoints } from "./patrimony.helpers";
-import { usePatrimonyMutations } from "./usePatrimonyMutations";
 
 /**
  * Patrimônio (nova identidade). KPIs (líquido/ativos/passivos), gráfico de
@@ -36,7 +36,7 @@ const Patrimony = () => {
   const patrimonios = useGetPatrimonios();
   const resumo = useGetResumoPatrimonio();
   const evolucao = useGetEvolucaoPatrimonio(range);
-  const { remove } = usePatrimonyMutations();
+  const { remove } = usePatrimonioMutations();
 
   const rows = patrimonios.data?.data?.rows ?? [];
   const evolucaoPoints = useMemo(
