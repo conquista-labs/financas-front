@@ -1,9 +1,16 @@
 import { AlertTriangle, Check, Tag } from "lucide-react";
+import { useMemo } from "react";
 
+import type { Tag as TagModel } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { ComboboxOption } from "@/presentation/components";
 
-import { type ReviewLine, totalDespesasIncluidas } from "../import.helpers";
+import {
+  normalizeTag,
+  type ReviewLine,
+  totalDespesasIncluidas,
+} from "../import.helpers";
 import { ReviewRow } from "./ReviewRow";
 
 interface ReviewStepProps {
@@ -13,6 +20,8 @@ interface ReviewStepProps {
   pessoas: ComboboxOption[];
   meios: ComboboxOption[];
   formas: ComboboxOption[];
+  /** Tags já cadastradas, para sugerir na marcação em lote. */
+  tags: TagModel[];
   tag: string;
   onTagChange: (value: string) => void;
   onToggle: (key: string) => void;
@@ -34,6 +43,7 @@ export const ReviewStep = ({
   pessoas,
   meios,
   formas,
+  tags,
   tag,
   onTagChange,
   onToggle,
@@ -45,6 +55,16 @@ export const ReviewStep = ({
   const selecionadas = lines.filter((l) => l.incluir).length;
   const duplicadas = lines.filter((l) => l.possivelDuplicada).length;
   const total = totalDespesasIncluidas(lines);
+
+  // Tags existentes que casam com o que foi digitado (compara pelo slug, já
+  // que o valor enviado é normalizado). Sem texto → mostra as mais usadas.
+  const tagSuggestions = useMemo(() => {
+    const query = normalizeTag(tag) ?? "";
+    return [...tags]
+      .sort((a, b) => b.count - a.count)
+      .filter((t) => !query || (normalizeTag(t.nome) ?? "").includes(query))
+      .slice(0, 8);
+  }, [tags, tag]);
 
   return (
     <div>
@@ -100,6 +120,36 @@ export const ReviewStep = ({
           <span className="text-[12px] text-muted">
             deixe vazio para não marcar
           </span>
+
+          {/* Sugestões: tags já cadastradas — clique para preencher. */}
+          {tagSuggestions.length > 0 && (
+            <div className="flex w-full flex-wrap items-center gap-[6px]">
+              <span className="text-[11.5px] font-medium text-muted">
+                Existentes:
+              </span>
+              {tagSuggestions.map((t) => {
+                const active = normalizeTag(tag) === normalizeTag(t.nome);
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => onTagChange(active ? "" : t.nome)}
+                    className={cn(
+                      "flex items-center gap-[5px] rounded-pill border py-[4px] pl-[10px] pr-[9px] text-[12px] font-semibold transition-colors",
+                      active
+                        ? "border-primary bg-primary-soft text-primary-strong"
+                        : "border-line bg-track text-fg hover:border-primary hover:text-primary",
+                    )}
+                  >
+                    {t.nome}
+                    <span className="text-[10.5px] font-medium text-muted">
+                      {t.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Rodapé: cancelar + total + confirmar (sem border-top próprio) */}

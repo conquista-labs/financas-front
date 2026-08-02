@@ -11,6 +11,7 @@ import {
   useGetEnums,
   useGetMeiosPagamento,
   useGetPessoas,
+  useGetTags,
 } from "@/presentation/hooks/api";
 import { urlRouters } from "@/presentation/router/router.definitions";
 
@@ -52,6 +53,7 @@ const Import = () => {
   const pessoas = useGetPessoas(OPT_LIMIT);
   const meios = useGetMeiosPagamento(OPT_LIMIT);
   const enums = useGetEnums();
+  const tags = useGetTags();
 
   const categoriaOpts = useMemo<ComboboxOption[]>(
     () =>
@@ -171,6 +173,7 @@ const Import = () => {
           pessoas={pessoaOpts}
           meios={meioOpts}
           formas={formaOpts}
+          tags={tags.data?.data ?? []}
           tag={tag}
           onTagChange={setTag}
           onToggle={toggleLine}
