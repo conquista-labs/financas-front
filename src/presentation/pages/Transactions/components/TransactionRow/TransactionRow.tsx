@@ -39,8 +39,13 @@ export const TransactionRow = ({
 
   const isReceita = categoria?.tipo === "receita";
   const catColor = enhance(categoria?.cor);
-  const parcela = parseParcela(formaPagamento);
   const forma = formatFormaPagamento(formaPagamento);
+  // Posição real da parcela (2/6) quando o backend agrupou a compra; senão
+  // cai no derivado de formaPagamento (que assume a 1ª parcela).
+  const parcela =
+    transacao.parcelaNumero && transacao.totalParcelas
+      ? { atual: transacao.parcelaNumero, total: transacao.totalParcelas }
+      : parseParcela(formaPagamento);
 
   return (
     <div className="flex items-center gap-[14px] border-b border-line2 py-[15px] last:border-b-0">
