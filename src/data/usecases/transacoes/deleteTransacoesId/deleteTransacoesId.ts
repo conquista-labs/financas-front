@@ -15,9 +15,10 @@ export class DeleteTransacoesId implements DeleteTransacoesIdUseCase {
   async delete(
     params: DeleteTransacoesIdParams,
   ): Promise<DeleteTransacoesIdModel> {
+    const query = params.escopo ? `?escopo=${params.escopo}` : "";
     const httpResponse = await this.httpClient.request<DeleteTransacoesIdModel>(
       {
-        url: `${this.url.replace(":id", params.id)}`,
+        url: `${this.url.replace(":id", params.id)}${query}`,
         method: "delete",
       },
     );

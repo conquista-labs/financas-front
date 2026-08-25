@@ -21,6 +21,10 @@ import { urlRouters } from "@/presentation/router/router.definitions";
 
 import { ActionBar } from "./components/ActionBar";
 import { ActiveFilterChips } from "./components/ActiveFilterChips";
+import {
+  type DeleteEscopo,
+  DeleteTransactionDialog,
+} from "./components/DeleteTransactionDialog";
 import type { TransactionFilters } from "./components/FiltersSheet";
 import { FiltersSheet } from "./components/FiltersSheet";
 import { MonthSelector } from "./components/MonthSelector";
@@ -36,6 +40,10 @@ const Transactions = () => {
   const navigate = useNavigate();
   const { openQuickAdd } = useQuickAdd();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // Transação aguardando confirmação de exclusão (null = diálogo fechado).
+  const [deleteTarget, setDeleteTarget] = useState<TransacaoResponse | null>(
+    null,
+  );
 
   const [queryParams, setQueryParams] = useQueryParams({
     startDate: withDefault(DateParam, startOfMonth(new Date())),
@@ -210,18 +218,30 @@ const Transactions = () => {
     }
   };
 
-  const handleDelete = (transacao: TransacaoResponse) => {
+  // Abre a confirmação; a exclusão só acontece no confirmDelete.
+  const handleDelete = (transacao: TransacaoResponse) =>
+    setDeleteTarget(transacao);
+
+  const confirmDelete = (escopo?: DeleteEscopo) => {
+    if (!deleteTarget) return;
     deleteTransacao(
-      { id: transacao.id },
+      { id: deleteTarget.id, ...(escopo ? { escopo } : {}) },
       {
-        onSuccess: () =>
-          toast.success("Transação excluída", {
-            action: {
-              label: "Desfazer",
-              // TODO: re-POST do payload (não há endpoint de restore) — Fatia 2.
-              onClick: () => toast.info("Desfazer virá com o lançamento."),
+        onSuccess: () => {
+          setDeleteTarget(null);
+          toast.success(
+            escopo === "esta_e_futuras"
+              ? "Parcelas excluídas"
+              : "Transação excluída",
+            {
+              action: {
+                label: "Desfazer",
+                // TODO: re-POST do payload (não há endpoint de restore) — Fatia 2.
+                onClick: () => toast.info("Desfazer virá com o lançamento."),
+              },
             },
-          }),
+          );
+        },
         onError: (error) => toast.error(error.message),
       },
     );
@@ -289,6 +309,13 @@ const Transactions = () => {
         value={filters}
         onApply={applyFilters}
         onClear={clearFilters}
+      />
+
+      <DeleteTransactionDialog
+        target={deleteTarget}
+        isDeleting={isDeleting}
+        onClose={() => !isDeleting && setDeleteTarget(null)}
+        onConfirm={confirmDelete}
       />
     </div>
   );

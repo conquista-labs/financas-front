@@ -44,6 +44,18 @@ export interface TransacaoResponse {
    * Quando foi marcada como paga (null enquanto pendente)
    */
   pagaEm?: string | null;
+  /**
+   * Grupo da compra parcelada — compartilhado por todas as parcelas (null se à vista). Permite excluir \"esta e as futuras\".
+   */
+  parcelaGrupoId?: string | null;
+  /**
+   * Posição real da parcela na compra (ex.: 2 de 6).
+   */
+  parcelaNumero?: number | null;
+  /**
+   * Total de parcelas da compra.
+   */
+  totalParcelas?: number | null;
   categoria: Categoria;
   pessoa: Pessoa;
   meioPagamento: MeioPagamento;
