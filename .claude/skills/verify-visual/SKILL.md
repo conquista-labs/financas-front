@@ -1,6 +1,6 @@
 ---
 name: verify-visual
-description: Verifica se uma tela migrada/nova da "Nossa Grana" renderiza fielmente nos DOIS temas (claro e escuro) — roda o app, alterna o data-theme e confere os design tokens, as fontes e que nenhum estilo RarUI vazou. Use após migrar uma página para shadcn, após adicionar um componente shadcn, ou quando o usuário pedir "conferir no claro e escuro", "validar visual", "checar o tema".
+description: Verifica no navegador (Playwright) uma tela da "Nossa Grana" — renderização fiel nos DOIS temas (claro/escuro, design tokens/fontes/sem RarUI) E fluxos com dados reais (criar/editar/filtrar), logando sozinha via POST /auth/login (sem pedir token ao usuário). Use após migrar uma página para shadcn, após adicionar um componente shadcn, ao validar um filtro/CRUD contra a API real, ou quando o usuário pedir "conferir no claro e escuro", "validar visual", "checar o tema", "testar no navegador".
 ---
 
 # verify-visual
@@ -30,26 +30,51 @@ um usuário fake e libera as rotas privadas sem login (ver `proxy-route.tsx`). *
 para `false`** ao terminar. Atenção: o token é fake (`"dev-skip-auth"`), então chamadas à API real
 falham (401/500) — serve para telas com dados mockados/vazios, não para validar dados de verdade.
 
-### B) Fluxo com dados reais (criar/editar/filtrar) → injetar JWT
+### B) Fluxo com dados reais (criar/editar/filtrar) → login automático + injetar JWT
 
-Quando precisa que a API responda de verdade, injete um token real no localStorage:
+Quando precisa que a API responda de verdade, **obtenha o token você mesmo** via login por
+senha (`POST /auth/login`) e injete no localStorage. **Não peça token ao usuário.**
 
-1. Navegue para uma rota. Se cair em `/login`, não há token válido.
-2. O auth é um Zustand `persist`, chave **`auth`**, shape
-   `{"state":{"auth":{"token","user"}},"version":0}` (ver `src/presentation/store/auth.ts`).
-3. **Peça o token ao usuário** — ele cola o JSON completo do `auth`. Não guarde em arquivo nem no
-   git; expira (~24h) e é pessoal.
-4. Injete e recarregue:
+Pré-requisito: o back tem que estar de pé **contra o banco de dev** e o front tem que apontar pra
+ele. O jeito mais simples é `yarn loc` no front (aponta pra `http://localhost:3001`) + back na
+`3001` (`cp .env.development .env && PORT=3001 yarn start:dev` no `financas-api`). Confira a API que
+o front usa em `.env.loc`/`.env.dev` (`VITE_API_URL`) e case a porta do back.
+
+1. **Pegue o JWT** batendo direto na API. As credenciais do usuário de teste do dev vêm do
+   `.env.development` do back (`TEST_USER_EMAIL` / `TEST_USER_PASSWORD`) — não hardcode:
+   ```bash
+   # do diretório do financas-api (as vars estão no .env.development de lá)
+   set -a; . ../financas-api/.env.development; set +a
+   curl -s -X POST "$API_URL/auth/login" -H "Content-Type: application/json" \
+     -d "{\"email\":\"$TEST_USER_EMAIL\",\"password\":\"$TEST_USER_PASSWORD\"}"
+   # → { "data": { "access_token": "<JWT>", "nome": "...", "email": "..." } }
+   ```
+   Extraia `data.access_token`. Se der 401, o usuário não existe/está sem senha nesse banco — aí sim
+   avise o usuário (provável banco errado no `.env`, ou dev foi resetado — ver skill
+   `clonar-prod-dev` no back).
+2. O auth do front é um Zustand `persist`, chave **`auth`**, shape
+   `{"state":{"auth":{"token","user"}},"version":0}` (ver `src/presentation/store/auth.ts`). O
+   `user` é opcional, então um objeto mínimo basta.
+3. **Injete e recarregue** (navegue pra qualquer rota primeiro pra ter `localStorage` do domínio):
    ```js
-   // browser_evaluate — cole o objeto que o usuário passou
+   // browser_evaluate — TOKEN vem do passo 1
    () => {
-     localStorage.setItem("auth", JSON.stringify(AUTH_OBJ));
+     localStorage.setItem(
+       "auth",
+       JSON.stringify({
+         state: { auth: { token: "<JWT>", user: {} } },
+         version: 0,
+       }),
+     );
      return "ok";
    };
    ```
-   Depois `browser_navigate` para a rota-alvo. Se voltar a `/login`, o token expirou — peça outro.
+   Depois `browser_navigate` para a rota-alvo. Se cair em `/login`, o token não pegou — refaça o
+   passo 1 (o JWT expira em ~24h, então gere na hora, não reaproveite um antigo).
 
-- Requests reais batem na API de produção/hml; o `.mock` só gera tipos, não intercepta HTTP.
+- Com `yarn loc`+back local, os requests batem no seu back → banco de **dev** (dados reais e
+  seguros pra mexer). Com `yarn dev` apontando pra hml/prod, cuidado ao criar/editar/excluir.
+- O `.mock` só gera tipos, não intercepta HTTP.
 
 ## Screenshots (Playwright)
 
@@ -94,5 +119,6 @@ ou faça `localStorage["dark-theme"]="true"` e recarregue, ou no devtools rode
 ## Reporte
 
 Diga o que você navegou, quais rotas/componentes, screenshots ou observações concretas por tema, e
-qualquer desvio da spec do handoff. Reporte com honestidade — se o token expirou e o usuário não
-passou outro, diga isso em vez de fingir que validou.
+qualquer desvio da spec do handoff. Reporte com honestidade — se o login falhou (401 no
+`/auth/login`, back apontando pro banco errado) e você não conseguiu autenticar, diga isso em vez de
+fingir que validou.
