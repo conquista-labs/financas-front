@@ -18,8 +18,33 @@ export interface MeioPagamento {
    */
   favorito: boolean;
   /**
+   * Tipo do meio de pagamento
+   */
+  tipo: MeioPagamento.TipoEnum;
+  /**
+   * Dia (1-31) de vencimento da fatura (só para tipo credito)
+   */
+  diaVencimento?: number | null;
+  /**
    * Número de transações usando este meio
    */
   totalLancamentos: number;
   createdAt: string;
+}
+export namespace MeioPagamento {
+  export type TipoEnum =
+    | "credito"
+    | "debito"
+    | "pix"
+    | "dinheiro"
+    | "boleto"
+    | "outro";
+  export const TipoEnum = {
+    Credito: "credito" as TipoEnum,
+    Debito: "debito" as TipoEnum,
+    Pix: "pix" as TipoEnum,
+    Dinheiro: "dinheiro" as TipoEnum,
+    Boleto: "boleto" as TipoEnum,
+    Outro: "outro" as TipoEnum,
+  };
 }

@@ -59,6 +59,9 @@ export const MeioList = ({
             <span className="block text-[11.5px] font-medium text-muted">
               {meio.totalLancamentos} lançamento
               {meio.totalLancamentos === 1 ? "" : "s"}
+              {meio.tipo === "credito" && meio.diaVencimento
+                ? ` · vence dia ${meio.diaVencimento}`
+                : ""}
             </span>
           </div>
           <div className="flex shrink-0 gap-[5px]">
@@ -76,6 +79,9 @@ export const MeioList = ({
                   id: meio.id,
                   nome: meio.nome,
                   favorito: meio.favorito,
+                  // `tipo` no RegisterItem carrega o tipo do meio (o form mapeia).
+                  tipo: meio.tipo,
+                  diaVencimento: meio.diaVencimento,
                 })
               }
             >

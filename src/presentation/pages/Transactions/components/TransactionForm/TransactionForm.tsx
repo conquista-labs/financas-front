@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { MeioPagamento } from "@/domain/models";
 import { maskCurrencyInput } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { calcularVencimentoFatura } from "@/lib/vencimento";
 import { Combobox, DateField } from "@/presentation/components";
 import { Switch, Textarea } from "@/presentation/components/ui";
 import {
@@ -145,6 +146,8 @@ export const TransactionForm = ({
       meio: (meios?.data?.rows ?? []).map((m: MeioPagamento) => ({
         value: m.id,
         label: m.nome,
+        tipo: m.tipo,
+        diaVencimento: m.diaVencimento,
       })),
       forma: (enums?.data?.formaPagamento ?? []).map((f) => ({
         value: f.value,
@@ -195,11 +198,21 @@ export const TransactionForm = ({
             options={selectOptions.meio}
             error={errors.meioPagamentoId?.message}
             onValueChange={(id) => {
+              const meio = selectOptions.meio.find((m) => m.value === id);
               // Ajusta o status padrão pelo meio (boleto/cheque/crédito = a pagar).
-              const nome = selectOptions.meio.find(
-                (m: { value: string; label: string }) => m.value === id,
-              )?.label;
-              setValue("status", statusPadraoPorMeio(nome));
+              setValue("status", statusPadraoPorMeio(meio?.label));
+              // Cartão de crédito com vencimento: a data da compra vira o
+              // vencimento da fatura no mês seguinte (editável depois).
+              if (meio?.tipo === "credito" && meio?.diaVencimento) {
+                const compra = toISODate(watch("data")) || toISODate(undefined);
+                if (compra) {
+                  setValue(
+                    "data",
+                    calcularVencimentoFatura(compra, meio.diaVencimento),
+                    { shouldValidate: true },
+                  );
+                }
+              }
             }}
           />
           <ControlledSelect
