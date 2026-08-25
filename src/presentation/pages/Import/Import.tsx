@@ -116,6 +116,18 @@ const Import = () => {
       prev.map((l) => (l.key === key ? { ...l, ...patch } : l)),
     );
 
+  // Operações em lote (ações em massa / "aplicar aos N iguais"). Recebem o
+  // conjunto de keys já resolvido pela camada de UI (que conhece filtro/iguais).
+  const applyToKeys = (keys: Set<string>, patch: Partial<ReviewLine>) =>
+    setLines((prev) =>
+      prev.map((l) => (keys.has(l.key) ? { ...l, ...patch } : l)),
+    );
+
+  const toggleKeys = (keys: Set<string>, incluir: boolean) =>
+    setLines((prev) =>
+      prev.map((l) => (keys.has(l.key) ? { ...l, incluir } : l)),
+    );
+
   const reset = () => {
     setStep("upload");
     setFileName("");
@@ -178,6 +190,8 @@ const Import = () => {
           onTagChange={setTag}
           onToggle={toggleLine}
           onChangeLine={changeLine}
+          onApplyToKeys={applyToKeys}
+          onToggleKeys={toggleKeys}
           onCancel={reset}
           onConfirm={handleConfirm}
           isConfirming={confirmar.isPending}

@@ -35,6 +35,12 @@ const moneyWrap =
 const OPT_LIMIT = { page: 1, limit: 100 };
 const PRIORIDADES: DesejoResponse.PrioridadeEnum[] = ["alta", "media", "baixa"];
 
+/** Prefixa https:// quando o usuário cola um domínio sem protocolo. Vazio → "". */
+const withProtocol = (url: string): string => {
+  if (!url) return "";
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+};
+
 /**
  * Modal de criar/editar desejo: título, nota, valor estimado, prioridade
  * (pills) e — só na criação — quem já vota (chips de pessoa). Editar não mexe
@@ -53,6 +59,7 @@ export const DesejoFormDialog = ({
 
   const [titulo, setTitulo] = useState("");
   const [nota, setNota] = useState("");
+  const [link, setLink] = useState("");
   const [valor, setValor] = useState("");
   const [prioridade, setPrioridade] =
     useState<DesejoResponse.PrioridadeEnum>("media");
@@ -63,6 +70,7 @@ export const DesejoFormDialog = ({
     if (!open) return;
     setTitulo(desejo?.titulo ?? "");
     setNota(desejo?.nota ?? "");
+    setLink(desejo?.link ?? "");
     setValor(desejo?.valorEstimado != null ? String(desejo.valorEstimado) : "");
     setPrioridade(desejo?.prioridade ?? "media");
     setVotos(desejo?.votos.map((v) => v.pessoaId) ?? []);
@@ -89,10 +97,13 @@ export const DesejoFormDialog = ({
     };
 
     if (isEdit) {
+      // Em edição, `nota` e `link` vão SEMPRE (mesmo vazios) — senão apagá-los
+      // não persiste (o back mantém o anterior quando o campo é omitido).
       const body: EditDesejoRequest = {
         titulo: titulo.trim(),
         prioridade,
-        ...(nota ? { nota } : {}),
+        nota: nota.trim(),
+        link: withProtocol(link.trim()),
         ...(valor ? { valorEstimado: parseAmount(valor) } : {}),
       };
       updateDesejo.mutate({ id: desejo!.id, body }, done);
@@ -101,6 +112,7 @@ export const DesejoFormDialog = ({
         titulo: titulo.trim(),
         prioridade,
         ...(nota ? { nota } : {}),
+        ...(link.trim() ? { link: withProtocol(link.trim()) } : {}),
         ...(valor ? { valorEstimado: parseAmount(valor) } : {}),
         ...(votos.length ? { votos } : {}),
       };
@@ -146,6 +158,18 @@ export const DesejoFormDialog = ({
               onChange={(e) => setNota(e.target.value)}
               placeholder="Ex: seccional cinza"
               rows={2}
+            />
+          </div>
+
+          <div>
+            <span className={labelCls}>Link (opcional)</span>
+            <input
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              type="url"
+              inputMode="url"
+              placeholder="Ex: loja.com/produto"
+              className={fieldCls}
             />
           </div>
 

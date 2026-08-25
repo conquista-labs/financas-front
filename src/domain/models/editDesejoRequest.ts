@@ -7,6 +7,8 @@
 export interface EditDesejoRequest {
   titulo?: string;
   nota?: string;
+  /** URL de referência (ex.: link do produto). */
+  link?: string;
   valorEstimado?: number;
   prioridade?: EditDesejoRequest.PrioridadeEnum;
 }

@@ -1,4 +1,11 @@
-import { Heart, Loader2, Pencil, Target, Trash2 } from "lucide-react";
+import {
+  ExternalLink,
+  Heart,
+  Loader2,
+  Pencil,
+  Target,
+  Trash2,
+} from "lucide-react";
 
 import type { DesejoResponse, Pessoa } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
@@ -19,6 +26,15 @@ interface DesejoCardProps {
 
 const iconBtn =
   "grid size-8 shrink-0 place-items-center rounded-[9px] transition-colors disabled:cursor-not-allowed disabled:opacity-60";
+
+/** Rótulo amigável do link: só o host (sem www/protocolo); fallback = a URL. */
+const linkLabel = (url: string): string => {
+  try {
+    return new URL(url).host.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+};
 
 /**
  * Card de um desejo (fiel ao protótipo): título + valor + badge de prioridade,
@@ -64,6 +80,21 @@ export const DesejoCard = ({
 
       {/* Nota */}
       <p className="text-[12.5px] text-muted">{desejo.nota || "Sem nota"}</p>
+
+      {/* Link (opcional) */}
+      {desejo.link && (
+        <a
+          href={desejo.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-fit items-center gap-[6px] text-[12.5px] font-semibold text-primary hover:underline"
+        >
+          <ExternalLink className="size-[13px]" strokeWidth={2} />
+          <span className="max-w-[240px] truncate">
+            {linkLabel(desejo.link)}
+          </span>
+        </a>
+      )}
 
       {/* Votos + selo */}
       <div className="flex flex-wrap items-center gap-2">

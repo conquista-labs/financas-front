@@ -129,6 +129,7 @@ const Goals = () => {
                   titulo: desejo.titulo,
                   prioridade: desejo.prioridade,
                   ...(desejo.nota ? { nota: desejo.nota } : {}),
+                  ...(desejo.link ? { link: desejo.link } : {}),
                   ...(desejo.valorEstimado != null
                     ? { valorEstimado: desejo.valorEstimado }
                     : {}),

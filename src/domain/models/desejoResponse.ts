@@ -10,6 +10,8 @@ export interface DesejoResponse {
   id: string;
   titulo: string;
   nota?: string | null;
+  /** URL de referência (ex.: link do produto). */
+  link?: string | null;
   valorEstimado?: number | null;
   prioridade: DesejoResponse.PrioridadeEnum;
   /** Preenchido depois que o desejo é promovido a meta. */

@@ -19,6 +19,12 @@ export interface ReviewLine {
   formaPagamento: string;
   /** Propagar as parcelas futuras (só faz efeito se parcelada). */
   propagarParcelas: boolean;
+  /**
+   * A análise trouxe uma categoria sugerida (palpite do histórico). Fixo na
+   * origem — não muda quando o usuário edita a categoria. Alimenta o badge
+   * "Sugerido" e o contador de "prontas".
+   */
+  categoriaSugerida: boolean;
 }
 
 /** Nº de parcelas se a forma for "parcelaNx" com N≥2; senão 0 (não parcelada). */
@@ -47,6 +53,7 @@ export const toReviewLines = (linhas: LinhaImportacao[]): ReviewLine[] =>
     formaPagamento: l.formaPagamento || "avista",
     // Propagar é escolha consciente do usuário → desligado por padrão.
     propagarParcelas: false,
+    categoriaSugerida: Boolean(l.categoriaSugerida?.id),
   }));
 
 /**
@@ -85,6 +92,90 @@ export const totalDespesasIncluidas = (lines: ReviewLine[]): number =>
   lines
     .filter((l) => l.incluir && l.tipo === "despesa")
     .reduce((acc, l) => acc + l.valor, 0);
+
+/** Linha está "pronta" = incluída e com categoria já definida (sugerida ou escolhida). */
+export const isReady = (l: ReviewLine): boolean =>
+  l.incluir && Boolean(l.categoriaId);
+
+/** Linha "precisa de você" = incluída mas ainda sem categoria. */
+export const needsAttention = (l: ReviewLine): boolean =>
+  l.incluir && !l.categoriaId;
+
+/** Linha parcelada (forma "parcelaNx", N≥2). */
+export const isParcelada = (l: ReviewLine): boolean =>
+  numParcelas(l.formaPagamento) >= 2;
+
+/** Abas de filtro da revisão. */
+export type ReviewFilter = "todas" | "revisar" | "duplicadas" | "parceladas";
+
+/** Contadores para os KPIs do topo e os selos das abas. */
+export interface ReviewCounts {
+  lidas: number;
+  prontas: number;
+  atencao: number;
+  duplicadas: number;
+  parceladas: number;
+}
+
+export const countLines = (lines: ReviewLine[]): ReviewCounts => ({
+  lidas: lines.length,
+  prontas: lines.filter(isReady).length,
+  atencao: lines.filter(needsAttention).length,
+  duplicadas: lines.filter((l) => l.possivelDuplicada).length,
+  parceladas: lines.filter(isParcelada).length,
+});
+
+/**
+ * Aplica aba + busca sobre as linhas. A busca casa por descrição (case/acento
+ * insensível). Retorna as linhas na ordem original.
+ */
+export const filterLines = (
+  lines: ReviewLine[],
+  filter: ReviewFilter,
+  query: string,
+): ReviewLine[] => {
+  const q = query.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  return lines.filter((l) => {
+    if (filter === "revisar" && !needsAttention(l)) return false;
+    if (filter === "duplicadas" && !l.possivelDuplicada) return false;
+    if (filter === "parceladas" && !isParcelada(l)) return false;
+    if (q) {
+      const desc = l.descricao
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "");
+      if (!desc.includes(q)) return false;
+    }
+    return true;
+  });
+};
+
+/**
+ * Chave para agrupar lançamentos "iguais": mesma descrição normalizada. Usada
+ * pelo "aplicar aos N iguais" (propaga categoria/pessoa/meio para os pares).
+ */
+export const sameKey = (l: ReviewLine): string =>
+  l.descricao
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/\s+/g, " ");
+
+/** Quantas outras linhas têm a mesma descrição desta (exclui a própria). */
+export const countSame = (lines: ReviewLine[], line: ReviewLine): number => {
+  const key = sameKey(line);
+  return lines.filter((l) => l.key !== line.key && sameKey(l) === key).length;
+};
+
+/** Total de parcelas futuras que serão agendadas (soma das linhas com propagar). */
+export const totalFuturasAgendadas = (lines: ReviewLine[]): number =>
+  lines
+    .filter((l) => l.incluir && l.propagarParcelas)
+    .reduce(
+      (acc, l) => acc + Math.max(0, numParcelas(l.formaPagamento) - 1),
+      0,
+    );
 
 /**
  * Normaliza a tag em lote: minúsculas, sem acento, espaços viram hífen. Vazia

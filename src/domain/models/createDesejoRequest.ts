@@ -7,6 +7,8 @@
 export interface CreateDesejoRequest {
   titulo: string;
   nota?: string;
+  /** URL de referência (ex.: link do produto). */
+  link?: string;
   valorEstimado?: number;
   prioridade?: CreateDesejoRequest.PrioridadeEnum;
   /** pessoaIds que já votam ao criar. */

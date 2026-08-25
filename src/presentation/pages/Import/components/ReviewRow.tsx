@@ -16,8 +16,12 @@ interface ReviewRowProps {
   pessoas: ComboboxOption[];
   meios: ComboboxOption[];
   formas: ComboboxOption[];
+  /** Quantas outras linhas têm a mesma descrição (para o "aplicar aos N iguais"). */
+  sameCount: number;
   onToggle: () => void;
   onChange: (patch: Partial<ReviewLine>) => void;
+  /** Propaga categoria/pessoa/meio/forma desta linha para as iguais. */
+  onApplySame: () => void;
 }
 
 /** Trigger dos selects da revisão — visual do protótipo (radius 9px, compacto). */
@@ -38,8 +42,10 @@ export const ReviewRow = ({
   pessoas,
   meios,
   formas,
+  sameCount,
   onToggle,
   onChange,
+  onApplySame,
 }: ReviewRowProps) => {
   const isReceita = line.tipo === "receita";
   // Nº total de parcelas (a linha da fatura é sempre a 1ª; futuras = projeção).
@@ -92,12 +98,30 @@ export const ReviewRow = ({
               strokeWidth={1.9}
             />
           </div>
-          {line.possivelDuplicada && (
-            <span className="mt-[2px] flex items-center gap-1 pl-2 text-[11.5px] font-semibold text-warning">
-              <AlertTriangle className="size-3" strokeWidth={2} />
-              Parece já lançada
-            </span>
-          )}
+          <div className="mt-[3px] flex flex-wrap items-center gap-x-[10px] gap-y-1 pl-2">
+            {line.categoriaSugerida && (
+              <span className="rounded-full bg-primary/soft px-[8px] py-[2px] text-[10.5px] font-bold text-primary-strong">
+                Sugerido
+              </span>
+            )}
+            {sameCount > 0 && (
+              <button
+                type="button"
+                onClick={onApplySame}
+                className="text-[11.5px] font-semibold text-primary transition-colors hover:text-primary-strong hover:underline"
+              >
+                {sameCount === 1
+                  ? "aplicar ao 1 igual"
+                  : `aplicar aos ${sameCount} iguais`}
+              </button>
+            )}
+            {line.possivelDuplicada && (
+              <span className="flex items-center gap-1 text-[11.5px] font-semibold text-warning">
+                <AlertTriangle className="size-3" strokeWidth={2} />
+                Parece já lançada
+              </span>
+            )}
+          </div>
         </div>
 
         <Combobox

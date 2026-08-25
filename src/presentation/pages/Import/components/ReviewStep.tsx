@@ -1,5 +1,5 @@
-import { AlertTriangle, Check, Tag } from "lucide-react";
-import { useMemo } from "react";
+import { CalendarClock, Tag } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import type { Tag as TagModel } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
@@ -7,11 +7,20 @@ import { cn } from "@/lib/utils";
 import type { ComboboxOption } from "@/presentation/components";
 
 import {
+  countLines,
+  countSame,
+  filterLines,
   normalizeTag,
+  numParcelas,
+  type ReviewFilter,
   type ReviewLine,
+  sameKey,
   totalDespesasIncluidas,
+  totalFuturasAgendadas,
 } from "../import.helpers";
 import { ReviewRow } from "./ReviewRow";
+import { ReviewSummary } from "./ReviewSummary";
+import { ReviewToolbar } from "./ReviewToolbar";
 
 interface ReviewStepProps {
   fileName: string;
@@ -26,15 +35,19 @@ interface ReviewStepProps {
   onTagChange: (value: string) => void;
   onToggle: (key: string) => void;
   onChangeLine: (key: string, patch: Partial<ReviewLine>) => void;
+  /** Aplica um patch a um conjunto de linhas (ações em massa / iguais). */
+  onApplyToKeys: (keys: Set<string>, patch: Partial<ReviewLine>) => void;
+  /** Marca/desmarca um conjunto de linhas. */
+  onToggleKeys: (keys: Set<string>, incluir: boolean) => void;
   onCancel: () => void;
   onConfirm: () => void;
   isConfirming: boolean;
 }
 
 /**
- * Passo 2 — revisão. Cabeçalho com contadores (selecionadas + duplicadas),
- * lista rolável de transações editáveis, tag em lote e rodapé com o total de
- * despesas + CTA de importação.
+ * Passo 2 — revisão. KPIs no topo, barra de abas/busca + ações em massa, lista
+ * rolável de transações editáveis, tag em lote e rodapé com resumo do que será
+ * criado + total de despesas + CTA de importação.
  */
 export const ReviewStep = ({
   fileName,
@@ -48,57 +61,109 @@ export const ReviewStep = ({
   onTagChange,
   onToggle,
   onChangeLine,
+  onApplyToKeys,
+  onToggleKeys,
   onCancel,
   onConfirm,
   isConfirming,
 }: ReviewStepProps) => {
+  const [filter, setFilter] = useState<ReviewFilter>("todas");
+  const [query, setQuery] = useState("");
+
+  const counts = useMemo(() => countLines(lines), [lines]);
   const selecionadas = lines.filter((l) => l.incluir).length;
-  const duplicadas = lines.filter((l) => l.possivelDuplicada).length;
   const total = totalDespesasIncluidas(lines);
+  const futuras = totalFuturasAgendadas(lines);
+
+  const visible = useMemo(
+    () => filterLines(lines, filter, query),
+    [lines, filter, query],
+  );
+  const visibleKeys = useMemo(
+    () => new Set(visible.map((l) => l.key)),
+    [visible],
+  );
 
   // Tags existentes que casam com o que foi digitado (compara pelo slug, já
   // que o valor enviado é normalizado). Sem texto → mostra as mais usadas.
   const tagSuggestions = useMemo(() => {
-    const query = normalizeTag(tag) ?? "";
+    const q = normalizeTag(tag) ?? "";
     return [...tags]
       .sort((a, b) => b.count - a.count)
-      .filter((t) => !query || (normalizeTag(t.nome) ?? "").includes(query))
+      .filter((t) => !q || (normalizeTag(t.nome) ?? "").includes(q))
       .slice(0, 8);
   }, [tags, tag]);
 
+  // Aplica os campos preenchidos de uma linha às demais com a mesma descrição.
+  const applySame = (line: ReviewLine) => {
+    const key = sameKey(line);
+    const targets = new Set(
+      lines
+        .filter((l) => l.key !== line.key && sameKey(l) === key)
+        .map((l) => l.key),
+    );
+    if (!targets.size) return;
+    onApplyToKeys(targets, {
+      categoriaId: line.categoriaId,
+      pessoaId: line.pessoaId,
+      meioPagamentoId: line.meioPagamentoId,
+      formaPagamento: line.formaPagamento,
+    });
+  };
+
+  // Liga a propagação de parcelas em todas as exibidas que forem parceladas.
+  const createFutures = () => {
+    const targets = new Set(
+      visible
+        .filter((l) => numParcelas(l.formaPagamento) >= 2)
+        .map((l) => l.key),
+    );
+    if (targets.size) onApplyToKeys(targets, { propagarParcelas: true });
+  };
+
   return (
     <div>
-      {/* Resumo */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <span className="flex items-center gap-[6px] rounded-full bg-primary/10 px-[14px] py-2 text-[13px] font-semibold text-primary">
-          <Check className="size-[15px]" strokeWidth={2.4} />
-          {selecionadas} selecionada{selecionadas === 1 ? "" : "s"}
-        </span>
-        {duplicadas > 0 && (
-          <span className="flex items-center gap-[6px] rounded-full bg-warning/10 px-[14px] py-2 text-[13px] font-semibold text-warning">
-            <AlertTriangle className="size-[15px]" strokeWidth={2.2} />
-            {duplicadas} possível duplicada{duplicadas === 1 ? "" : "s"}
-          </span>
-        )}
-        <span className="text-[13px] text-muted">de {fileName}</span>
-      </div>
+      <ReviewSummary counts={counts} fileName={fileName} />
 
-      {/* Card único: lista rolável + tag + rodapé (fiel ao protótipo) */}
+      {/* Card único: toolbar + lista rolável + tag + rodapé */}
       <div className="rounded-[20px] border border-line bg-card px-5 pb-2 pt-[6px]">
+        <ReviewToolbar
+          filter={filter}
+          onFilterChange={setFilter}
+          query={query}
+          onQueryChange={setQuery}
+          counts={counts}
+          visible={visible}
+          categorias={categorias}
+          pessoas={pessoas}
+          formas={formas}
+          onToggleAll={(incluir) => onToggleKeys(visibleKeys, incluir)}
+          onApplyToVisible={(patch) => onApplyToKeys(visibleKeys, patch)}
+          onCreateFutures={createFutures}
+        />
+
         {/* Lista de transações (sangra até a borda do card) */}
         <div className="nice-scroll -mx-5 max-h-[440px] overflow-y-auto px-5 [&>*:last-child]:border-0">
-          {lines.map((line) => (
-            <ReviewRow
-              key={line.key}
-              line={line}
-              categorias={categorias}
-              pessoas={pessoas}
-              meios={meios}
-              formas={formas}
-              onToggle={() => onToggle(line.key)}
-              onChange={(patch) => onChangeLine(line.key, patch)}
-            />
-          ))}
+          {visible.length === 0 ? (
+            <p className="py-12 text-center text-[13.5px] text-muted">
+              Nenhuma transação neste filtro.
+            </p>
+          ) : (
+            visible.map((line) => (
+              <ReviewRow
+                key={line.key}
+                line={line}
+                categorias={categorias}
+                pessoas={pessoas}
+                meios={meios}
+                formas={formas}
+                sameCount={countSame(lines, line)}
+                onToggle={() => onToggle(line.key)}
+                onChange={(patch) => onChangeLine(line.key, patch)}
+                onApplySame={() => applySame(line)}
+              />
+            ))
+          )}
         </div>
 
         {/* Tag em lote (separada da lista por border-top) */}
@@ -152,16 +217,26 @@ export const ReviewStep = ({
           )}
         </div>
 
-        {/* Rodapé: cancelar + total + confirmar (sem border-top próprio) */}
+        {/* Rodapé: resumo + cancelar + total + confirmar */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-[2px] pb-2 pt-[14px]">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isConfirming}
-            className="rounded-[12px] border border-line bg-card px-5 py-3 text-sm font-semibold text-fg transition-colors hover:bg-track disabled:opacity-50"
-          >
-            Cancelar
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={isConfirming}
+              className="rounded-[12px] border border-line bg-card px-5 py-3 text-sm font-semibold text-fg transition-colors hover:bg-track disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <span className="flex items-center gap-[6px] text-[12.5px] text-muted">
+              <CalendarClock className="size-4" strokeWidth={1.9} />
+              {selecionadas} lançamento{selecionadas === 1 ? "" : "s"} agora
+              {futuras > 0 &&
+                ` · ${futuras} parcela${futuras === 1 ? "" : "s"} futura${
+                  futuras === 1 ? "" : "s"
+                } agendada${futuras === 1 ? "" : "s"}`}
+            </span>
+          </div>
 
           <div className="flex flex-wrap items-center gap-4">
             <span className="text-[13.5px] text-muted">
