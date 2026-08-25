@@ -15,9 +15,12 @@ export type GetTransacoesParams = {
   limit?: number;
   /** Busca textual (descrição). */
   search?: string;
-  /** Período (ISO) — filtram o mês. */
+  /** Período (ISO) — filtram o mês (pela data da transação). */
   startDate?: string;
   endDate?: string;
+  /** Data de criação/cadastro (createdAt) — range inclusivo (yyyy-MM-dd). */
+  createdAtStart?: string;
+  createdAtEnd?: string;
   categoriaId?: string;
   pessoaId?: string;
   pessoaIds?: string[];

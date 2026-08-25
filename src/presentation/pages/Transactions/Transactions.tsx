@@ -47,6 +47,8 @@ const Transactions = () => {
     tag: withDefault(StringParam, ""),
     search: withDefault(StringParam, ""),
     tipo: withDefault(StringParam, ""),
+    createdAtStart: withDefault(StringParam, ""),
+    createdAtEnd: withDefault(StringParam, ""),
   });
 
   const { page, pageSize, onChangePage, onChangePageSize } = usePagination();
@@ -63,15 +65,27 @@ const Transactions = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
+  // Filtrar por data de cadastro (createdAt) IGNORA o período por data da
+  // transação: os dois juntos quase sempre têm interseção vazia (uma coisa é
+  // quando a transação aconteceu, outra é quando foi cadastrada). Com cadastro
+  // ativo, não enviamos startDate/endDate — o resultado passa a ser só o
+  // recorte de cadastro.
+  const hasCreatedAtFilter = Boolean(
+    queryParams.createdAtStart || queryParams.createdAtEnd,
+  );
+
   const formattedParams = useMemo(
     () => ({
       ...queryParams,
-      startDate: format(queryParams.startDate, "yyyy-MM-dd"),
-      endDate: queryParams.endDate
-        ? format(queryParams.endDate, "yyyy-MM-dd")
-        : "",
+      startDate: hasCreatedAtFilter
+        ? ""
+        : format(queryParams.startDate, "yyyy-MM-dd"),
+      endDate:
+        !hasCreatedAtFilter && queryParams.endDate
+          ? format(queryParams.endDate, "yyyy-MM-dd")
+          : "",
     }),
-    [queryParams],
+    [queryParams, hasCreatedAtFilter],
   );
 
   const { data, isLoading } = useGetTransacoes({
@@ -105,6 +119,8 @@ const Transactions = () => {
     queryParams.formaPagamento,
     queryParams.tag,
     queryParams.tipo,
+    queryParams.createdAtStart,
+    queryParams.createdAtEnd,
   ].filter(Boolean).length;
 
   // Filtros (subconjunto dos query params) para o painel e os chips ativos.
@@ -117,6 +133,8 @@ const Transactions = () => {
     tag: queryParams.tag,
     startDate: formattedParams.startDate,
     endDate: formattedParams.endDate,
+    createdAtStart: queryParams.createdAtStart,
+    createdAtEnd: queryParams.createdAtEnd,
   };
 
   const applyFilters = (next: TransactionFilters) => {
@@ -131,6 +149,8 @@ const Transactions = () => {
         ? new Date(`${next.startDate}T00:00:00`)
         : undefined,
       endDate: next.endDate ? new Date(`${next.endDate}T00:00:00`) : undefined,
+      createdAtStart: next.createdAtStart,
+      createdAtEnd: next.createdAtEnd,
     });
     onChangePage({ page: 1, pageSize });
     setFiltersOpen(false);
@@ -144,6 +164,8 @@ const Transactions = () => {
       meioPagamentoId: "",
       formaPagamento: "",
       tag: "",
+      createdAtStart: "",
+      createdAtEnd: "",
     });
     onChangePage({ page: 1, pageSize });
     setFiltersOpen(false);
@@ -226,6 +248,7 @@ const Transactions = () => {
           onPrev={() => navigateMonth("prev")}
           onNext={() => navigateMonth("next")}
           onRangeChange={applyRange}
+          disabled={hasCreatedAtFilter}
         />
       </div>
 

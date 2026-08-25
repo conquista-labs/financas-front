@@ -21,6 +21,12 @@ interface MonthSelectorProps {
   onNext: () => void;
   /** Aplica um range de dias escolhido no calendário. */
   onRangeChange: (start: Date, end: Date) => void;
+  /**
+   * Desabilita o seletor. Usado quando o filtro por data de cadastro está
+   * ativo — nesse caso o período por data da transação é ignorado, então o
+   * seletor fica neutro para não sugerir que ainda filtra.
+   */
+  disabled?: boolean;
 }
 
 const MONTHS = [
@@ -54,6 +60,7 @@ export const MonthSelector = ({
   onPrev,
   onNext,
   onRangeChange,
+  disabled = false,
 }: MonthSelectorProps) => {
   const [open, setOpen] = useState(false);
   // Seleção em curso dentro do popover (independe do range já aplicado, para
@@ -90,20 +97,33 @@ export const MonthSelector = ({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div
+      className={cn(
+        "flex items-center gap-2",
+        disabled && "pointer-events-none opacity-40",
+      )}
+      title={
+        disabled
+          ? "Filtrando por data de cadastro — o período por data da transação está desativado."
+          : undefined
+      }
+      aria-disabled={disabled}
+    >
       <button
         type="button"
         aria-label="Mês anterior"
         onClick={onPrev}
+        disabled={disabled}
         className="grid size-9 place-items-center rounded-[11px] border border-line bg-card text-fg2 transition-colors hover:text-fg"
       >
         <ChevronLeft className="size-[18px]" strokeWidth={1.9} />
       </button>
 
-      <Popover open={open} onOpenChange={openChange}>
+      <Popover open={open && !disabled} onOpenChange={openChange}>
         <PopoverTrigger asChild>
           <button
             type="button"
+            disabled={disabled}
             className={cn(
               "min-w-[140px] rounded-[11px] border border-transparent px-2 py-[6px] text-center font-display text-[15px] font-semibold capitalize text-fg transition-colors hover:border-line",
               open && "border-primary",
@@ -128,6 +148,7 @@ export const MonthSelector = ({
         type="button"
         aria-label="Próximo mês"
         onClick={onNext}
+        disabled={disabled}
         className="grid size-9 place-items-center rounded-[11px] border border-line bg-card text-fg2 transition-colors hover:text-fg"
       >
         <ChevronRight className="size-[18px]" strokeWidth={1.9} />

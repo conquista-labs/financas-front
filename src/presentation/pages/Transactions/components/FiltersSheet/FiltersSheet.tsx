@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import type { MeioPagamento } from "@/domain/models";
 import { enhance } from "@/lib/color";
-import { Combobox } from "@/presentation/components";
+import { Combobox, DateField } from "@/presentation/components";
 import {
   Sheet,
   SheetContent,
@@ -29,6 +29,9 @@ export interface TransactionFilters {
   tag: string;
   startDate: string;
   endDate: string;
+  /** Data de criação/cadastro (createdAt), range inclusivo em "yyyy-MM-dd". */
+  createdAtStart: string;
+  createdAtEnd: string;
 }
 
 interface FiltersSheetProps {
@@ -173,6 +176,24 @@ export const FiltersSheet = ({
           onValueChange={(v) => set({ tag: v })}
           options={tagRows.map((t) => ({ value: t.nome, label: t.nome }))}
         />
+
+        {/* Data de cadastro (createdAt) — quando a transação foi registrada,
+            independente da "data da transação" (que fica no seletor de mês). */}
+        <div>
+          <span className={filterLabel()}>Data de cadastro</span>
+          <div className="flex items-center gap-2">
+            <DateField
+              value={draft.createdAtStart}
+              onChange={(v) => set({ createdAtStart: v })}
+              placeholder="De"
+            />
+            <DateField
+              value={draft.createdAtEnd}
+              onChange={(v) => set({ createdAtEnd: v })}
+              placeholder="Até"
+            />
+          </div>
+        </div>
 
         {/* Período (De/Até) fica no seletor de mês do header — clicar no rótulo
             abre um calendário de intervalo. Evita dois controles para o mesmo
