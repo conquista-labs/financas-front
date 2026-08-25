@@ -8,6 +8,7 @@ import type { CreateTransacaoRequest } from "@/domain/models";
 import { enhance } from "@/lib/color";
 import { maskCurrencyInput, parseAmount } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { calcularVencimentoFatura } from "@/lib/vencimento";
 import { Combobox, DateField } from "@/presentation/components";
 import {
   Dialog,
@@ -72,9 +73,25 @@ export const QuickAddModal = () => {
 
   const meioOpts = useMemo(
     () =>
-      (meios?.data?.rows ?? []).map((m) => ({ value: m.id, label: m.nome })),
+      (meios?.data?.rows ?? []).map((m) => ({
+        value: m.id,
+        label: m.nome,
+        tipo: m.tipo,
+        diaVencimento: m.diaVencimento,
+      })),
     [meios],
   );
+
+  // Ao escolher um cartão de crédito com vencimento, a data da compra vira o
+  // vencimento da fatura no mês seguinte (editável). Status vai para pendente.
+  const handleMeioChange = (id: string) => {
+    setMeioPagamentoId(id);
+    const meio = meioOpts.find((m) => m.value === id);
+    if (meio?.tipo === "credito" && meio?.diaVencimento && data) {
+      setData(calcularVencimentoFatura(data, meio.diaVencimento));
+      setStatus("pendente");
+    }
+  };
   const formaOpts = useMemo(
     () =>
       (enums?.data?.formaPagamento ?? []).map((f) => ({
@@ -321,7 +338,7 @@ export const QuickAddModal = () => {
               inline
               options={meioOpts}
               value={meioPagamentoId || undefined}
-              onChange={setMeioPagamentoId}
+              onChange={handleMeioChange}
               placeholder="Selecione"
               clearLabel="Não informado"
               searchPlaceholder="Buscar meio…"

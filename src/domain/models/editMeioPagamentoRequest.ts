@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import type { MeioPagamento } from "./meioPagamento";
+
 export interface EditMeioPagamentoRequest {
   /**
    * Nome do meio de pagamento
@@ -19,4 +21,12 @@ export interface EditMeioPagamentoRequest {
    * Se o meio de pagamento é favorito
    */
   favorito?: boolean;
+  /**
+   * Tipo do meio de pagamento
+   */
+  tipo?: MeioPagamento.TipoEnum;
+  /**
+   * Dia (1-31) de vencimento da fatura (só para tipo credito)
+   */
+  diaVencimento?: number;
 }

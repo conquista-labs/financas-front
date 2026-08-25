@@ -16,6 +16,7 @@ import { useCadastroMutations } from "@/presentation/hooks/api";
 import { ColorPickerField } from "./ColorPickerField";
 import {
   emptyForm,
+  MEIO_TIPOS,
   type RegisterFormValues,
   schemas,
 } from "./registerForm.definitions";
@@ -29,6 +30,8 @@ export interface RegisterItem {
   cor?: string;
   email?: string;
   favorito?: boolean;
+  /** Meio de pagamento: dia de vencimento da fatura (só crédito). */
+  diaVencimento?: number | null;
 }
 
 interface RegisterFormDialogProps {
@@ -66,6 +69,7 @@ export const RegisterFormDialog = ({
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: yupResolver(schemas[kind]) as never,
@@ -79,6 +83,13 @@ export const RegisterFormDialog = ({
             cor: item.cor,
             email: item.email ?? "",
             favorito: item.favorito,
+            // Para meio, `item.tipo` carrega o tipo do meio (credito/debito/...).
+            ...(kind === "meio"
+              ? {
+                  tipoMeio: item.tipo ?? "outro",
+                  diaVencimento: item.diaVencimento ?? "",
+                }
+              : {}),
           }
         : {}),
     } as RegisterFormValues,
@@ -96,7 +107,18 @@ export const RegisterFormDialog = ({
       };
     if (kind === "pessoa")
       return { nome: v.nome, ...(v.email ? { email: v.email } : {}) };
-    return { nome: v.nome };
+    // meio: tipo + dia de vencimento (só envia o dia quando crédito).
+    const dia =
+      v.tipoMeio === "credito" &&
+      v.diaVencimento !== "" &&
+      v.diaVencimento != null
+        ? Number(v.diaVencimento)
+        : undefined;
+    return {
+      nome: v.nome,
+      tipo: v.tipoMeio ?? "outro",
+      ...(dia != null ? { diaVencimento: dia } : {}),
+    };
   };
 
   const onSubmit = (v: RegisterFormValues) => {
@@ -226,6 +248,69 @@ export const RegisterFormDialog = ({
                   )}
                 />
               </div>
+            </>
+          )}
+
+          {/* Meio: Tipo + Dia de vencimento (só crédito) */}
+          {kind === "meio" && (
+            <>
+              <div className="mt-4">
+                <span className={labelCls}>Tipo</span>
+                <Controller
+                  name="tipoMeio"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="grid grid-cols-3 gap-2">
+                      {MEIO_TIPOS.map((opt) => {
+                        const active = field.value === opt.v;
+                        return (
+                          <button
+                            key={opt.v}
+                            type="button"
+                            onClick={() => field.onChange(opt.v)}
+                            className={cn(
+                              "rounded-[11px] border px-2 py-[9px] text-[13px] font-semibold transition-colors",
+                              active
+                                ? "border-primary bg-primary-soft text-primary-strong"
+                                : "border-line bg-card text-fg2 hover:border-primary/40",
+                            )}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                />
+              </div>
+
+              {watch("tipoMeio") === "credito" && (
+                <div className="mt-4">
+                  <span className={labelCls}>Dia de vencimento da fatura</span>
+                  <Controller
+                    name="diaVencimento"
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        inputMode="numeric"
+                        placeholder="ex: 8"
+                        className={cn(fieldCls, "max-w-[140px]")}
+                      />
+                    )}
+                  />
+                  <p className="mt-[6px] text-[11.5px] leading-relaxed text-muted">
+                    Ao lançar uma compra neste cartão, a data vira o vencimento
+                    da fatura no mês seguinte (você ainda pode ajustar).
+                  </p>
+                  {errors.diaVencimento && (
+                    <span className="mt-1 block text-xs text-danger">
+                      {errors.diaVencimento.message}
+                    </span>
+                  )}
+                </div>
+              )}
             </>
           )}
 
