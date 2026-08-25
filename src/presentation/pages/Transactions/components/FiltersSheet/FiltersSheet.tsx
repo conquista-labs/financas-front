@@ -183,11 +183,13 @@ export const FiltersSheet = ({
           <span className={filterLabel()}>Data de cadastro</span>
           <div className="flex items-center gap-2">
             <DateField
+              inline
               value={draft.createdAtStart}
               onChange={(v) => set({ createdAtStart: v })}
               placeholder="De"
             />
             <DateField
+              inline
               value={draft.createdAtEnd}
               onChange={(v) => set({ createdAtEnd: v })}
               placeholder="Até"

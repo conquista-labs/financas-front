@@ -16,6 +16,12 @@ interface DateFieldProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  /**
+   * Renderiza o calendário sem portal. Use quando o DateField vive dentro de um
+   * Sheet/Dialog Radix, senão o focus/pointer trap do Sheet bloqueia os cliques
+   * nos dias (ver [[combobox-inline-overlay]]).
+   */
+  inline?: boolean;
 }
 
 /**
@@ -28,6 +34,7 @@ export const DateField = ({
   onChange,
   placeholder = "Selecionar",
   className,
+  inline = false,
 }: DateFieldProps) => {
   const selected = value ? parse(value, "yyyy-MM-dd", new Date()) : undefined;
 
@@ -49,7 +56,7 @@ export const DateField = ({
           {selected ? format(selected, "dd/MM/yyyy") : placeholder}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto p-0" align="start" inline={inline}>
         <Calendar
           mode="single"
           locale={ptBR}
