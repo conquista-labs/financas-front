@@ -35,7 +35,10 @@ dist-ssr
 !.yarn/sdks
 !.yarn/versions
 
-./env
+# dotenv environment variable files
+.env
+.env.*
+!.env.example
 CLAUDE.md
 
 # Output de screenshots do Playwright MCP (validação visual local)
