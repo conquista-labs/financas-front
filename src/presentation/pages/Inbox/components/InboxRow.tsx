@@ -1,16 +1,24 @@
-import { Check, EyeOff, Pencil, RotateCcw } from "lucide-react";
+import { Check, EyeOff, Pencil, RotateCcw, Unlink } from "lucide-react";
+import type { ReactNode } from "react";
 
 import type { LancamentoExterno } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Combobox, type ComboboxOption } from "@/presentation/components";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/presentation/components/ui";
 
 import {
   categoriaDe,
   diaMes,
   DICAS,
   type InboxEdit,
+  type InboxVisao,
   MOTIVOS_IGNORADO,
+  MOTIVOS_VINCULADO,
 } from "../inbox.helpers";
 
 interface InboxRowProps {
@@ -19,14 +27,18 @@ interface InboxRowProps {
   /** Categorias do MESMO tipo do lançamento (receita/despesa). */
   categorias: ComboboxOption[];
   selecionado: boolean;
-  /** "ignorado": mostra o motivo e a ação de restaurar, sem edição. */
-  modo: "pendente" | "ignorado";
+  /**
+   * "ignorado": motivo + restaurar. "vinculado": como foi ligado a uma
+   * transação existente + desvincular (só o vínculo automático). Sem edição.
+   */
+  modo: InboxVisao;
   ocupado?: boolean;
   onToggle: () => void;
   onChange: (patch: InboxEdit) => void;
   onAceitar: () => void;
   onIgnorar: () => void;
   onRestaurar: () => void;
+  onDesvincular: () => void;
 }
 
 const selectCls =
@@ -38,10 +50,43 @@ const TONS = {
   primary: "bg-primary/soft text-primary-strong",
 };
 
+/** Botão só com ícone + tooltip dizendo o que a ação faz. */
+const AcaoIcone = ({
+  label,
+  dica,
+  onClick,
+  className,
+  children,
+}: {
+  label: string;
+  dica: string;
+  onClick: () => void;
+  className: string;
+  children: ReactNode;
+}) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        className={cn(
+          "grid size-8 place-items-center rounded-[9px] transition-colors",
+          className,
+        )}
+      >
+        {children}
+      </button>
+    </TooltipTrigger>
+    <TooltipContent side="top">{dica}</TooltipContent>
+  </Tooltip>
+);
+
 /**
  * Um lançamento vindo do banco. Pendente: checkbox, descrição editável,
  * categoria (sugerida ou escolhida), valor e ações aceitar/ignorar. Ignorado:
- * mostra o motivo e permite restaurar.
+ * mostra o motivo e permite restaurar. Vinculado: mostra como foi ligado a uma
+ * transação que já existia e permite desvincular o automático.
  */
 export const InboxRow = ({
   lancamento: l,
@@ -55,6 +100,7 @@ export const InboxRow = ({
   onAceitar,
   onIgnorar,
   onRestaurar,
+  onDesvincular,
 }: InboxRowProps) => {
   const isReceita = l.tipo === "receita";
   const dica = l.motivo ? DICAS[l.motivo] : undefined;
@@ -138,6 +184,13 @@ export const InboxRow = ({
               {MOTIVOS_IGNORADO[l.motivo ?? "manual"] ?? l.motivo}
             </span>
           )}
+          {modo === "vinculado" && (
+            <span
+              className={cn("rounded-full px-2 py-[1px] font-bold", TONS.success)}
+            >
+              {MOTIVOS_VINCULADO[l.motivo ?? ""] ?? "Ligado a uma transação"}
+            </span>
+          )}
         </div>
       </div>
 
@@ -170,35 +223,51 @@ export const InboxRow = ({
       <div className="flex w-[68px] shrink-0 justify-end gap-1">
         {modo === "pendente" ? (
           <>
-            <button
-              type="button"
+            <AcaoIcone
+              label="Aceitar"
+              dica={
+                !categoriaId
+                  ? "Escolha uma categoria para aceitar"
+                  : l.motivo === "conta_recorrente"
+                    ? "Aceitar: marca a conta recorrente como paga"
+                    : "Aceitar: vira uma transação com esta categoria"
+              }
               onClick={onAceitar}
-              aria-label="Aceitar"
-              title={categoriaId ? "Aceitar" : "Escolha uma categoria"}
-              className="grid size-8 place-items-center rounded-[9px] text-success transition-colors hover:bg-success/10"
+              className="text-success hover:bg-success/10"
             >
               <Check className="size-[17px]" strokeWidth={2.4} />
-            </button>
-            <button
-              type="button"
+            </AcaoIcone>
+            <AcaoIcone
+              label="Ignorar"
+              dica="Ignorar: não entra nas finanças (dá para restaurar)"
               onClick={onIgnorar}
-              aria-label="Ignorar"
-              title="Ignorar"
-              className="grid size-8 place-items-center rounded-[9px] text-muted transition-colors hover:bg-track hover:text-fg"
+              className="text-muted hover:bg-track hover:text-fg"
             >
               <EyeOff className="size-[16px]" strokeWidth={2} />
-            </button>
+            </AcaoIcone>
           </>
-        ) : (
-          <button
-            type="button"
+        ) : modo === "ignorado" ? (
+          <AcaoIcone
+            label="Restaurar"
+            dica="Restaurar: volta para a caixa de entrada"
             onClick={onRestaurar}
-            aria-label="Restaurar"
-            title="Voltar para a caixa de entrada"
-            className="grid size-8 place-items-center rounded-[9px] text-primary transition-colors hover:bg-primary/soft"
+            className="text-primary hover:bg-primary/soft"
           >
             <RotateCcw className="size-[16px]" strokeWidth={2} />
-          </button>
+          </AcaoIcone>
+        ) : (
+          // Só o vínculo automático se desfaz aqui; o de conta recorrente foi
+          // decisão de vocês ao aceitar.
+          l.motivo === "ja_lancado" && (
+            <AcaoIcone
+              label="Desvincular"
+              dica="Não é o mesmo lançamento: volta para a caixa para revisar"
+              onClick={onDesvincular}
+              className="text-primary hover:bg-primary/soft"
+            >
+              <Unlink className="size-[16px]" strokeWidth={2} />
+            </AcaoIcone>
+          )
         )}
       </div>
     </div>

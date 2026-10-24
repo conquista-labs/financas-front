@@ -10,7 +10,7 @@ export type GetCaixaEntradaModel = GetCaixaEntradaResponse;
 export type GetCaixaEntradaParams = {
   page?: number;
   limit?: number;
-  status?: "pendente" | "ignorado";
+  status?: "pendente" | "ignorado" | "vinculado";
   pessoaId?: string;
   comDica?: boolean;
   busca?: string;

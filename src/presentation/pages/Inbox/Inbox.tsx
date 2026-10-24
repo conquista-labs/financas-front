@@ -1,11 +1,17 @@
-import { CheckCheck, EyeOff, RefreshCw, Search } from "lucide-react";
+import { CheckCheck, CopyX, EyeOff, RefreshCw, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import type { LancamentoExterno } from "@/domain/models";
 import { cn } from "@/lib/utils";
 import type { ComboboxOption } from "@/presentation/components";
-import { Skeleton } from "@/presentation/components/ui";
+import {
+  Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/presentation/components/ui";
 import {
   useGetCaixaEntrada,
   useGetCaixaEntradaResumo,
@@ -14,7 +20,12 @@ import {
 } from "@/presentation/hooks/api";
 
 import { InboxKpis, InboxRow } from "./components";
-import { categoriaDe, type InboxEdit, MOTIVOS_IGNORADO } from "./inbox.helpers";
+import {
+  categoriaDe,
+  type InboxEdit,
+  type InboxVisao,
+  MOTIVOS_IGNORADO,
+} from "./inbox.helpers";
 import { useInboxMutations } from "./useInboxMutations";
 
 const LIMIT = 50;
@@ -26,10 +37,12 @@ type Filtro = "todos" | "dica" | `pessoa:${string}`;
  * Caixa de entrada — o que a sincronização bancária trouxe e ainda não virou
  * transação. Revisar = confirmar/ajustar categoria e aceitar (em lote ou um a
  * um), ou ignorar. Os ignorados automaticamente (fatura, Pix entre vocês,
- * investimentos) ficam numa lista à parte, restauráveis.
+ * investimentos) ficam numa lista à parte, restauráveis. O que bate com uma
+ * transação já lançada (mesmo valor, dia e meio) é ligado sozinho e aparece em
+ * "Já lançados", de onde dá para desvincular.
  */
 const Inbox = () => {
-  const [visao, setVisao] = useState<"pendente" | "ignorado">("pendente");
+  const [visao, setVisao] = useState<InboxVisao>("pendente");
   const [filtro, setFiltro] = useState<Filtro>("todos");
   const [busca, setBusca] = useState("");
   const [page, setPage] = useState(1);
@@ -49,7 +62,14 @@ const Inbox = () => {
   const resumo = useGetCaixaEntradaResumo();
   const categorias = useGetCategorias(OPT_LIMIT);
   const pessoas = useGetPessoas(OPT_LIMIT);
-  const { aceitar, ignorar, restaurar, sincronizar } = useInboxMutations();
+  const {
+    aceitar,
+    ignorar,
+    ignorarParecidas,
+    restaurar,
+    desvincular,
+    sincronizar,
+  } = useInboxMutations();
 
   const rows = lista.data?.data?.rows ?? [];
   const meta = lista.data?.data?.meta;
@@ -168,16 +188,40 @@ const Inbox = () => {
     });
   };
 
+  const handleDesvincular = (ids: string[]) => {
+    marcarOcupados(ids, true);
+    desvincular.mutate(ids, {
+      onSuccess: () =>
+        toast.success("Desvinculado. Voltou para a caixa para vocês revisarem."),
+      onError: () => toast.error("Não foi possível desvincular."),
+      onSettled: () => marcarOcupados(ids, false),
+    });
+  };
+
+  const handleIgnorarParecidas = () =>
+    ignorarParecidas.mutate(undefined, {
+      onSuccess: (r) => {
+        const n = r.data.ignorados;
+        toast.success(
+          `${n} ignorada${n === 1 ? "" : "s"}. Dá para restaurar em Ignorados.`,
+        );
+        setSelecionados(new Set());
+      },
+      onError: () => toast.error("Não foi possível ignorar. Tente de novo."),
+    });
+
   const handleSincronizar = () =>
     sincronizar.mutate(undefined, {
       onSuccess: (r) => {
-        const { novos, erros } = r.data.totais;
+        const { novos, erros, vinculadosJaLancados } = r.data.totais;
         if (erros) toast.error("Algum banco não respondeu. Veja as contas.");
-        toast.success(
-          novos
-            ? `${novos} lançamento${novos === 1 ? "" : "s"} novo${novos === 1 ? "" : "s"}`
-            : "Nada novo nos bancos",
-        );
+        const partes = [
+          novos &&
+            `${novos} lançamento${novos === 1 ? "" : "s"} novo${novos === 1 ? "" : "s"}`,
+          vinculadosJaLancados &&
+            `${vinculadosJaLancados} já estava${vinculadosJaLancados === 1 ? "" : "m"} lançado${vinculadosJaLancados === 1 ? "" : "s"}`,
+        ].filter(Boolean);
+        toast.success(partes.length ? partes.join(" · ") : "Nada novo nos bancos");
       },
       onError: () => toast.error("Não foi possível sincronizar agora."),
     });
@@ -200,6 +244,8 @@ const Inbox = () => {
   ];
 
   return (
+    // O provider do app só cobre a Sidebar; os tooltips das ações precisam do seu.
+    <TooltipProvider delayDuration={200}>
     <div className="animate-om-fade">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -235,6 +281,7 @@ const Inbox = () => {
               {(
                 [
                   { v: "pendente", label: "Para revisar" },
+                  { v: "vinculado", label: "Já lançados" },
                   { v: "ignorado", label: "Ignorados" },
                 ] as const
               ).map((t) => (
@@ -295,6 +342,28 @@ const Inbox = () => {
               {todosMarcados ? "Desmarcar todos" : "Marcar todos desta página"}
             </button>
             <span className="flex-1" />
+            {!!resumo.data?.data?.possiveisDuplicadas && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    disabled={ignorarParecidas.isPending}
+                    onClick={handleIgnorarParecidas}
+                    className="flex items-center gap-[6px] rounded-[10px] border border-warning/40 px-3 py-[7px] text-[12.5px] font-semibold text-warning transition-colors hover:bg-warning/10 disabled:opacity-50"
+                  >
+                    <CopyX className="size-[15px]" strokeWidth={2} />
+                    Ignorar {resumo.data.data.possiveisDuplicadas} que parece
+                    {resumo.data.data.possiveisDuplicadas === 1 ? "" : "m"} já
+                    lançada
+                    {resumo.data.data.possiveisDuplicadas === 1 ? "" : "s"}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  Têm o mesmo valor e dia de uma transação que já existe. Dá para
+                  restaurar em Ignorados.
+                </TooltipContent>
+              </Tooltip>
+            )}
             <button
               type="button"
               disabled={!selecionadosRows.length || ignorar.isPending}
@@ -328,7 +397,9 @@ const Inbox = () => {
                 ? busca || filtro !== "todos"
                   ? "Nada para revisar com esse filtro."
                   : "Tudo revisado. Quando os bancos trouxerem algo novo, aparece aqui."
-                : "Nada ignorado com esse filtro."}
+                : visao === "vinculado"
+                  ? "Nada ligado a lançamentos que já existiam."
+                  : "Nada ignorado com esse filtro."}
             </p>
           ) : (
             rows.map((l) => (
@@ -357,6 +428,7 @@ const Inbox = () => {
                 onAceitar={() => handleAceitar([l])}
                 onIgnorar={() => handleIgnorar([l.id])}
                 onRestaurar={() => handleRestaurar([l.id])}
+                onDesvincular={() => handleDesvincular([l.id])}
               />
             ))
           )}
@@ -413,6 +485,7 @@ const Inbox = () => {
         </div>
       )}
     </div>
+    </TooltipProvider>
   );
 };
 

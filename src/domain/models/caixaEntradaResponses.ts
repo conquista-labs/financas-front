@@ -9,6 +9,10 @@ export interface GetCaixaEntradaResponse {
 export interface CaixaEntradaResumo {
   pendentes: number;
   comDica: number;
+  /** Pendentes com a dica "parece já lançada" (coincidência fraca). */
+  possiveisDuplicadas: number;
+  /** Vinculados sozinhos a uma transação já lançada (coincidência forte). */
+  vinculadosAutomaticamente: number;
   aceitos: number;
   ignorados: number;
   ignoradosPorMotivo: { motivo: string; total: number }[];
@@ -53,6 +57,20 @@ export interface RestaurarLancamentosResponse {
   data: { restaurados: number };
 }
 
+export interface IgnorarParecidasResponse {
+  message: string;
+  data: { ignorados: number };
+}
+
+export interface DesvincularLancamentosRequest {
+  ids: string[];
+}
+
+export interface DesvincularLancamentosResponse {
+  message: string;
+  data: { desvinculados: number };
+}
+
 export interface ExecutarSincronizacaoResponse {
   message: string;
   data: {
@@ -60,6 +78,7 @@ export interface ExecutarSincronizacaoResponse {
       novos: number;
       ignorados: number;
       atualizados: number;
+      vinculadosJaLancados: number;
       possiveisParesCasal: number;
       erros: number;
     };

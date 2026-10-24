@@ -6,7 +6,9 @@ import type {
 } from "@/domain/models";
 import {
   makePostCaixaEntradaAceitarFactory,
+  makePostCaixaEntradaDesvincularFactory,
   makePostCaixaEntradaIgnorarFactory,
+  makePostCaixaEntradaIgnorarParecidasFactory,
   makePostCaixaEntradaRestaurarFactory,
   makePostSincronizacaoExecutarFactory,
 } from "@/main/factories/usecases";
@@ -53,10 +55,28 @@ export const useInboxMutations = () => {
     onSuccess: invalidateCaixa,
   });
 
+  const ignorarParecidas = useMutation({
+    mutationFn: () => makePostCaixaEntradaIgnorarParecidasFactory().post(),
+    onSuccess: invalidateCaixa,
+  });
+
+  const desvincular = useMutation({
+    mutationFn: (ids: string[]) =>
+      makePostCaixaEntradaDesvincularFactory().post({ ids }),
+    onSuccess: invalidateCaixa,
+  });
+
   const sincronizar = useMutation({
     mutationFn: () => makePostSincronizacaoExecutarFactory().post(),
     onSuccess: invalidateCaixa,
   });
 
-  return { aceitar, ignorar, restaurar, sincronizar };
+  return {
+    aceitar,
+    ignorar,
+    ignorarParecidas,
+    restaurar,
+    desvincular,
+    sincronizar,
+  };
 };

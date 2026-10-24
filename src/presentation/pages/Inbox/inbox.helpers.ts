@@ -20,8 +20,17 @@ export const MOTIVOS_IGNORADO: Record<string, string> = {
   fatura: "Pagamento de fatura",
   casal: "Pix entre vocês",
   regra: "Regra",
+  duplicada: "Pareciam já lançadas",
   manual: "Ignorados por vocês",
 };
+
+/** Como um lançamento ficou ligado a uma transação que já existia. */
+export const MOTIVOS_VINCULADO: Record<string, string> = {
+  ja_lancado: "Já estava lançado",
+  conta_recorrente: "Conta recorrente paga",
+};
+
+export type InboxVisao = "pendente" | "vinculado" | "ignorado";
 
 /** Edição local de uma linha antes de aceitar. */
 export interface InboxEdit {
