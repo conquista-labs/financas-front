@@ -19,6 +19,7 @@ import {
   type InboxVisao,
   MOTIVOS_IGNORADO,
   MOTIVOS_VINCULADO,
+  pessoaDe,
 } from "../inbox.helpers";
 
 interface InboxRowProps {
@@ -26,6 +27,8 @@ interface InboxRowProps {
   edit?: InboxEdit;
   /** Categorias do MESMO tipo do lançamento (receita/despesa). */
   categorias: ComboboxOption[];
+  /** Pessoas ativas (inclui "Casal"); o padrão é o titular da conta. */
+  pessoas: ComboboxOption[];
   selecionado: boolean;
   /**
    * "ignorado": motivo + restaurar. "vinculado": como foi ligado a uma
@@ -92,6 +95,7 @@ export const InboxRow = ({
   lancamento: l,
   edit,
   categorias,
+  pessoas,
   selecionado,
   modo,
   ocupado,
@@ -160,7 +164,8 @@ export const InboxRow = ({
         <div className="mt-[2px] flex flex-wrap items-center gap-x-2 gap-y-1 pl-2 text-[11.5px]">
           <span className="text-muted">
             {l.conta.nome}
-            {l.pessoa ? ` · ${l.pessoa.nome}` : ""}
+            {/* Na revisão a pessoa fica no seletor ao lado. */}
+            {modo !== "pendente" && l.pessoa ? ` · ${l.pessoa.nome}` : ""}
           </span>
           {l.totalParcelas && (
             <span
@@ -208,6 +213,28 @@ export const InboxRow = ({
           )}
           contentClassName="min-w-[210px]"
         />
+      )}
+
+      {modo === "pendente" && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="shrink-0">
+              <Combobox
+                options={pessoas}
+                value={pessoaDe(l, edit)}
+                onChange={(v) => onChange({ pessoaId: v })}
+                placeholder="Pessoa"
+                clearLabel="Ninguém"
+                searchPlaceholder="Buscar pessoa…"
+                className={cn(selectCls, "w-[118px]")}
+                contentClassName="min-w-[180px]"
+              />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            De quem é o gasto — o padrão é o titular da conta
+          </TooltipContent>
+        </Tooltip>
       )}
 
       <span

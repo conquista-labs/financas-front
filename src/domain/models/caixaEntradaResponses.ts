@@ -24,7 +24,13 @@ export interface GetCaixaEntradaResumoResponse {
 }
 
 export interface AceitarLancamentosRequest {
-  itens: { id: string; categoriaId?: string; descricao?: string }[];
+  itens: {
+    id: string;
+    categoriaId?: string;
+    descricao?: string;
+    /** Omitido = titular da conta; "" = ninguém. */
+    pessoaId?: string;
+  }[];
 }
 
 export interface AceitarLancamentosResponse {

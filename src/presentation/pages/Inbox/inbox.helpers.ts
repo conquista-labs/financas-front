@@ -36,6 +36,8 @@ export type InboxVisao = "pendente" | "vinculado" | "ignorado";
 export interface InboxEdit {
   categoriaId?: string;
   descricao?: string;
+  /** Pessoa escolhida na revisão ("" = ninguém); sem edição vale o titular. */
+  pessoaId?: string;
 }
 
 /** Categoria efetiva da linha: a escolhida, senão a sugerida. */
@@ -44,3 +46,7 @@ export const categoriaDe = (l: LancamentoExterno, edit?: InboxEdit) =>
 
 /** "2026-10-09" → "09/10". */
 export const diaMes = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+
+/** Pessoa efetiva da linha: a escolhida na revisão, senão o titular da conta. */
+export const pessoaDe = (l: LancamentoExterno, edit?: InboxEdit) =>
+  edit?.pessoaId ?? l.pessoa?.id ?? "";

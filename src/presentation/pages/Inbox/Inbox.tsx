@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 import type { LancamentoExterno } from "@/domain/models";
 import { cn } from "@/lib/utils";
-import type { ComboboxOption } from "@/presentation/components";
+import { Combobox, type ComboboxOption } from "@/presentation/components";
 import {
   Skeleton,
   Tooltip,
@@ -85,6 +85,15 @@ const Inbox = () => {
   }, [categorias.data]);
 
   const pessoasOpts = pessoas.data?.data?.rows ?? [];
+  // Seletor de pessoa da revisão (inclui "Casal").
+  const pessoaOptions = useMemo<ComboboxOption[]>(
+    () =>
+      (pessoas.data?.data?.rows ?? []).map((p) => ({
+        value: p.id,
+        label: p.nome,
+      })),
+    [pessoas.data],
+  );
 
   const mudarFiltro = (f: Filtro) => {
     setFiltro(f);
@@ -135,6 +144,10 @@ const Inbox = () => {
           categoriaId: categoriaDe(l, edits[l.id]),
           ...(edits[l.id]?.descricao?.trim() && {
             descricao: edits[l.id]!.descricao!.trim(),
+          }),
+          // Só manda quando foi trocada; sem isso a API usa o titular.
+          ...(edits[l.id]?.pessoaId !== undefined && {
+            pessoaId: edits[l.id]!.pessoaId,
           }),
         })),
       },
@@ -364,6 +377,26 @@ const Inbox = () => {
                 </TooltipContent>
               </Tooltip>
             )}
+            {selecionadosRows.length > 0 && (
+              <Combobox
+                options={pessoaOptions}
+                value=""
+                onChange={(v) =>
+                  setEdits((prev) => {
+                    const e = { ...prev };
+                    selecionadosRows.forEach((l) => {
+                      e[l.id] = { ...e[l.id], pessoaId: v };
+                    });
+                    return e;
+                  })
+                }
+                placeholder="Pessoa dos selecionados"
+                clearLabel="Ninguém"
+                searchPlaceholder="Buscar pessoa…"
+                className="!w-[190px] !rounded-[10px] !border-line !px-3 !py-[7px] !text-[12.5px]"
+                contentClassName="min-w-[200px]"
+              />
+            )}
             <button
               type="button"
               disabled={!selecionadosRows.length || ignorar.isPending}
@@ -409,6 +442,7 @@ const Inbox = () => {
                 modo={visao}
                 edit={edits[l.id]}
                 categorias={categoriasPorTipo[l.tipo]}
+                pessoas={pessoaOptions}
                 selecionado={selecionados.has(l.id)}
                 ocupado={ocupados.has(l.id)}
                 onToggle={() =>
