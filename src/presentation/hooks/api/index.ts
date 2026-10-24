@@ -1,6 +1,7 @@
 export * from "./analytics";
 export * from "./auth";
 export * from "./cadastros";
+export * from "./caixaEntrada";
 export * from "./calendario";
 export * from "./categorias";
 export * from "./desejos";

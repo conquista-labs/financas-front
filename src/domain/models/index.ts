@@ -170,3 +170,5 @@ export * from "./getMetaIdResponse";
 export * from "./metaEnvelopeResponse";
 export * from "./getDesejosResponse";
 export * from "./desejoEnvelopeResponse";
+export * from "./caixaEntradaResponses";
+export * from "./lancamentoExterno";

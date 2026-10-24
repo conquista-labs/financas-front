@@ -9,6 +9,7 @@ import {
   Goals,
   Home,
   Import,
+  Inbox,
   NotFound,
   Patrimony,
   Registers,
@@ -81,6 +82,14 @@ const PrivateRoute: React.FC = () => (
         element={
           <Suspense>
             <Import />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.inbox}
+        element={
+          <Suspense>
+            <Inbox />
           </Suspense>
         }
       />
