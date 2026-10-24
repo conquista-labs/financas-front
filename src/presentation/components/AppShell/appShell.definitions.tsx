@@ -2,6 +2,7 @@ import {
   ArrowLeftRight,
   Box,
   CalendarDays,
+  Inbox,
   Landmark,
   LayoutDashboard,
   type LucideIcon,
@@ -23,7 +24,8 @@ export interface NavItem {
 /**
  * Itens de navegação da Sidebar (nova identidade "Nossa Grana"), fiéis ao
  * protótipo: Visão geral, Transações, Calendário, Patrimônio, Cadastros
- * (agrupa Categorias/Pessoas/Meios), Importar. Ícones do lucide-react.
+ * (agrupa Categorias/Pessoas/Meios), Caixa de entrada, Importar. Ícones do
+ * lucide-react.
  */
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -61,6 +63,12 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Cadastros",
     to: urlRouters.registers,
     icon: Box,
+  },
+  {
+    id: "inbox",
+    label: "Caixa de entrada",
+    to: urlRouters.inbox,
+    icon: Inbox,
   },
   {
     id: "import",

@@ -1,5 +1,6 @@
 export * from "./analytics";
 export * from "./auth";
+export * from "./caixaEntrada";
 export * from "./calendario";
 export * from "./categorias";
 export * from "./desejos";

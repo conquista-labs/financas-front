@@ -31,5 +31,7 @@ export const urlRouters = {
   registers: "/cadastros",
   // Importar extrato — wizard analisar/confirmar (POST /importacoes/*).
   import: "/importar",
+  // Caixa de entrada — revisão do que a sincronização bancária trouxe.
+  inbox: "/caixa-de-entrada",
   error: "/error",
 };
