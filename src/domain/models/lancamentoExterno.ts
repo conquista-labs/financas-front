@@ -29,5 +29,9 @@ export interface LancamentoExterno {
     tipo: "receita" | "despesa";
   } | null;
   conta: { id: string; nome: string };
+  /** Banco da conexão ("Nubank", "XP"…) — o cartão sozinho não diz. */
+  banco: string | null;
   pessoa: { id: string; nome: string } | null;
+  /** Meio sugerido: o da conta, ou pelo tipo de operação na conta corrente. */
+  meioSugerido: { id: string; nome: string } | null;
 }

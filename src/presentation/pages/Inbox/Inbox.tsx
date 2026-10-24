@@ -16,6 +16,7 @@ import {
   useGetCaixaEntrada,
   useGetCaixaEntradaResumo,
   useGetCategorias,
+  useGetMeiosPagamento,
   useGetPessoas,
 } from "@/presentation/hooks/api";
 
@@ -62,6 +63,7 @@ const Inbox = () => {
   const resumo = useGetCaixaEntradaResumo();
   const categorias = useGetCategorias(OPT_LIMIT);
   const pessoas = useGetPessoas(OPT_LIMIT);
+  const meiosPagamento = useGetMeiosPagamento(OPT_LIMIT);
   const {
     aceitar,
     ignorar,
@@ -85,6 +87,15 @@ const Inbox = () => {
   }, [categorias.data]);
 
   const pessoasOpts = pessoas.data?.data?.rows ?? [];
+  const meioOptions = useMemo<ComboboxOption[]>(
+    () =>
+      (meiosPagamento.data?.data?.rows ?? []).map((m) => ({
+        value: m.id,
+        label: m.nome,
+      })),
+    [meiosPagamento.data],
+  );
+
   // Seletor de pessoa da revisão (inclui "Casal").
   const pessoaOptions = useMemo<ComboboxOption[]>(
     () =>
@@ -149,15 +160,21 @@ const Inbox = () => {
           ...(edits[l.id]?.pessoaId !== undefined && {
             pessoaId: edits[l.id]!.pessoaId,
           }),
+          ...(edits[l.id]?.meioPagamentoId !== undefined && {
+            meioPagamentoId: edits[l.id]!.meioPagamentoId,
+          }),
+          ...(edits[l.id]?.criarFuturas && { criarFuturas: true }),
         })),
       },
       {
         onSuccess: (r) => {
-          const { aceitos, vinculados, erros } = r.data;
+          const { aceitos, vinculados, erros, futurasCriadas = 0 } = r.data;
           const partes = [
             aceitos && `${aceitos} lançado${aceitos === 1 ? "" : "s"}`,
             vinculados &&
-              `${vinculados} conta${vinculados === 1 ? "" : "s"} marcada${vinculados === 1 ? "" : "s"} como paga${vinculados === 1 ? "" : "s"}`,
+              `${vinculados} marcado${vinculados === 1 ? "" : "s"} como pago${vinculados === 1 ? "" : "s"}`,
+            futurasCriadas &&
+              `${futurasCriadas} parcela${futurasCriadas === 1 ? "" : "s"} futura${futurasCriadas === 1 ? "" : "s"} criada${futurasCriadas === 1 ? "" : "s"}`,
           ].filter(Boolean);
           if (partes.length) toast.success(partes.join(" · "));
           if (erros.length) toast.error(erros[0].erro);
@@ -443,6 +460,7 @@ const Inbox = () => {
                 edit={edits[l.id]}
                 categorias={categoriasPorTipo[l.tipo]}
                 pessoas={pessoaOptions}
+                meios={meioOptions}
                 selecionado={selecionados.has(l.id)}
                 ocupado={ocupados.has(l.id)}
                 onToggle={() =>

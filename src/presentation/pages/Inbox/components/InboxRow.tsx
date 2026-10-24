@@ -17,8 +17,10 @@ import {
   DICAS,
   type InboxEdit,
   type InboxVisao,
+  meioDe,
   MOTIVOS_IGNORADO,
   MOTIVOS_VINCULADO,
+  parcelasRestantes,
   pessoaDe,
 } from "../inbox.helpers";
 
@@ -29,6 +31,8 @@ interface InboxRowProps {
   categorias: ComboboxOption[];
   /** Pessoas ativas (inclui "Casal"); o padrão é o titular da conta. */
   pessoas: ComboboxOption[];
+  /** Meios de pagamento; o padrão é o sugerido pela conta/operação. */
+  meios: ComboboxOption[];
   selecionado: boolean;
   /**
    * "ignorado": motivo + restaurar. "vinculado": como foi ligado a uma
@@ -96,6 +100,7 @@ export const InboxRow = ({
   edit,
   categorias,
   pessoas,
+  meios,
   selecionado,
   modo,
   ocupado,
@@ -162,6 +167,11 @@ export const InboxRow = ({
           </p>
         )}
         <div className="mt-[2px] flex flex-wrap items-center gap-x-2 gap-y-1 pl-2 text-[11.5px]">
+          {l.banco && (
+            <span className="rounded-full bg-track px-2 py-[1px] font-bold text-fg2">
+              {l.banco}
+            </span>
+          )}
           <span className="text-muted">
             {l.conta.nome}
             {/* Na revisão a pessoa fica no seletor ao lado. */}
@@ -183,6 +193,35 @@ export const InboxRow = ({
           )}
           {modo === "pendente" && sugerida && (
             <span className="font-semibold text-primary">Sugerido</span>
+          )}
+          {modo === "pendente" && parcelasRestantes(l) > 0 && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={!!edit?.criarFuturas}
+                  onClick={() => onChange({ criarFuturas: !edit?.criarFuturas })}
+                  className={cn(
+                    "flex items-center gap-1 rounded-full border px-2 py-[1px] font-semibold transition-colors",
+                    edit?.criarFuturas
+                      ? "border-primary bg-primary/soft text-primary-strong"
+                      : "border-line text-fg2 hover:border-primary/50",
+                  )}
+                >
+                  {edit?.criarFuturas && (
+                    <Check className="size-3" strokeWidth={3} />
+                  )}
+                  {parcelasRestantes(l) === 1
+                    ? "Criar a parcela que falta"
+                    : `Criar as ${parcelasRestantes(l)} futuras`}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                Cria as parcelas restantes como pendentes, uma por mês. Quando
+                o banco trouxer cada uma, é só aceitar que vira paga.
+              </TooltipContent>
+            </Tooltip>
           )}
           {modo === "ignorado" && (
             <span className="rounded-full bg-track px-2 py-[1px] font-semibold text-fg2">
@@ -233,6 +272,32 @@ export const InboxRow = ({
           </TooltipTrigger>
           <TooltipContent side="top">
             De quem é o gasto — o padrão é o titular da conta
+          </TooltipContent>
+        </Tooltip>
+      )}
+
+      {modo === "pendente" && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="shrink-0">
+              <Combobox
+                options={meios}
+                value={meioDe(l, edit)}
+                onChange={(v) => onChange({ meioPagamentoId: v })}
+                placeholder="Meio de pagamento"
+                clearLabel="Não informado"
+                searchPlaceholder="Buscar meio…"
+                className={cn(
+                  selectCls,
+                  "w-[150px]",
+                  !meioDe(l, edit) && "!border-warning/60",
+                )}
+                contentClassName="min-w-[220px]"
+              />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            Meio de pagamento — sugerido pela conta e pelo tipo de operação
           </TooltipContent>
         </Tooltip>
       )}

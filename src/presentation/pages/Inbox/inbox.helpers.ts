@@ -9,6 +9,10 @@ export const DICAS: Record<
     label: "Conta recorrente · aceitar marca como paga",
     tone: "success",
   },
+  parcela_prevista: {
+    label: "Parcela prevista · aceitar marca como paga",
+    tone: "success",
+  },
   possivel_casal: { label: "Parece Pix entre vocês", tone: "warning" },
   possivel_duplicada: { label: "Parece já lançada", tone: "warning" },
 };
@@ -38,6 +42,10 @@ export interface InboxEdit {
   descricao?: string;
   /** Pessoa escolhida na revisão ("" = ninguém); sem edição vale o titular. */
   pessoaId?: string;
+  /** Meio escolhido ("" = nenhum); sem edição vale o sugerido. */
+  meioPagamentoId?: string;
+  /** Compra parcelada: criar as parcelas restantes como pendentes. */
+  criarFuturas?: boolean;
 }
 
 /** Categoria efetiva da linha: a escolhida, senão a sugerida. */
@@ -50,3 +58,13 @@ export const diaMes = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
 /** Pessoa efetiva da linha: a escolhida na revisão, senão o titular da conta. */
 export const pessoaDe = (l: LancamentoExterno, edit?: InboxEdit) =>
   edit?.pessoaId ?? l.pessoa?.id ?? "";
+
+/** Meio efetivo da linha: o escolhido na revisão, senão o sugerido. */
+export const meioDe = (l: LancamentoExterno, edit?: InboxEdit) =>
+  edit?.meioPagamentoId ?? l.meioSugerido?.id ?? "";
+
+/** Quantas parcelas ainda vão cair depois desta (0 se não der para criar). */
+export const parcelasRestantes = (l: LancamentoExterno) =>
+  l.totalParcelas && l.parcelaNumero && l.motivo !== "parcela_prevista"
+    ? l.totalParcelas - l.parcelaNumero
+    : 0;

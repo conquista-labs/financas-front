@@ -30,6 +30,10 @@ export interface AceitarLancamentosRequest {
     descricao?: string;
     /** Omitido = titular da conta; "" = ninguém. */
     pessoaId?: string;
+    /** Omitido = o sugerido; "" = nenhum. */
+    meioPagamentoId?: string;
+    /** Compra parcelada: cria as parcelas restantes como pendentes. */
+    criarFuturas?: boolean;
   }[];
 }
 
@@ -38,6 +42,7 @@ export interface AceitarLancamentosResponse {
   data: {
     aceitos: number;
     vinculados: number;
+    futurasCriadas?: number;
     regrasAprendidas: number;
     erros: { id: string; erro: string }[];
   };
