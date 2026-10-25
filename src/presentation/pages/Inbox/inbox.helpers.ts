@@ -26,6 +26,7 @@ export const MOTIVOS_IGNORADO: Record<string, string> = {
   regra: "Regra",
   duplicada: "Pareciam já lançadas",
   manual: "Ignorados por vocês",
+  cancelada_no_banco: "Cancelada no banco",
 };
 
 /** Como um lançamento ficou ligado a uma transação que já existia. */
