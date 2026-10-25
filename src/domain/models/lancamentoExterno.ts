@@ -18,6 +18,8 @@ export interface LancamentoExterno {
    * investimento | regra | manual).
    */
   motivo: string | null;
+  /** POSTED (confirmada) ou PENDING (cartão com a fatura ainda aberta). */
+  statusBanco: "POSTED" | "PENDING";
   categoriaPluggy: string | null;
   parcelaNumero: number | null;
   totalParcelas: number | null;

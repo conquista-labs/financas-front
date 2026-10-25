@@ -177,6 +177,19 @@ export const InboxRow = ({
             {/* Na revisão a pessoa fica no seletor ao lado. */}
             {modo !== "pendente" && l.pessoa ? ` · ${l.pessoa.nome}` : ""}
           </span>
+          {l.statusBanco === "PENDING" && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="rounded-full bg-track px-2 py-[1px] font-semibold text-fg2">
+                  Fatura aberta
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                Compra na fatura que ainda não fechou. Se for cancelada no banco,
+                sai da caixa sozinha.
+              </TooltipContent>
+            </Tooltip>
+          )}
           {l.totalParcelas && (
             <span
               className={cn("rounded-full px-2 py-[1px] font-bold", TONS.primary)}
