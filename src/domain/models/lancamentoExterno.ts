@@ -4,8 +4,14 @@
  */
 export interface LancamentoExterno {
   id: string;
-  /** YYYY-MM-DD */
+  /** YYYY-MM-DD — data do banco (no cartão, a da compra). */
   data: string;
+  /**
+   * Cartão de crédito com dia de vencimento: YYYY-MM-DD do vencimento da
+   * fatura, a data em que a transação é lançada ao aceitar (mesma regra do
+   * lançamento rápido). Null nos outros meios.
+   */
+  dataFatura: string | null;
   descricao: string;
   descricaoOriginal: string;
   /** Sempre positivo; o sentido vem de `tipo`. */

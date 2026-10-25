@@ -116,6 +116,14 @@ export const InboxRow = ({
   const categoriaId = categoriaDe(l, edit);
   const sugerida =
     !!l.categoriaSugerida && categoriaId === l.categoriaSugerida.id;
+  // Data da fatura vale para o meio sugerido (o cartão da conta); trocou o
+  // meio, a API recalcula no aceite.
+  const fatura =
+    modo === "pendente" &&
+    l.dataFatura &&
+    meioDe(l, edit) === l.meioSugerido?.id
+      ? l.dataFatura
+      : null;
 
   return (
     <div
@@ -177,29 +185,39 @@ export const InboxRow = ({
             {/* Na revisão a pessoa fica no seletor ao lado. */}
             {modo !== "pendente" && l.pessoa ? ` · ${l.pessoa.nome}` : ""}
           </span>
-          {l.statusBanco === "PENDING" && (
+          {(l.statusBanco === "PENDING" || fatura) && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="rounded-full bg-track px-2 py-[1px] font-semibold text-fg2">
-                  Fatura aberta
+                  {l.statusBanco === "PENDING" ? "Fatura aberta" : "Fatura"}
+                  {fatura && ` · vence ${diaMes(fatura)}`}
                 </span>
               </TooltipTrigger>
-              <TooltipContent side="top">
-                Compra na fatura que ainda não fechou. Se for cancelada no banco,
-                sai da caixa sozinha.
+              <TooltipContent side="top" className="max-w-[260px]">
+                {fatura &&
+                  `Compra em ${diaMes(l.data)}. Ao aceitar, é lançada no vencimento da fatura (${diaMes(fatura)}), pendente até ela vencer.`}
+                {fatura && l.statusBanco === "PENDING" && " "}
+                {l.statusBanco === "PENDING" &&
+                  "A fatura ainda não fechou: se a compra for cancelada no banco, sai da caixa sozinha."}
               </TooltipContent>
             </Tooltip>
           )}
           {l.totalParcelas && (
             <span
-              className={cn("rounded-full px-2 py-[1px] font-bold", TONS.primary)}
+              className={cn(
+                "rounded-full px-2 py-[1px] font-bold",
+                TONS.primary,
+              )}
             >
               Parcela {l.parcelaNumero}/{l.totalParcelas}
             </span>
           )}
           {modo === "pendente" && dica && (
             <span
-              className={cn("rounded-full px-2 py-[1px] font-bold", TONS[dica.tone])}
+              className={cn(
+                "rounded-full px-2 py-[1px] font-bold",
+                TONS[dica.tone],
+              )}
             >
               {dica.label}
             </span>
@@ -214,7 +232,9 @@ export const InboxRow = ({
                   type="button"
                   role="checkbox"
                   aria-checked={!!edit?.criarFuturas}
-                  onClick={() => onChange({ criarFuturas: !edit?.criarFuturas })}
+                  onClick={() =>
+                    onChange({ criarFuturas: !edit?.criarFuturas })
+                  }
                   className={cn(
                     "flex items-center gap-1 rounded-full border px-2 py-[1px] font-semibold transition-colors",
                     edit?.criarFuturas
@@ -231,8 +251,8 @@ export const InboxRow = ({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                Cria as parcelas restantes como pendentes, uma por mês. Quando
-                o banco trouxer cada uma, é só aceitar que vira paga.
+                Cria as parcelas restantes como pendentes, uma por mês. Quando o
+                banco trouxer cada uma, é só aceitar que vira paga.
               </TooltipContent>
             </Tooltip>
           )}
@@ -243,7 +263,10 @@ export const InboxRow = ({
           )}
           {modo === "vinculado" && (
             <span
-              className={cn("rounded-full px-2 py-[1px] font-bold", TONS.success)}
+              className={cn(
+                "rounded-full px-2 py-[1px] font-bold",
+                TONS.success,
+              )}
             >
               {MOTIVOS_VINCULADO[l.motivo ?? ""] ?? "Ligado a uma transação"}
             </span>
