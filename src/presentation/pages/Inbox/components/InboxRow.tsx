@@ -271,6 +271,13 @@ export const InboxRow = ({
               {MOTIVOS_VINCULADO[l.motivo ?? ""] ?? "Ligado a uma transação"}
             </span>
           )}
+          {modo === "vinculado" && l.transacao && (
+            <span className="text-fg2">
+              → {l.transacao.descricao} em {diaMes(l.transacao.data)}
+              {l.transacao.parcelaNumero &&
+                ` (${l.transacao.parcelaNumero}/${l.transacao.totalParcelas ?? "?"})`}
+            </span>
+          )}
         </div>
       </div>
 
