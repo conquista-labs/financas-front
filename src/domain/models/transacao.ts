@@ -24,6 +24,10 @@ export interface Transacao {
   lembrarMe?: boolean;
   meioPagamentoId?: string;
   formaPagamento?: Transacao.FormaPagamentoEnum;
+  /** Parcelas da mesma compra compartilham o grupo. */
+  parcelaGrupoId?: string | null;
+  parcelaNumero?: number | null;
+  totalParcelas?: number | null;
   createdAt: string;
   /**
    * Nomes das tags vinculadas à transação

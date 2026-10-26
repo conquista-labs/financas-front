@@ -98,7 +98,7 @@ export const RealizarDesejoDialog = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <span className={labelCls}>Quando</span>
-              <DateField value={data} onChange={setData} />
+              <DateField value={data} onChange={setData} inline />
             </div>
             <div>
               <span className={labelCls}>Quanto custou (opcional)</span>

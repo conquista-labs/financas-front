@@ -1,24 +1,17 @@
-import { Loader2, Pencil, Trash2, Trophy } from "lucide-react";
+import { CalendarDays, Loader2, Pencil, Trash2, Trophy } from "lucide-react";
 
 import type { MetaResponse } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
 
-import {
-  mesAnoAlvo,
-  progressRing,
-  ringColorPorTipo,
-  statusProgressoMeta,
-} from "../goals.helpers";
+import { mesAnoAlvo } from "../goals.helpers";
 
 interface MetaCardProps {
   meta: MetaResponse;
   /** true enquanto esta meta está sendo arquivada (spinner na lixeira). */
   isArchiving?: boolean;
-  onOpen: (meta: MetaResponse) => void;
-  onAporte: (meta: MetaResponse) => void;
   onEdit: (meta: MetaResponse) => void;
   onArchive: (meta: MetaResponse) => void;
-  /** "Concluir meta": conquistada (abre o modal com data/valor/compra). */
+  /** "Concluir meta": conquistada (abre o modal com data/valor/compras). */
   onConcluir: (meta: MetaResponse) => void;
 }
 
@@ -26,88 +19,49 @@ const iconBtn =
   "grid size-8 shrink-0 place-items-center rounded-[9px] transition-colors disabled:cursor-not-allowed disabled:opacity-60";
 
 /**
- * Card de uma meta (layout horizontal do protótipo): anel de progresso
- * (conic-gradient — roxo p/ acumular, laranja p/ quitar), bloco de texto
- * clicável (título + tag "Dívida" + valor/alvo + status colorido) e ações
- * (Aportar em destaque, concluir, editar, arquivar). Anel 64/50 (7px de espessura).
+ * Card de uma meta — só o marco: título, valor, quando e de quem. Concluir
+ * (troféu) em destaque; editar (clique no texto ou no lápis) e arquivar.
  */
 export const MetaCard = ({
   meta,
   isArchiving,
-  onOpen,
-  onAporte,
   onEdit,
   onArchive,
   onConcluir,
 }: MetaCardProps) => {
-  const st = statusProgressoMeta[meta.statusProgresso];
-  const pct = Math.round(meta.percentual);
-  const ring = ringColorPorTipo(meta.tipo);
-  const isQuitar = meta.tipo === "quitar";
-  const done = meta.statusProgresso === "concluida";
-  const eta = done
-    ? "objetivo batido"
-    : `chega em ${mesAnoAlvo(meta.dataAlvo)}`;
+  const quando = meta.dataAlvo
+    ? `até ${mesAnoAlvo(meta.dataAlvo)}`
+    : "sem prazo";
+  const dono = meta.pessoa?.nome ?? "Casal";
 
   return (
-    <div className="flex items-center gap-[18px] rounded-[20px] border border-line bg-card px-[22px] py-5">
-      {/* Anel de progresso (donut) */}
-      <div
-        className="grid size-16 shrink-0 place-items-center rounded-full"
-        style={{ background: progressRing(pct, ring) }}
-      >
-        <span className="grid size-[50px] place-items-center rounded-full bg-card">
-          <span className="font-display text-[14px] font-bold text-fg">
-            {pct}%
-          </span>
-        </span>
-      </div>
-
-      {/* Texto — abre o detalhe */}
+    <div className="flex items-center gap-4 rounded-[20px] border border-line bg-card px-[22px] py-5">
       <button
         type="button"
-        onClick={() => onOpen(meta)}
-        title="Ver detalhes"
+        onClick={() => onEdit(meta)}
+        title="Editar meta"
         className="flex min-w-0 flex-1 flex-col gap-[5px] text-left"
       >
-        <span className="flex items-center gap-2">
-          <span className="truncate text-[15.5px] font-semibold text-fg">
-            {meta.titulo}
-          </span>
-          {isQuitar && (
-            <span className="shrink-0 rounded-full bg-warning/10 px-[9px] py-[3px] text-[10.5px] font-bold text-warning">
-              Dívida
-            </span>
-          )}
+        <span className="truncate text-[15.5px] font-semibold text-fg">
+          {meta.titulo}
         </span>
-        <span className="font-display text-[18px] font-bold -tracking-[0.02em] text-fg">
-          {formatCurrency(meta.valorAtual)}
-          <span className="ml-1 font-sans text-[13px] font-medium text-muted">
-            de {formatCurrency(meta.valorAlvo)}
-          </span>
+        <span className="font-display text-[20px] font-bold -tracking-[0.02em] text-fg">
+          {formatCurrency(meta.valorAlvo)}
         </span>
-        <span className={`text-[12.5px] font-semibold ${st.text}`}>
-          {st.label} · {eta}
+        <span className="flex items-center gap-[6px] text-[12.5px] font-medium text-muted">
+          <CalendarDays className="size-[13px]" strokeWidth={2} />
+          {quando} · {dono}
         </span>
       </button>
 
-      {/* Ações */}
       <div className="flex shrink-0 items-center gap-[6px]">
         <button
           type="button"
-          onClick={() => onAporte(meta)}
-          className="rounded-[10px] bg-primary/10 px-[15px] py-[9px] text-[13px] font-bold text-primary transition-colors hover:bg-primary/15"
-        >
-          Aportar
-        </button>
-        <button
-          type="button"
-          aria-label="Concluir meta"
-          title="Concluir meta"
           onClick={() => onConcluir(meta)}
-          className={`${iconBtn} bg-success/10 text-success hover:bg-success/15`}
+          className="flex items-center gap-[6px] rounded-[10px] bg-success/10 px-[13px] py-[9px] text-[13px] font-bold text-success transition-colors hover:bg-success/15"
         >
-          <Trophy className="size-4" strokeWidth={1.8} />
+          <Trophy className="size-[14px]" strokeWidth={2.2} />
+          Concluir
         </button>
         <button
           type="button"

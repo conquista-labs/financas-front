@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type {
   ConcluirMetaRequest,
-  CreateAporteRequest,
   CreateDesejoRequest,
   CreateMetaRequest,
   EditDesejoRequest,
@@ -20,7 +19,6 @@ import {
   makePostDesejoPromoverFactory,
   makePostDesejoReabrirFactory,
   makePostDesejoRealizarFactory,
-  makePostMetaAporteFactory,
   makePostMetaConcluirFactory,
   makePostMetaFactory,
   makePostMetaReabrirFactory,
@@ -69,12 +67,6 @@ export const useGoalsMutations = () => {
 
   const restoreMeta = useMutation({
     mutationFn: (id: string) => makePostMetaRestaurarFactory().post({ id }),
-    onSuccess: invalidateMetas,
-  });
-
-  const addAporte = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: CreateAporteRequest }) =>
-      makePostMetaAporteFactory().post({ id }, body),
     onSuccess: invalidateMetas,
   });
 
@@ -155,7 +147,6 @@ export const useGoalsMutations = () => {
     updateMeta,
     archiveMeta,
     restoreMeta,
-    addAporte,
     createDesejo,
     updateDesejo,
     archiveDesejo,

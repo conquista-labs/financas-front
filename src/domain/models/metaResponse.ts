@@ -28,7 +28,8 @@ export interface MetaResponse {
   status: MetaResponse.StatusEnum;
   /** ceil(falta/aporteMensal); null se aporte 0. */
   etaMeses?: number | null;
-  dataAlvo: string;
+  /** null = sem prazo. */
+  dataAlvo: string | null;
   tag: TagResumo;
   /** null = Casal. */
   pessoa?: PessoaResumo | null;
@@ -36,13 +37,15 @@ export interface MetaResponse {
   concluidaEm?: string | null;
   /** Quanto custou no fim (informado ao concluir). */
   valorFinal?: number | null;
-  /** A compra que realizou a meta. */
-  compra?: {
+  /** Compras que realizaram a meta (várias = parcelas). */
+  compras?: Array<{
     id: string;
     descricao: string;
     data: string;
     valor: number;
-  } | null;
+    parcelaNumero?: number | null;
+    totalParcelas?: number | null;
+  }>;
 }
 export namespace MetaResponse {
   export type TipoEnum = "acumular" | "quitar";

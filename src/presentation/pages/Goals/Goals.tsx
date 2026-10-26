@@ -14,14 +14,12 @@ import {
 } from "@/presentation/hooks/api";
 
 import {
-  AporteDialog,
   ConcluirMetaDialog,
   ConquistasList,
   DesejoCard,
   DesejoFormDialog,
   GoalsKpis,
   MetaCard,
-  MetaDetalheDialog,
   MetaFormDialog,
   RealizarDesejoDialog,
 } from "./components";
@@ -32,10 +30,10 @@ const OPT_LIMIT = { page: 1, limit: 100 };
 type Tab = "metas" | "desejos" | "conquistas";
 
 /**
- * Metas & Desejos (nova identidade). Aba Metas: KPIs (herói guardado + ritmo) e
- * grid de metas (anel de progresso, aportar/editar/arquivar, detalhe com
- * gráfico). Aba Desejos: grid de desejos com voto do casal e "virar meta".
- * Criar/editar/aportar via modais; arquivar com desfazer (restaurar/recriar).
+ * Metas & Desejos. Meta é só um marco (título, valor, quando, de quem) — o
+ * sistema não acompanha quanto já foi juntado. Aba Metas: total das metas e
+ * conquistas do ano + grid de metas (concluir/editar/arquivar). Aba Desejos:
+ * voto do casal, "virar meta" e "Já realizei". Arquivar com desfazer.
  * Aba Conquistas: metas concluídas ("Concluir meta" ou alvo batido) e desejos
  * realizados ("Já realizei"), com "Reabrir".
  */
@@ -50,8 +48,6 @@ const Goals = () => {
   const setTab = (t: Tab) => setTabParam(t);
 
   // Modais.
-  const [detalhe, setDetalhe] = useState<MetaResponse | null>(null);
-  const [aporte, setAporte] = useState<MetaResponse | null>(null);
   const [concluir, setConcluir] = useState<MetaResponse | null>(null);
   const [realizar, setRealizar] = useState<DesejoResponse | null>(null);
   const [metaForm, setMetaForm] = useState<{
@@ -81,8 +77,7 @@ const Goals = () => {
   } = useGoalsMutations();
 
   const todasMetas = metas.data?.data ?? [];
-  // Em andamento x conquistadas (status persistido — a API conclui sozinha
-  // quando os aportes batem o alvo).
+  // Em andamento x conquistadas (status persistido).
   const metasRows = todasMetas.filter((m) => m.status !== "concluida");
   const metasConcluidas = todasMetas.filter((m) => m.status === "concluida");
   const desejosRealizados = realizados.data?.data ?? [];
@@ -92,14 +87,8 @@ const Goals = () => {
   // --- Metas ---
   const openNewMeta = () =>
     setMetaForm({ open: true, meta: null, desejo: null });
-  const openEditMeta = (meta: MetaResponse) => {
-    setDetalhe(null);
+  const openEditMeta = (meta: MetaResponse) =>
     setMetaForm({ open: true, meta, desejo: null });
-  };
-  const openAporte = (meta: MetaResponse) => {
-    setDetalhe(null);
-    setAporte(meta);
-  };
 
   const handleArchiveMeta = (meta: MetaResponse) =>
     archiveMeta.mutate(meta.id, {
@@ -117,10 +106,7 @@ const Goals = () => {
     });
 
   // --- Conquistas ---
-  const openConcluir = (meta: MetaResponse) => {
-    setDetalhe(null);
-    setConcluir(meta);
-  };
+  const openConcluir = (meta: MetaResponse) => setConcluir(meta);
   const handleReabrirMeta = (meta: MetaResponse) =>
     reabrirMeta.mutate(meta.id, {
       onSuccess: () => toast.success(`"${meta.titulo}" voltou para as metas.`),
@@ -260,8 +246,6 @@ const Goals = () => {
                   isArchiving={
                     archiveMeta.isPending && archiveMeta.variables === meta.id
                   }
-                  onOpen={setDetalhe}
-                  onAporte={openAporte}
                   onEdit={openEditMeta}
                   onArchive={handleArchiveMeta}
                   onConcluir={openConcluir}
@@ -271,7 +255,7 @@ const Goals = () => {
           )}
 
           <p className="mt-4 text-[12.5px] text-muted">
-            Cada meta soma os lançamentos com a tag vinculada.
+            Meta é um marco: quando conseguirem, use "Concluir".
           </p>
         </>
       ) : tab === "conquistas" ? (
@@ -298,7 +282,7 @@ const Goals = () => {
             />
           )}
           <p className="mt-4 text-[12.5px] text-muted">
-            Meta que bate o alvo pelos aportes vem para cá sozinha.
+            Marcou por engano? "Reabrir" volta para as metas ou desejos.
           </p>
         </>
       ) : (
@@ -343,13 +327,6 @@ const Goals = () => {
       )}
 
       {/* Modais */}
-      <MetaDetalheDialog
-        meta={detalhe}
-        open={!!detalhe}
-        onOpenChange={(o) => !o && setDetalhe(null)}
-        onAporte={openAporte}
-        onEdit={openEditMeta}
-      />
       <ConcluirMetaDialog
         meta={concluir}
         open={!!concluir}
@@ -359,11 +336,6 @@ const Goals = () => {
         desejo={realizar}
         open={!!realizar}
         onOpenChange={(o) => !o && setRealizar(null)}
-      />
-      <AporteDialog
-        meta={aporte}
-        open={!!aporte}
-        onOpenChange={(o) => !o && setAporte(null)}
       />
       <MetaFormDialog
         meta={metaForm.meta}
