@@ -42,4 +42,12 @@ export interface LancamentoExterno {
   pessoa: { id: string; nome: string } | null;
   /** Meio sugerido: o da conta, ou pelo tipo de operação na conta corrente. */
   meioSugerido: { id: string; nome: string } | null;
+  /** Já lançado/aceito: a transação a que ficou ligado (para conferir). */
+  transacao: {
+    descricao: string;
+    /** YYYY-MM-DD — no cartão, o vencimento da fatura. */
+    data: string;
+    parcelaNumero: number | null;
+    totalParcelas: number | null;
+  } | null;
 }
