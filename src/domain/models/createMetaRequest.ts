@@ -6,11 +6,13 @@
  */
 export interface CreateMetaRequest {
   titulo: string;
-  tipo: CreateMetaRequest.TipoEnum;
+  /** Default: acumular (a tela simples não pergunta). */
+  tipo?: CreateMetaRequest.TipoEnum;
   valorAlvo: number;
   valorInicial?: number;
   aporteMensal?: number;
-  dataAlvo: string;
+  /** Quando (opcional) — o backend normaliza para o dia 1º. */
+  dataAlvo?: string;
   /** Nome da tag (não id); o backend faz connectOrCreate. */
   tag?: string;
   /** null = Casal. */

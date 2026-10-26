@@ -72,7 +72,7 @@ export const ConquistasList = ({
                 ? `custou ${formatCurrency(item.meta.valorFinal)} (alvo ${formatCurrency(item.meta.valorAlvo)})`
                 : `alvo ${formatCurrency(item.meta.valorAlvo)}`
               : formatCurrency(valor);
-          const compra = item.tipo === "meta" ? item.meta.compra : null;
+          const compras = item.tipo === "meta" ? (item.meta.compras ?? []) : [];
           return (
             <div
               key={`${item.tipo}-${id}`}
@@ -98,9 +98,12 @@ export const ConquistasList = ({
                   {item.tipo === "meta" ? "Conquistada" : "Realizado"} em{" "}
                   {dataCurta(item.data)} · {detalhe}
                 </p>
-                {compra && (
+                {compras.length > 0 && (
                   <p className="truncate text-[12px] text-fg2">
-                    → {compra.descricao} em {dataCurta(compra.data)}
+                    → {compras[0].descricao}
+                    {compras.length > 1
+                      ? ` · ${compras.length} parcelas (${dataCurta(compras[0].data)} a ${dataCurta(compras[compras.length - 1].data)})`
+                      : ` em ${dataCurta(compras[0].data)}`}
                   </p>
                 )}
               </div>

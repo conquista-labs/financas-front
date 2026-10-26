@@ -11,52 +11,40 @@ import { maskCurrencyInput, parseAmount } from "@/lib/format";
 const money = (n?: number | null): string =>
   n != null ? maskCurrencyInput(String(Math.round(n * 100))) : "";
 
-/** Valores do form de meta (strings p/ inputs; convertidos no submit). */
+/**
+ * Valores do form de meta. Meta é só um MARCO: título, valor, quando
+ * (opcional) e de quem — o sistema não acompanha quanto já foi juntado.
+ */
 export interface MetaFormValues {
   titulo: string;
-  tipo: string;
   valorAlvo: string;
-  valorInicial: string;
-  aporteMensal: string;
+  /** "yyyy-MM-01" ou vazio (sem prazo). */
   dataAlvo: string;
-  tag: string;
   pessoaId: string;
 }
 
 export const emptyForm: MetaFormValues = {
   titulo: "",
-  tipo: "acumular",
   valorAlvo: "",
-  valorInicial: "",
-  aporteMensal: "",
   dataAlvo: "",
-  tag: "",
   pessoaId: "",
 };
 
 export const schema = object({
   titulo: string()
     .required("Informe o título")
-    .min(2, "Mínimo de 2 caracteres")
+    .min(3, "Mínimo de 3 caracteres")
     .max(80, "Máximo de 80 caracteres"),
-  tipo: string().required("Selecione o tipo"),
-  valorAlvo: string().required("Informe o valor alvo"),
-  valorInicial: string().optional(),
-  aporteMensal: string().optional(),
-  dataAlvo: string().required("Informe a data alvo"),
-  tag: string().optional(),
+  valorAlvo: string().required("Informe o valor"),
+  dataAlvo: string().optional(),
   pessoaId: string().optional(),
 });
 
 /** Pré-preenche o form a partir de uma meta existente (edição). */
 export const fromMeta = (m: MetaResponse): MetaFormValues => ({
   titulo: m.titulo,
-  tipo: m.tipo,
   valorAlvo: money(m.valorAlvo),
-  valorInicial: money(m.valorAtual),
-  aporteMensal: money(m.aporteMensal),
   dataAlvo: (m.dataAlvo ?? "").slice(0, 10),
-  tag: m.tag.nome,
   pessoaId: m.pessoa?.id ?? "",
 });
 
@@ -68,19 +56,16 @@ export const fromDesejo = (titulo: string, valorEstimado?: number | null) => ({
 });
 
 /**
- * Payload da API. Valores monetários vêm como string ("1.000,00") e viram
- * number; opcionais vazios são omitidos. `pessoaId` vazio = Casal (envia null).
- * Serve para create e edit (edit ignora `tipo`).
+ * Payload da API. Criar: sem prazo = omite `dataAlvo`. Editar: sem prazo =
+ * `null` (tira o prazo). `pessoaId` vazio = Casal (null). A tag continua
+ * sendo gerada pelo backend a partir do título, sem aparecer na tela.
  */
 export const toRequest = (
   v: MetaFormValues,
-): CreateMetaRequest & EditMetaRequest => ({
-  titulo: v.titulo,
-  tipo: v.tipo as CreateMetaRequest.TipoEnum,
+  isEdit: boolean,
+): Omit<CreateMetaRequest, "dataAlvo"> & EditMetaRequest => ({
+  titulo: v.titulo.trim(),
   valorAlvo: parseAmount(v.valorAlvo),
-  dataAlvo: v.dataAlvo,
   pessoaId: v.pessoaId || null,
-  ...(v.valorInicial ? { valorInicial: parseAmount(v.valorInicial) } : {}),
-  ...(v.aporteMensal ? { aporteMensal: parseAmount(v.aporteMensal) } : {}),
-  ...(v.tag ? { tag: v.tag } : {}),
+  ...(v.dataAlvo ? { dataAlvo: v.dataAlvo } : isEdit ? { dataAlvo: null } : {}),
 });

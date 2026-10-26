@@ -1,3 +1,5 @@
+import { Target, Trophy } from "lucide-react";
+
 import type { MetasResumoResponse } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
 import { Skeleton } from "@/presentation/components/ui";
@@ -8,68 +10,54 @@ interface GoalsKpisProps {
 }
 
 /**
- * KPIs do topo de Metas (fiel ao protótipo): grid 1.25fr / 1fr com dois cards —
- * o herói roxo (total guardado + barra de progresso) e um card branco que
- * combina "aportado no mês vs planejado" e "metas no ritmo".
+ * Topo de Metas, simples: quantas metas em andamento e o total delas, e as
+ * conquistas do ano. (O sistema não acompanha quanto já foi juntado.)
  */
 export const GoalsKpis = ({ resumo, isLoading }: GoalsKpisProps) => {
   if (isLoading || !resumo)
     return (
-      <div className="grid gap-4 lg:grid-cols-[1.25fr_1fr]">
+      <div className="grid gap-4 sm:grid-cols-2">
         {Array.from({ length: 2 }).map((_, i) => (
-          <Skeleton key={i} className="h-[150px] rounded-[20px]" />
+          <Skeleton key={i} className="h-[92px] rounded-[20px]" />
         ))}
       </div>
     );
 
-  const pct = Math.max(0, Math.min(100, resumo.percentual));
-  const atrasadas = resumo.metasTotal - resumo.metasNoRitmo;
-  const atrasadasLabel =
-    atrasadas <= 0
-      ? "tudo em dia"
-      : `${atrasadas} ${atrasadas === 1 ? "precisa" : "precisam"} de atenção`;
-
+  const conquistas = resumo.conquistas;
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.25fr_1fr]">
-      {/* Herói — guardado para os sonhos */}
-      <div
-        className="rounded-[20px] px-6 py-[22px] text-white shadow-[0_20px_40px_-22px_rgba(43,35,80,.7)]"
-        style={{
-          background: "linear-gradient(150deg,#2b2350 0%,#5B4BE0 130%)",
-        }}
-      >
-        <p className="text-[13px] opacity-85">Guardado para nossos sonhos</p>
-        <p className="mt-[6px] font-display text-[34px] font-bold -tracking-[0.03em]">
-          {formatCurrency(resumo.totalGuardado)}
-        </p>
-        <p className="mt-[2px] text-[12.5px] opacity-80">
-          de {formatCurrency(resumo.totalAlvo)} · {pct}% do caminho
-        </p>
-        <div className="mt-[14px] h-2 overflow-hidden rounded-full bg-white/[.22]">
-          <div
-            className="h-full rounded-full bg-white transition-[width]"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Card branco combinado */}
-      <div className="flex flex-col justify-center gap-4 rounded-[20px] border border-line bg-card px-6 py-[22px]">
+    <div className="grid gap-4 sm:grid-cols-2">
+      <div className="flex items-center gap-4 rounded-[20px] border border-line bg-card px-[22px] py-5">
+        <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+          <Target className="size-5" strokeWidth={2} />
+        </span>
         <div>
-          <p className="text-[13px] text-muted">Aportado no mês</p>
-          <p className="mt-1 font-display text-[26px] font-bold text-success">
-            {formatCurrency(resumo.aportadoNoMes)}
+          <p className="text-[13px] font-semibold text-muted">
+            {resumo.metasTotal} {resumo.metasTotal === 1 ? "meta" : "metas"} em
+            andamento
+          </p>
+          <p className="font-display text-[22px] font-bold -tracking-[0.02em] text-fg">
+            {formatCurrency(resumo.totalAlvo)}
             <span className="ml-1 font-sans text-[13px] font-medium text-muted">
-              de {formatCurrency(resumo.aportePlanejado)} planejado
+              no total
             </span>
           </p>
         </div>
-        <p className="border-t border-line2 pt-[14px] text-[13px] text-fg2">
-          <strong className="font-semibold">
-            {resumo.metasNoRitmo} de {resumo.metasTotal}
-          </strong>{" "}
-          metas no ritmo · {atrasadasLabel}
-        </p>
+      </div>
+      <div className="flex items-center gap-4 rounded-[20px] border border-line bg-card px-[22px] py-5">
+        <span className="grid size-11 place-items-center rounded-full bg-success/10 text-success">
+          <Trophy className="size-5" strokeWidth={2} />
+        </span>
+        <div>
+          <p className="text-[13px] font-semibold text-muted">
+            Conquistas em {conquistas?.ano ?? new Date().getFullYear()}
+          </p>
+          <p className="font-display text-[22px] font-bold -tracking-[0.02em] text-fg">
+            {conquistas?.quantidade ?? 0}
+            <span className="ml-1 font-sans text-[13px] font-medium text-muted">
+              · {formatCurrency(conquistas?.valor ?? 0)} realizados
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

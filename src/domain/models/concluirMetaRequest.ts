@@ -11,6 +11,6 @@ export interface ConcluirMetaRequest {
   concluidaEm?: string;
   /** Quanto custou no fim. */
   valorFinal?: number;
-  /** A compra (transação) que realizou a meta — informativo. */
-  compraTransacaoId?: string;
+  /** Compras (transações) que realizaram a meta — várias = parcelas. */
+  compraTransacaoIds?: string[];
 }

@@ -9,7 +9,8 @@ export interface EditMetaRequest {
   valorAlvo?: number;
   valorInicial?: number;
   aporteMensal?: number;
-  dataAlvo?: string;
+  /** null = tirar o prazo. */
+  dataAlvo?: string | null;
   tag?: string;
   pessoaId?: string | null;
   patrimonioId?: string | null;

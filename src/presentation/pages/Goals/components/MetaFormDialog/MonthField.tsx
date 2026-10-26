@@ -28,7 +28,7 @@ const MESES = [
 ];
 
 /**
- * Seletor de mês/ano para a data alvo da meta (o backend normaliza pro dia 1º,
+ * Seletor de mês/ano ("quando", opcional — "Sem prazo" limpa) para a meta (o backend normaliza pro dia 1º,
  * então dia não importa). Dois Selects (mês + ano) em vez de calendário: são
  * componentes pequenos e o Radix Select tem portal + collision, então funciona
  * bem dentro do Dialog — ao contrário do calendário em popover, que cobria o
@@ -46,7 +46,7 @@ export const MonthField = ({ value, onChange }: MonthFieldProps) => {
     onChange(`${a}-${String(m).padStart(2, "0")}-01`);
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-[1fr_1fr_auto] items-center gap-2">
       <Select
         value={mes ? String(mes) : undefined}
         onValueChange={(v) => emit(Number(v), ano ?? anoAtual)}
@@ -78,6 +78,15 @@ export const MonthField = ({ value, onChange }: MonthFieldProps) => {
           ))}
         </SelectContent>
       </Select>
+
+      <button
+        type="button"
+        onClick={() => onChange("")}
+        disabled={!value}
+        className="px-1 text-[12px] font-semibold text-muted transition-colors hover:text-fg disabled:invisible"
+      >
+        Sem prazo
+      </button>
     </div>
   );
 };

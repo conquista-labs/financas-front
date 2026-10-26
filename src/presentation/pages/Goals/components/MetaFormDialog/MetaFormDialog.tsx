@@ -3,9 +3,12 @@ import { X } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import type { DesejoResponse, MetaResponse } from "@/domain/models";
+import type {
+  CreateMetaRequest,
+  DesejoResponse,
+  MetaResponse,
+} from "@/domain/models";
 import { maskCurrencyInput } from "@/lib/format";
-import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -49,16 +52,11 @@ const moneyWrap =
 
 const OPT_LIMIT = { page: 1, limit: 100 };
 
-const TIPOS = [
-  { v: "acumular", label: "Acumular" },
-  { v: "quitar", label: "Quitar dívida" },
-];
-
 /**
  * Modal de criar/editar meta — e também de promover um desejo (quando `desejo`
- * é passado, pré-preenche título/valor e chama o endpoint de promover). Tipo em
- * pills, valores com máscara BR, data alvo via DateField, tag livre e dono
- * (Casal por padrão). RHF + Yup; persiste via useGoalsMutations.
+ * é passado, pré-preenche título/valor e chama o endpoint de promover). Meta é
+ * só um marco: título, valor, de quem (Casal por padrão) e quando (mês/ano,
+ * opcional). RHF + Yup; persiste via useGoalsMutations.
  */
 export const MetaFormDialog = ({
   meta,
@@ -90,7 +88,7 @@ export const MetaFormDialog = ({
   const close = () => onOpenChange(false);
 
   const onSubmit = (v: MetaFormValues) => {
-    const body = toRequest(v);
+    const body = toRequest(v, isEdit);
     const done = {
       onSuccess: () => {
         toast.success(
@@ -108,9 +106,10 @@ export const MetaFormDialog = ({
       updateMeta.mutate({ id: meta!.id, body }, done);
     } else if (isPromote) {
       // Promover usa o mesmo body (o form nunca produz desejoId).
-      promote.mutate({ id: desejo!.id, body }, done);
+      promote.mutate({ id: desejo!.id, body: body as CreateMetaRequest }, done);
     } else {
-      createMeta.mutate(body, done);
+      // Criar nunca manda dataAlvo null (só omite) — ver toRequest.
+      createMeta.mutate(body as CreateMetaRequest, done);
     }
   };
 
@@ -150,7 +149,7 @@ export const MetaFormDialog = ({
               render={({ field }) => (
                 <input
                   {...field}
-                  placeholder="Ex: Reforma da cozinha"
+                  placeholder="Ex: Cerca viva"
                   className={fieldCls}
                 />
               )}
@@ -162,43 +161,10 @@ export const MetaFormDialog = ({
             )}
           </div>
 
-          {/* Tipo (pills) — oculto no editar (não muda) */}
-          {!isEdit && (
-            <div>
-              <span className={labelCls}>Tipo</span>
-              <Controller
-                name="tipo"
-                control={control}
-                render={({ field }) => (
-                  <div className="flex gap-2">
-                    {TIPOS.map((opt) => {
-                      const active = field.value === opt.v;
-                      return (
-                        <button
-                          key={opt.v}
-                          type="button"
-                          onClick={() => field.onChange(opt.v)}
-                          className={cn(
-                            "flex-1 rounded-[11px] border py-[11px] text-[13.5px] font-semibold transition-colors",
-                            active
-                              ? "border-primary bg-primary/soft text-primary-strong"
-                              : "border-line bg-card text-fg2 hover:border-primary/40",
-                          )}
-                        >
-                          {opt.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              />
-            </div>
-          )}
-
-          {/* Valores */}
+          {/* Valor + quando */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <span className={labelCls}>Valor alvo</span>
+              <span className={labelCls}>Valor</span>
               <Controller
                 name="valorAlvo"
                 control={control}
@@ -222,91 +188,6 @@ export const MetaFormDialog = ({
                   {errors.valorAlvo.message}
                 </span>
               )}
-            </div>
-            <div>
-              <span className={labelCls}>
-                {isEdit ? "Já guardado" : "Valor inicial"}
-              </span>
-              <Controller
-                name="valorInicial"
-                control={control}
-                render={({ field }) => (
-                  <div className={moneyWrap}>
-                    <span className="mr-1 text-sm text-muted">R$</span>
-                    <input
-                      value={field.value}
-                      onChange={(e) =>
-                        field.onChange(maskCurrencyInput(e.target.value))
-                      }
-                      inputMode="decimal"
-                      placeholder="0,00"
-                      disabled={isEdit}
-                      className="w-full bg-transparent py-[11px] text-sm text-fg outline-none disabled:opacity-60"
-                    />
-                  </div>
-                )}
-              />
-            </div>
-          </div>
-
-          {/* Aporte mensal + data alvo */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <span className={labelCls}>Aporte mensal</span>
-              <Controller
-                name="aporteMensal"
-                control={control}
-                render={({ field }) => (
-                  <div className={moneyWrap}>
-                    <span className="mr-1 text-sm text-muted">R$</span>
-                    <input
-                      value={field.value}
-                      onChange={(e) =>
-                        field.onChange(maskCurrencyInput(e.target.value))
-                      }
-                      inputMode="decimal"
-                      placeholder="0,00"
-                      className="w-full bg-transparent py-[11px] text-sm text-fg outline-none"
-                    />
-                  </div>
-                )}
-              />
-            </div>
-            <div>
-              <span className={labelCls}>Data alvo</span>
-              <Controller
-                name="dataAlvo"
-                control={control}
-                render={({ field }) => (
-                  <MonthField value={field.value} onChange={field.onChange} />
-                )}
-              />
-              {errors.dataAlvo && (
-                <span className="mt-1 block text-xs text-danger">
-                  {errors.dataAlvo.message}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Tag + dono */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <span className={labelCls}>Tag</span>
-              <Controller
-                name="tag"
-                control={control}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    placeholder="meta-cozinha"
-                    className={fieldCls}
-                  />
-                )}
-              />
-              <span className="mt-1 block text-[11px] text-muted">
-                Some as transações com essa tag.
-              </span>
             </div>
             <div>
               <span className={labelCls}>De quem</span>
@@ -333,6 +214,17 @@ export const MetaFormDialog = ({
                 )}
               />
             </div>
+          </div>
+
+          <div>
+            <span className={labelCls}>Quando (opcional)</span>
+            <Controller
+              name="dataAlvo"
+              control={control}
+              render={({ field }) => (
+                <MonthField value={field.value} onChange={field.onChange} />
+              )}
+            />
           </div>
 
           <button
