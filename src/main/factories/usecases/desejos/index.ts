@@ -4,4 +4,6 @@ export * from "./getDesejosFactory";
 export * from "./patchDesejoIdFactory";
 export * from "./postDesejoFactory";
 export * from "./postDesejoPromoverFactory";
+export * from "./postDesejoReabrirFactory";
+export * from "./postDesejoRealizarFactory";
 export * from "./putDesejoVotoFactory";

@@ -6,14 +6,19 @@ import type {
   PostCaixaEntradaRestaurarUseCase,
 } from "@/domain/usecases";
 
-export class PostCaixaEntradaRestaurar implements PostCaixaEntradaRestaurarUseCase {
+export class PostCaixaEntradaRestaurar
+  implements PostCaixaEntradaRestaurarUseCase
+{
   constructor(
     private readonly url: string,
     private readonly httpClient: HttpClient,
   ) {}
 
-  async post(params: PostCaixaEntradaRestaurarParams): Promise<PostCaixaEntradaRestaurarModel> {
-    const httpResponse = await this.httpClient.request<PostCaixaEntradaRestaurarModel>({
+  async post(
+    params: PostCaixaEntradaRestaurarParams,
+  ): Promise<PostCaixaEntradaRestaurarModel> {
+    const httpResponse =
+      await this.httpClient.request<PostCaixaEntradaRestaurarModel>({
         url: this.url,
         method: "post",
         body: params,

@@ -1,4 +1,5 @@
 import {
+  CircleCheck,
   ExternalLink,
   Heart,
   Loader2,
@@ -22,6 +23,8 @@ interface DesejoCardProps {
   onPromote: (desejo: DesejoResponse) => void;
   onEdit: (desejo: DesejoResponse) => void;
   onArchive: (desejo: DesejoResponse) => void;
+  /** "Já realizei": conquistado sem virar meta. */
+  onRealizar: (desejo: DesejoResponse) => void;
 }
 
 const iconBtn =
@@ -39,7 +42,8 @@ const linkLabel = (url: string): string => {
 /**
  * Card de um desejo (fiel ao protótipo): título + valor + badge de prioridade,
  * nota, chips de voto (coração + nome por pessoa, alterna ao clicar) com o selo
- * "os dois querem" (≥2 votos), e rodapé com "Virar meta" + editar/arquivar.
+ * "os dois querem" (≥2 votos), e rodapé com "Virar meta", "Já realizei" e
+ * editar/arquivar.
  */
 export const DesejoCard = ({
   desejo,
@@ -49,6 +53,7 @@ export const DesejoCard = ({
   onPromote,
   onEdit,
   onArchive,
+  onRealizar,
 }: DesejoCardProps) => {
   const prio = prioridadeDesejo[desejo.prioridade];
   const votou = (pessoaId: string) =>
@@ -131,14 +136,24 @@ export const DesejoCard = ({
 
       {/* Rodapé */}
       <div className="flex items-center justify-between gap-[10px] border-t border-line2 pt-3">
-        <button
-          type="button"
-          onClick={() => onPromote(desejo)}
-          className="flex items-center gap-[6px] rounded-[10px] bg-primary px-[14px] py-[9px] text-[13px] font-bold text-white transition-colors hover:bg-primary-strong"
-        >
-          <Target className="size-[14px]" strokeWidth={2.2} />
-          Virar meta
-        </button>
+        <div className="flex gap-[6px]">
+          <button
+            type="button"
+            onClick={() => onPromote(desejo)}
+            className="flex items-center gap-[6px] rounded-[10px] bg-primary px-[14px] py-[9px] text-[13px] font-bold text-white transition-colors hover:bg-primary-strong"
+          >
+            <Target className="size-[14px]" strokeWidth={2.2} />
+            Virar meta
+          </button>
+          <button
+            type="button"
+            onClick={() => onRealizar(desejo)}
+            className="flex items-center gap-[6px] rounded-[10px] bg-success/10 px-[12px] py-[9px] text-[13px] font-bold text-success transition-colors hover:bg-success/15"
+          >
+            <CircleCheck className="size-[14px]" strokeWidth={2.2} />
+            Já realizei
+          </button>
+        </div>
         <div className="flex gap-[6px]">
           <button
             type="button"

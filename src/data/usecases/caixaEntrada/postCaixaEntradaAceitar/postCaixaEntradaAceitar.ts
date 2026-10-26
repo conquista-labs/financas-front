@@ -12,8 +12,11 @@ export class PostCaixaEntradaAceitar implements PostCaixaEntradaAceitarUseCase {
     private readonly httpClient: HttpClient,
   ) {}
 
-  async post(params: PostCaixaEntradaAceitarParams): Promise<PostCaixaEntradaAceitarModel> {
-    const httpResponse = await this.httpClient.request<PostCaixaEntradaAceitarModel>({
+  async post(
+    params: PostCaixaEntradaAceitarParams,
+  ): Promise<PostCaixaEntradaAceitarModel> {
+    const httpResponse =
+      await this.httpClient.request<PostCaixaEntradaAceitarModel>({
         url: this.url,
         method: "post",
         body: params,

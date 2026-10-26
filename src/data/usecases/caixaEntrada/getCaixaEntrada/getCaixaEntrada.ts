@@ -14,10 +14,10 @@ export class GetCaixaEntrada implements GetCaixaEntradaUseCase {
 
   async get(params: GetCaixaEntradaParams): Promise<GetCaixaEntradaModel> {
     const httpResponse = await this.httpClient.request<GetCaixaEntradaModel>({
-        url: this.url,
-        method: "get",
-        params,
-      });
+      url: this.url,
+      method: "get",
+      params,
+    });
 
     switch (httpResponse.statusCode) {
       case HttpStatusCode.ok:

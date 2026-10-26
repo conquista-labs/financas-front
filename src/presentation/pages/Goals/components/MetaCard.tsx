@@ -1,4 +1,4 @@
-import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2, Trophy } from "lucide-react";
 
 import type { MetaResponse } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
@@ -18,6 +18,8 @@ interface MetaCardProps {
   onAporte: (meta: MetaResponse) => void;
   onEdit: (meta: MetaResponse) => void;
   onArchive: (meta: MetaResponse) => void;
+  /** "Concluir meta": conquistada (abre o modal com data/valor/compra). */
+  onConcluir: (meta: MetaResponse) => void;
 }
 
 const iconBtn =
@@ -27,7 +29,7 @@ const iconBtn =
  * Card de uma meta (layout horizontal do protótipo): anel de progresso
  * (conic-gradient — roxo p/ acumular, laranja p/ quitar), bloco de texto
  * clicável (título + tag "Dívida" + valor/alvo + status colorido) e ações
- * (Aportar em destaque, editar, arquivar). Anel 64/50 (7px de espessura).
+ * (Aportar em destaque, concluir, editar, arquivar). Anel 64/50 (7px de espessura).
  */
 export const MetaCard = ({
   meta,
@@ -36,6 +38,7 @@ export const MetaCard = ({
   onAporte,
   onEdit,
   onArchive,
+  onConcluir,
 }: MetaCardProps) => {
   const st = statusProgressoMeta[meta.statusProgresso];
   const pct = Math.round(meta.percentual);
@@ -96,6 +99,15 @@ export const MetaCard = ({
           className="rounded-[10px] bg-primary/10 px-[15px] py-[9px] text-[13px] font-bold text-primary transition-colors hover:bg-primary/15"
         >
           Aportar
+        </button>
+        <button
+          type="button"
+          aria-label="Concluir meta"
+          title="Concluir meta"
+          onClick={() => onConcluir(meta)}
+          className={`${iconBtn} bg-success/10 text-success hover:bg-success/15`}
+        >
+          <Trophy className="size-4" strokeWidth={1.8} />
         </button>
         <button
           type="button"

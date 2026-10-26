@@ -15,37 +15,45 @@ import {
 
 import {
   AporteDialog,
+  ConcluirMetaDialog,
+  ConquistasList,
   DesejoCard,
   DesejoFormDialog,
   GoalsKpis,
   MetaCard,
   MetaDetalheDialog,
   MetaFormDialog,
+  RealizarDesejoDialog,
 } from "./components";
 import { useGoalsMutations } from "./useGoalsMutations";
 
 const OPT_LIMIT = { page: 1, limit: 100 };
 
-type Tab = "metas" | "desejos";
+type Tab = "metas" | "desejos" | "conquistas";
 
 /**
  * Metas & Desejos (nova identidade). Aba Metas: KPIs (herói guardado + ritmo) e
  * grid de metas (anel de progresso, aportar/editar/arquivar, detalhe com
  * gráfico). Aba Desejos: grid de desejos com voto do casal e "virar meta".
  * Criar/editar/aportar via modais; arquivar com desfazer (restaurar/recriar).
+ * Aba Conquistas: metas concluídas ("Concluir meta" ou alvo batido) e desejos
+ * realizados ("Já realizei"), com "Reabrir".
  */
 const Goals = () => {
-  // Aba persistida na URL (?tab=metas|desejos) — sobrevive ao F5.
+  // Aba persistida na URL (?tab=metas|desejos|conquistas) — sobrevive ao F5.
   const [tabParam, setTabParam] = useQueryParam(
     "tab",
     withDefault(StringParam, "metas"),
   );
-  const tab: Tab = tabParam === "desejos" ? "desejos" : "metas";
+  const tab: Tab =
+    tabParam === "desejos" || tabParam === "conquistas" ? tabParam : "metas";
   const setTab = (t: Tab) => setTabParam(t);
 
   // Modais.
   const [detalhe, setDetalhe] = useState<MetaResponse | null>(null);
   const [aporte, setAporte] = useState<MetaResponse | null>(null);
+  const [concluir, setConcluir] = useState<MetaResponse | null>(null);
+  const [realizar, setRealizar] = useState<DesejoResponse | null>(null);
   const [metaForm, setMetaForm] = useState<{
     open: boolean;
     meta: MetaResponse | null;
@@ -59,6 +67,7 @@ const Goals = () => {
   const metas = useGetMetas();
   const resumo = useGetMetasResumo();
   const desejos = useGetDesejos();
+  const realizados = useGetDesejos({ realizados: true });
   const pessoas = useGetPessoas(OPT_LIMIT);
   const {
     archiveMeta,
@@ -67,9 +76,16 @@ const Goals = () => {
     vote,
     unvote,
     createDesejo,
+    reabrirMeta,
+    reabrirDesejo,
   } = useGoalsMutations();
 
-  const metasRows = metas.data?.data ?? [];
+  const todasMetas = metas.data?.data ?? [];
+  // Em andamento x conquistadas (status persistido — a API conclui sozinha
+  // quando os aportes batem o alvo).
+  const metasRows = todasMetas.filter((m) => m.status !== "concluida");
+  const metasConcluidas = todasMetas.filter((m) => m.status === "concluida");
+  const desejosRealizados = realizados.data?.data ?? [];
   const desejosRows = desejos.data?.data ?? [];
   const pessoasRows = pessoas.data?.data?.rows ?? [];
 
@@ -99,6 +115,28 @@ const Goals = () => {
         }),
       onError: (e) => toast.error(e.message),
     });
+
+  // --- Conquistas ---
+  const openConcluir = (meta: MetaResponse) => {
+    setDetalhe(null);
+    setConcluir(meta);
+  };
+  const handleReabrirMeta = (meta: MetaResponse) =>
+    reabrirMeta.mutate(meta.id, {
+      onSuccess: () => toast.success(`"${meta.titulo}" voltou para as metas.`),
+      onError: (e) => toast.error(e.message),
+    });
+  const handleReabrirDesejo = (desejo: DesejoResponse) =>
+    reabrirDesejo.mutate(desejo.id, {
+      onSuccess: () =>
+        toast.success(`"${desejo.titulo}" voltou para os desejos.`),
+      onError: (e) => toast.error(e.message),
+    });
+  const reabrindo = reabrirMeta.isPending
+    ? reabrirMeta.variables
+    : reabrirDesejo.isPending
+      ? reabrirDesejo.variables
+      : null;
 
   // --- Desejos ---
   const openNewDesejo = () => setDesejoForm({ open: true, desejo: null });
@@ -144,8 +182,8 @@ const Goals = () => {
       onError: (e) => toast.error(e.message),
     });
 
-  const newLabel = tab === "metas" ? "Nova meta" : "Novo desejo";
-  const onNew = tab === "metas" ? openNewMeta : openNewDesejo;
+  const newLabel = tab === "desejos" ? "Novo desejo" : "Nova meta";
+  const onNew = tab === "desejos" ? openNewDesejo : openNewMeta;
 
   return (
     <div className="animate-om-fade">
@@ -170,11 +208,15 @@ const Goals = () => {
       </div>
 
       {/* Abas */}
-      <div className="mb-[18px] flex max-w-[420px] gap-[6px] rounded-[14px] bg-track p-[5px]">
+      <div className="mb-[18px] flex max-w-[560px] gap-[6px] rounded-[14px] bg-track p-[5px]">
         {(
           [
             { id: "metas", label: `Metas (${metasRows.length})` },
             { id: "desejos", label: `Desejos (${desejosRows.length})` },
+            {
+              id: "conquistas",
+              label: `Conquistas (${metasConcluidas.length + desejosRealizados.length})`,
+            },
           ] as const
         ).map((t) => (
           <button
@@ -222,6 +264,7 @@ const Goals = () => {
                   onAporte={openAporte}
                   onEdit={openEditMeta}
                   onArchive={handleArchiveMeta}
+                  onConcluir={openConcluir}
                 />
               ))}
             </div>
@@ -229,6 +272,33 @@ const Goals = () => {
 
           <p className="mt-4 text-[12.5px] text-muted">
             Cada meta soma os lançamentos com a tag vinculada.
+          </p>
+        </>
+      ) : tab === "conquistas" ? (
+        <>
+          {metas.isLoading || realizados.isLoading ? (
+            <div className="grid gap-3 lg:grid-cols-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <Skeleton key={i} className="h-[76px] rounded-[18px]" />
+              ))}
+            </div>
+          ) : metasConcluidas.length + desejosRealizados.length === 0 ? (
+            <EmptyState
+              title="As conquistas aparecem aqui"
+              subtitle='Use o troféu numa meta ou "Já realizei" num desejo quando vocês conseguirem.'
+            />
+          ) : (
+            <ConquistasList
+              metas={metasConcluidas}
+              desejos={desejosRealizados}
+              resumo={resumo.data?.data?.conquistas}
+              reabrindo={reabrindo}
+              onReabrirMeta={handleReabrirMeta}
+              onReabrirDesejo={handleReabrirDesejo}
+            />
+          )}
+          <p className="mt-4 text-[12.5px] text-muted">
+            Meta que bate o alvo pelos aportes vem para cá sozinha.
           </p>
         </>
       ) : (
@@ -259,6 +329,7 @@ const Goals = () => {
                   onPromote={openPromote}
                   onEdit={openEditDesejo}
                   onArchive={handleArchiveDesejo}
+                  onRealizar={setRealizar}
                 />
               ))}
             </div>
@@ -278,6 +349,16 @@ const Goals = () => {
         onOpenChange={(o) => !o && setDetalhe(null)}
         onAporte={openAporte}
         onEdit={openEditMeta}
+      />
+      <ConcluirMetaDialog
+        meta={concluir}
+        open={!!concluir}
+        onOpenChange={(o) => !o && setConcluir(null)}
+      />
+      <RealizarDesejoDialog
+        desejo={realizar}
+        open={!!realizar}
+        onOpenChange={(o) => !o && setRealizar(null)}
       />
       <AporteDialog
         meta={aporte}

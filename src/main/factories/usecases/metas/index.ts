@@ -4,5 +4,7 @@ export * from "./getMetasFactory";
 export * from "./getMetasResumoFactory";
 export * from "./patchMetaIdFactory";
 export * from "./postMetaAporteFactory";
+export * from "./postMetaConcluirFactory";
 export * from "./postMetaFactory";
+export * from "./postMetaReabrirFactory";
 export * from "./postMetaRestaurarFactory";

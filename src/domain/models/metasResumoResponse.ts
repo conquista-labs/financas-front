@@ -8,6 +8,8 @@ import type { MetaResponse } from "./metaResponse";
 
 /** GET /metas/resumo — cards do topo. */
 export interface MetasResumoResponse {
+  /** Conquistas do ano corrente: metas concluídas + desejos realizados. */
+  conquistas?: { ano: number; quantidade: number; valor: number };
   totalGuardado: number;
   totalAlvo: number;
   percentual: number;

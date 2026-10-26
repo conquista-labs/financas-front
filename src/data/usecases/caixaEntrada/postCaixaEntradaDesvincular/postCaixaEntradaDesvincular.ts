@@ -6,18 +6,23 @@ import type {
   PostCaixaEntradaDesvincularUseCase,
 } from "@/domain/usecases";
 
-export class PostCaixaEntradaDesvincular implements PostCaixaEntradaDesvincularUseCase {
+export class PostCaixaEntradaDesvincular
+  implements PostCaixaEntradaDesvincularUseCase
+{
   constructor(
     private readonly url: string,
     private readonly httpClient: HttpClient,
   ) {}
 
-  async post(params: PostCaixaEntradaDesvincularParams): Promise<PostCaixaEntradaDesvincularModel> {
-    const httpResponse = await this.httpClient.request<PostCaixaEntradaDesvincularModel>({
-      url: this.url,
-      method: "post",
-      body: params,
-    });
+  async post(
+    params: PostCaixaEntradaDesvincularParams,
+  ): Promise<PostCaixaEntradaDesvincularModel> {
+    const httpResponse =
+      await this.httpClient.request<PostCaixaEntradaDesvincularModel>({
+        url: this.url,
+        method: "post",
+        body: params,
+      });
 
     switch (httpResponse.statusCode) {
       case HttpStatusCode.ok:
