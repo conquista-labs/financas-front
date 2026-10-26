@@ -32,6 +32,17 @@ export interface MetaResponse {
   tag: TagResumo;
   /** null = Casal. */
   pessoa?: PessoaResumo | null;
+  /** ISO — quando foi conquistada (status "concluida"). */
+  concluidaEm?: string | null;
+  /** Quanto custou no fim (informado ao concluir). */
+  valorFinal?: number | null;
+  /** A compra que realizou a meta. */
+  compra?: {
+    id: string;
+    descricao: string;
+    data: string;
+    valor: number;
+  } | null;
 }
 export namespace MetaResponse {
   export type TipoEnum = "acumular" | "quitar";

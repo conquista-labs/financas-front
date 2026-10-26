@@ -12,8 +12,11 @@ export class PostCaixaEntradaIgnorar implements PostCaixaEntradaIgnorarUseCase {
     private readonly httpClient: HttpClient,
   ) {}
 
-  async post(params: PostCaixaEntradaIgnorarParams): Promise<PostCaixaEntradaIgnorarModel> {
-    const httpResponse = await this.httpClient.request<PostCaixaEntradaIgnorarModel>({
+  async post(
+    params: PostCaixaEntradaIgnorarParams,
+  ): Promise<PostCaixaEntradaIgnorarModel> {
+    const httpResponse =
+      await this.httpClient.request<PostCaixaEntradaIgnorarModel>({
         url: this.url,
         method: "post",
         body: params,

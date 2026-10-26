@@ -5,4 +5,6 @@ export * from "./getMetasResumo";
 export * from "./patchMetaId";
 export * from "./postMeta";
 export * from "./postMetaAporte";
+export * from "./postMetaConcluir";
+export * from "./postMetaReabrir";
 export * from "./postMetaRestaurar";

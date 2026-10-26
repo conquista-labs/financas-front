@@ -1,11 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type {
+  ConcluirMetaRequest,
   CreateAporteRequest,
   CreateDesejoRequest,
   CreateMetaRequest,
   EditDesejoRequest,
   EditMetaRequest,
+  RealizarDesejoRequest,
 } from "@/domain/models";
 import type { PostDesejoPromoverRequest } from "@/domain/usecases";
 import {
@@ -16,8 +18,12 @@ import {
   makePatchMetaIdFactory,
   makePostDesejoFactory,
   makePostDesejoPromoverFactory,
+  makePostDesejoReabrirFactory,
+  makePostDesejoRealizarFactory,
   makePostMetaAporteFactory,
+  makePostMetaConcluirFactory,
   makePostMetaFactory,
+  makePostMetaReabrirFactory,
   makePostMetaRestaurarFactory,
   makePutDesejoVotoFactory,
 } from "@/main/factories/usecases";
@@ -25,7 +31,8 @@ import {
 /**
  * CRUD de Metas e Desejos. As mutations dessas entidades não têm hooks React
  * Query individuais (só as factories + os hooks GET existem), então este hook
- * consolida as 11 operações das duas entidades relacionadas, invalidando as
+ * consolida as operações das duas entidades relacionadas (inclui concluir/
+ * reabrir meta e realizar/reabrir desejo — as "conquistas"), invalidando as
  * queries afetadas. A tela cuida de toast (sonner) e modais via
  * onSuccess/onError do `mutate`.
  */
@@ -69,6 +76,34 @@ export const useGoalsMutations = () => {
     mutationFn: ({ id, body }: { id: string; body: CreateAporteRequest }) =>
       makePostMetaAporteFactory().post({ id }, body),
     onSuccess: invalidateMetas,
+  });
+
+  // --- Conquistas (o resumo do ano soma metas e desejos: invalida os dois) ---
+  const invalidateConquistas = () => {
+    invalidateMetas();
+    invalidateDesejos();
+  };
+
+  const concluirMeta = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: ConcluirMetaRequest }) =>
+      makePostMetaConcluirFactory().post({ id }, body),
+    onSuccess: invalidateConquistas,
+  });
+
+  const reabrirMeta = useMutation({
+    mutationFn: (id: string) => makePostMetaReabrirFactory().post({ id }),
+    onSuccess: invalidateConquistas,
+  });
+
+  const realizarDesejo = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: RealizarDesejoRequest }) =>
+      makePostDesejoRealizarFactory().post({ id }, body),
+    onSuccess: invalidateConquistas,
+  });
+
+  const reabrirDesejo = useMutation({
+    mutationFn: (id: string) => makePostDesejoReabrirFactory().post({ id }),
+    onSuccess: invalidateConquistas,
   });
 
   // --- Desejos ---
@@ -127,5 +162,9 @@ export const useGoalsMutations = () => {
     vote,
     unvote,
     promote,
+    concluirMeta,
+    reabrirMeta,
+    realizarDesejo,
+    reabrirDesejo,
   };
 };

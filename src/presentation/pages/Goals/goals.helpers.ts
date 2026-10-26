@@ -98,3 +98,7 @@ export const historicoChartData = (
       valor: p.valor,
     };
   });
+
+/** "2026-10-20T00:00:00.000Z" → "20/10/26" (dia pelo UTC: a API grava meia-noite UTC). */
+export const dataCurta = (iso?: string | null): string =>
+  iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(2, 4)}` : "";

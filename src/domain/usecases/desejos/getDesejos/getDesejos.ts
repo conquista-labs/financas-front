@@ -14,4 +14,6 @@ export type GetDesejosModel = GetDesejosResponse;
 
 export type GetDesejosParams = {
   arquivados?: boolean;
+  /** Só os realizados ("Já realizei"). */
+  realizados?: boolean;
 };

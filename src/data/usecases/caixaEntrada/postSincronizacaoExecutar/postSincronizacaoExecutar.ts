@@ -5,14 +5,17 @@ import type {
   PostSincronizacaoExecutarUseCase,
 } from "@/domain/usecases";
 
-export class PostSincronizacaoExecutar implements PostSincronizacaoExecutarUseCase {
+export class PostSincronizacaoExecutar
+  implements PostSincronizacaoExecutarUseCase
+{
   constructor(
     private readonly url: string,
     private readonly httpClient: HttpClient,
   ) {}
 
   async post(): Promise<PostSincronizacaoExecutarModel> {
-    const httpResponse = await this.httpClient.request<PostSincronizacaoExecutarModel>({
+    const httpResponse =
+      await this.httpClient.request<PostSincronizacaoExecutarModel>({
         url: this.url,
         method: "post",
       });

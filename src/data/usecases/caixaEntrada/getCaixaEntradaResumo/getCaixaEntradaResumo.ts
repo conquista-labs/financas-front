@@ -12,7 +12,8 @@ export class GetCaixaEntradaResumo implements GetCaixaEntradaResumoUseCase {
   ) {}
 
   async get(): Promise<GetCaixaEntradaResumoModel> {
-    const httpResponse = await this.httpClient.request<GetCaixaEntradaResumoModel>({
+    const httpResponse =
+      await this.httpClient.request<GetCaixaEntradaResumoModel>({
         url: this.url,
         method: "get",
       });

@@ -17,6 +17,10 @@ export interface DesejoResponse {
   /** Preenchido depois que o desejo é promovido a meta. */
   metaId?: string | null;
   arquivado: boolean;
+  /** ISO — "Já realizei" (vai para as conquistas). */
+  realizadoEm?: string | null;
+  /** Quanto custou no fim. */
+  valorFinal?: number | null;
   votos: Array<VotoResumo>;
   /** true quando TODAS as pessoas ativas votaram (selo "os dois querem"). */
   todosQuerem: boolean;

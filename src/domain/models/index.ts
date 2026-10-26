@@ -172,3 +172,5 @@ export * from "./getDesejosResponse";
 export * from "./desejoEnvelopeResponse";
 export * from "./caixaEntradaResponses";
 export * from "./lancamentoExterno";
+export * from "./concluirMetaRequest";
+export * from "./realizarDesejoRequest";
