@@ -1,4 +1,11 @@
-import { Check, EyeOff, Pencil, RotateCcw, Unlink } from "lucide-react";
+import {
+  Check,
+  EyeOff,
+  Pencil,
+  RotateCcw,
+  Trash2,
+  Unlink,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 import type { LancamentoExterno } from "@/domain/models";
@@ -22,7 +29,9 @@ import {
   MOTIVOS_VINCULADO,
   parcelasRestantes,
   pessoaDe,
+  VINCULOS_DESFAZIVEIS,
 } from "../inbox.helpers";
+import { JaLanceiPopover } from "./JaLanceiPopover";
 
 interface InboxRowProps {
   lancamento: LancamentoExterno;
@@ -35,8 +44,8 @@ interface InboxRowProps {
   meios: ComboboxOption[];
   selecionado: boolean;
   /**
-   * "ignorado": motivo + restaurar. "vinculado": como foi ligado a uma
-   * transação existente + desvincular (só o vínculo automático). Sem edição.
+   * "ignorado": motivo + restaurar/excluir. "vinculado": como foi ligado a uma
+   * transação existente + desvincular. Sem edição.
    */
   modo: InboxVisao;
   ocupado?: boolean;
@@ -46,6 +55,10 @@ interface InboxRowProps {
   onIgnorar: () => void;
   onRestaurar: () => void;
   onDesvincular: () => void;
+  /** "Já lancei": ligar a uma transação que já existe. */
+  onJaLancei: (transacaoId: string) => void;
+  /** Some da caixa e de Ignorados; não volta na sincronização. */
+  onExcluir: () => void;
 }
 
 const selectCls =
@@ -92,8 +105,9 @@ const AcaoIcone = ({
 /**
  * Um lançamento vindo do banco. Pendente: checkbox, descrição editável,
  * categoria (sugerida ou escolhida), valor e ações aceitar/ignorar. Ignorado:
- * mostra o motivo e permite restaurar. Vinculado: mostra como foi ligado a uma
- * transação que já existia e permite desvincular o automático.
+ * mostra o motivo e permite restaurar ou excluir. Vinculado: mostra como foi
+ * ligado a uma transação que já existia e permite desvincular (automático e
+ * "Já lancei"). Pendente também tem "Já lancei" e excluir.
  */
 export const InboxRow = ({
   lancamento: l,
@@ -110,6 +124,8 @@ export const InboxRow = ({
   onIgnorar,
   onRestaurar,
   onDesvincular,
+  onJaLancei,
+  onExcluir,
 }: InboxRowProps) => {
   const isReceita = l.tipo === "receita";
   const dica = l.motivo ? DICAS[l.motivo] : undefined;
@@ -355,7 +371,7 @@ export const InboxRow = ({
         {formatCurrency(l.valor)}
       </span>
 
-      <div className="flex w-[68px] shrink-0 justify-end gap-1">
+      <div className="flex w-[140px] shrink-0 justify-end gap-1">
         {modo === "pendente" ? (
           <>
             <AcaoIcone
@@ -372,28 +388,47 @@ export const InboxRow = ({
             >
               <Check className="size-[17px]" strokeWidth={2.4} />
             </AcaoIcone>
+            <JaLanceiPopover lancamento={l} onEscolher={onJaLancei} />
             <AcaoIcone
               label="Ignorar"
-              dica="Ignorar: não entra nas finanças (dá para restaurar)"
+              dica="Ignorar: não entra nas finanças (fica em Ignorados, dá para restaurar)"
               onClick={onIgnorar}
               className="text-muted hover:bg-track hover:text-fg"
             >
               <EyeOff className="size-[16px]" strokeWidth={2} />
             </AcaoIcone>
+            <AcaoIcone
+              label="Excluir"
+              dica="Excluir: some daqui e de Ignorados, e não volta na sincronização"
+              onClick={onExcluir}
+              className="text-muted hover:bg-danger/10 hover:text-danger"
+            >
+              <Trash2 className="size-[16px]" strokeWidth={2} />
+            </AcaoIcone>
           </>
         ) : modo === "ignorado" ? (
-          <AcaoIcone
-            label="Restaurar"
-            dica="Restaurar: volta para a caixa de entrada"
-            onClick={onRestaurar}
-            className="text-primary hover:bg-primary/soft"
-          >
-            <RotateCcw className="size-[16px]" strokeWidth={2} />
-          </AcaoIcone>
+          <>
+            <AcaoIcone
+              label="Restaurar"
+              dica="Restaurar: volta para a caixa de entrada"
+              onClick={onRestaurar}
+              className="text-primary hover:bg-primary/soft"
+            >
+              <RotateCcw className="size-[16px]" strokeWidth={2} />
+            </AcaoIcone>
+            <AcaoIcone
+              label="Excluir"
+              dica="Excluir: some de Ignorados e não volta na sincronização"
+              onClick={onExcluir}
+              className="text-muted hover:bg-danger/10 hover:text-danger"
+            >
+              <Trash2 className="size-[16px]" strokeWidth={2} />
+            </AcaoIcone>
+          </>
         ) : (
-          // Só o vínculo automático se desfaz aqui; o de conta recorrente foi
-          // decisão de vocês ao aceitar.
-          l.motivo === "ja_lancado" && (
+          // O automático e o "Já lancei" se desfazem aqui; o de conta
+          // recorrente foi decisão de vocês ao aceitar.
+          VINCULOS_DESFAZIVEIS.has(l.motivo ?? "") && (
             <AcaoIcone
               label="Desvincular"
               dica="Não é o mesmo lançamento: volta para a caixa para revisar"

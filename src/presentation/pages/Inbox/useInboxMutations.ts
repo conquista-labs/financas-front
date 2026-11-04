@@ -3,13 +3,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
   AceitarLancamentosRequest,
   IgnorarLancamentosRequest,
+  VincularLancamentosRequest,
 } from "@/domain/models";
 import {
   makePostCaixaEntradaAceitarFactory,
   makePostCaixaEntradaDesvincularFactory,
+  makePostCaixaEntradaExcluirFactory,
   makePostCaixaEntradaIgnorarFactory,
   makePostCaixaEntradaIgnorarParecidasFactory,
+  makePostCaixaEntradaLimparIgnoradosFactory,
   makePostCaixaEntradaRestaurarFactory,
+  makePostCaixaEntradaVincularFactory,
   makePostSincronizacaoExecutarFactory,
 } from "@/main/factories/usecases";
 
@@ -66,6 +70,24 @@ export const useInboxMutations = () => {
     onSuccess: invalidateCaixa,
   });
 
+  // "Já lancei" pode marcar uma transação pendente como paga.
+  const vincular = useMutation({
+    mutationFn: (body: VincularLancamentosRequest) =>
+      makePostCaixaEntradaVincularFactory().post(body),
+    onSuccess: invalidateTransacoes,
+  });
+
+  const excluir = useMutation({
+    mutationFn: (ids: string[]) =>
+      makePostCaixaEntradaExcluirFactory().post({ ids }),
+    onSuccess: invalidateCaixa,
+  });
+
+  const limparIgnorados = useMutation({
+    mutationFn: () => makePostCaixaEntradaLimparIgnoradosFactory().post(),
+    onSuccess: invalidateCaixa,
+  });
+
   const sincronizar = useMutation({
     mutationFn: () => makePostSincronizacaoExecutarFactory().post(),
     onSuccess: invalidateCaixa,
@@ -77,6 +99,9 @@ export const useInboxMutations = () => {
     ignorarParecidas,
     restaurar,
     desvincular,
+    vincular,
+    excluir,
+    limparIgnorados,
     sincronizar,
   };
 };

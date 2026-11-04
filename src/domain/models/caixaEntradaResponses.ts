@@ -13,6 +13,8 @@ export interface CaixaEntradaResumo {
   possiveisDuplicadas: number;
   /** Vinculados sozinhos a uma transação já lançada (coincidência forte). */
   vinculadosAutomaticamente: number;
+  /** Ligados por vocês ("Já lancei"). */
+  vinculadosManualmente: number;
   aceitos: number;
   ignorados: number;
   ignoradosPorMotivo: { motivo: string; total: number }[];
@@ -95,4 +97,50 @@ export interface ExecutarSincronizacaoResponse {
     };
     duracaoMs: number;
   };
+}
+
+/** "Já lancei": transação que pode ser o lançamento do banco. */
+export interface CandidataJaLancei {
+  id: string;
+  descricao: string;
+  /** YYYY-MM-DD */
+  data: string;
+  valor: number;
+  status: "pendente" | "paga";
+  categoria: string | null;
+  meioPagamento: string | null;
+  pessoa: string | null;
+  /** Dias até a data mais próxima do lançamento (compra ou fatura). */
+  distanciaDias: number;
+  /** Mesmo meio de pagamento da conta do lançamento. */
+  mesmoMeio: boolean;
+}
+
+export interface GetCaixaEntradaCandidatasResponse {
+  message: string;
+  data: CandidataJaLancei[];
+}
+
+export interface VincularLancamentosRequest {
+  /** Sem transacaoId, a API usa a melhor candidata. */
+  itens: { id: string; transacaoId?: string }[];
+}
+
+export interface VincularLancamentosResponse {
+  message: string;
+  data: {
+    vinculados: number;
+    /** Transações que estavam pendentes e passaram a pagas. */
+    marcadasPagas: number;
+    erros: { id: string; erro: string }[];
+  };
+}
+
+export interface ExcluirLancamentosRequest {
+  ids: string[];
+}
+
+export interface ExcluirLancamentosResponse {
+  message: string;
+  data: { excluidos: number };
 }
