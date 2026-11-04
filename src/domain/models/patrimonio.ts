@@ -41,6 +41,17 @@ export interface Patrimonio {
   pluggyItemId?: string | null;
   /** ISO — última atualização pela conexão. */
   sincronizadoEm?: string | null;
+  /** Passivo: o bem que este financiamento paga (ex.: a casa). */
+  bemId?: string | null;
+  /** Ativo: o financiamento ligado a ele, se houver (dívida = saldoDevedor). */
+  financiamento?: {
+    id: string;
+    descricao: string;
+    saldoDevedor: number;
+    valorInicial?: number | null;
+    taxaJuros?: number | null;
+    dataVencimento?: string | null;
+  } | null;
   /** Posições ainda aplicadas (só nos sincronizados). */
   posicoes?: Array<{
     id: string;

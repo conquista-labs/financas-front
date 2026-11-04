@@ -19,6 +19,8 @@ import {
 } from "./components";
 import { evolucaoRange, toEvolucaoPoints } from "./patrimony.helpers";
 
+const LISTA_COMPLETA = { page: 1, limit: 200 };
+
 /**
  * Patrimônio (nova identidade). KPIs (líquido/ativos/passivos), gráfico de
  * evolução (Recharts) + composição dos ativos e a lista de itens. Criar/editar
@@ -33,7 +35,8 @@ const Patrimony = () => {
   // Janela do gráfico de evolução: últimos 12 meses (estável no mount).
   const range = useMemo(() => evolucaoRange(new Date()), []);
 
-  const patrimonios = useGetPatrimonios();
+  // Todos os itens (o padrão da API é 10 por página e a tela não pagina).
+  const patrimonios = useGetPatrimonios(LISTA_COMPLETA);
   const resumo = useGetResumoPatrimonio();
   const evolucao = useGetEvolucaoPatrimonio(range);
   const { remove } = usePatrimonioMutations();

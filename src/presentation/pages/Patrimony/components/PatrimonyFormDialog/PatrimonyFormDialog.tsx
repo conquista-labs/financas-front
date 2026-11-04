@@ -13,6 +13,7 @@ import {
 } from "@/presentation/components/ui";
 import {
   useGetEnums,
+  useGetPatrimonios,
   useGetPessoas,
   usePatrimonioMutations,
 } from "@/presentation/hooks/api";
@@ -38,6 +39,7 @@ const fieldCls =
   "w-full rounded-[11px] border border-line bg-card px-3 py-[11px] text-sm text-fg outline-none placeholder:text-muted focus:border-primary";
 
 const OPT_LIMIT = { page: 1, limit: 100 };
+const LISTA_COMPLETA = { page: 1, limit: 200 };
 
 /**
  * Modal de criar/editar patrimônio. Tipo em pills (Ativo/Passivo), categoria e
@@ -54,6 +56,8 @@ export const PatrimonyFormDialog = ({
 
   const { data: enums } = useGetEnums();
   const { data: pessoasData } = useGetPessoas(OPT_LIMIT);
+  // Mesma query da página (mesmo cache): os bens que um financiamento pode pagar.
+  const { data: patrimoniosData } = useGetPatrimonios(LISTA_COMPLETA);
 
   const categoriaOpts: ComboboxOption[] = (
     enums?.data?.categoriaPatrimonio ?? []
@@ -73,6 +77,14 @@ export const PatrimonyFormDialog = ({
   });
 
   const isPassivo = watch("tipo") === "passivo";
+  // Bens livres para financiar: ativos sem financiamento (ou o deste item).
+  const bemOpts: ComboboxOption[] = (patrimoniosData?.data?.rows ?? [])
+    .filter(
+      (p) =>
+        p.tipo === "ativo" &&
+        (!p.financiamento || p.financiamento.id === item?.id),
+    )
+    .map((p) => ({ value: p.id, label: p.descricao }));
   // Ligado a uma corretora: o valor atual vem da sincronização.
   const sincronizado = !!item?.pluggyItemId;
   const close = () => onOpenChange(false);
@@ -189,9 +201,9 @@ export const PatrimonyFormDialog = ({
             )}
           </div>
 
-          {/* Valores */}
+          {/* Valores (passivo: a dívida é o saldo devedor, mais abaixo) */}
           <div className="grid grid-cols-2 gap-3">
-            <div>
+            <div className={cn(isPassivo && "hidden")}>
               <span className={labelCls}>
                 Valor atual{sincronizado ? " (pela corretora)" : ""}
               </span>
@@ -218,7 +230,11 @@ export const PatrimonyFormDialog = ({
               )}
             </div>
             <div>
-              <span className={labelCls}>Valor inicial (opcional)</span>
+              <span className={labelCls}>
+                {isPassivo
+                  ? "Valor financiado (opcional)"
+                  : "Valor de compra (opcional)"}
+              </span>
               <Controller
                 name="valorInicial"
                 control={control}
@@ -283,8 +299,32 @@ export const PatrimonyFormDialog = ({
           {isPassivo && (
             <div className="space-y-4 rounded-[12px] bg-danger/10 p-4">
               <p className="text-[12.5px] font-bold text-danger">
-                Campos específicos de passivo
+                Dívida
               </p>
+              <div>
+                <span className={labelCls}>
+                  Financiamento de qual bem? (opcional)
+                </span>
+                <Controller
+                  name="bemId"
+                  control={control}
+                  render={({ field }) => (
+                    <Combobox
+                      options={bemOpts}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Nenhum (dívida solta)"
+                      clearLabel="Nenhum (dívida solta)"
+                      searchPlaceholder="Buscar bem…"
+                      inline
+                    />
+                  )}
+                />
+                <span className="mt-1 block text-[11.5px] text-muted">
+                  Ligado a um bem, aparece na mesma linha dele: quanto vale,
+                  quanto deve e quanto é de vocês.
+                </span>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <span className={labelCls}>Saldo devedor</span>
@@ -318,7 +358,7 @@ export const PatrimonyFormDialog = ({
                       <input
                         {...field}
                         inputMode="decimal"
-                        placeholder="Ex: 0.8"
+                        placeholder="Ex: 0,8"
                         className={fieldCls}
                       />
                     )}

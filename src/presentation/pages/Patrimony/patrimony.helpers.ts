@@ -58,6 +58,26 @@ export const labelMesRef = (mesReferencia: string): string => {
 export const delta = (p: Patrimonio): number =>
   p.valorAtual - (p.valorInicial ?? 0);
 
+/** Quanto se deve num passivo: o saldo devedor (o mesmo que os totais usam). */
+export const valorDivida = (p: Patrimonio): number =>
+  p.saldoDevedor ?? p.valorAtual;
+
+/**
+ * Itens da lista, uma linha por coisa: o financiamento ligado a um bem não
+ * aparece sozinho (vai na linha do bem). Bens primeiro (maior valor antes),
+ * depois as dívidas soltas (maior dívida antes).
+ */
+export const linhasDaLista = (rows: Patrimonio[]): Patrimonio[] => {
+  const ids = new Set(rows.map((r) => r.id));
+  const ativos = rows
+    .filter((r) => r.tipo === "ativo")
+    .sort((a, b) => b.valorAtual - a.valorAtual);
+  const passivosSoltos = rows
+    .filter((r) => r.tipo === "passivo" && !(r.bemId && ids.has(r.bemId)))
+    .sort((a, b) => valorDivida(b) - valorDivida(a));
+  return [...ativos, ...passivosSoltos];
+};
+
 export interface EvolucaoPoint {
   mes: string;
   ativos: number;
