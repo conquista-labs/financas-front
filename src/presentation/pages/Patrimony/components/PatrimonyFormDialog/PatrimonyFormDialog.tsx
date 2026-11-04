@@ -17,6 +17,7 @@ import {
   usePatrimonioMutations,
 } from "@/presentation/hooks/api";
 
+import { InvestimentosConexaoField } from "./InvestimentosConexaoField";
 import {
   emptyForm,
   fromPatrimonio,
@@ -72,6 +73,8 @@ export const PatrimonyFormDialog = ({
   });
 
   const isPassivo = watch("tipo") === "passivo";
+  // Ligado a uma corretora: o valor atual vem da sincronização.
+  const sincronizado = !!item?.pluggyItemId;
   const close = () => onOpenChange(false);
 
   const onSubmit = (v: PatrimonyFormValues) => {
@@ -189,7 +192,9 @@ export const PatrimonyFormDialog = ({
           {/* Valores */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <span className={labelCls}>Valor atual</span>
+              <span className={labelCls}>
+                Valor atual{sincronizado ? " (pela corretora)" : ""}
+              </span>
               <Controller
                 name="valorAtual"
                 control={control}
@@ -200,7 +205,8 @@ export const PatrimonyFormDialog = ({
                       {...field}
                       inputMode="decimal"
                       placeholder="0,00"
-                      className="w-full bg-transparent py-[11px] text-sm text-fg outline-none"
+                      disabled={sincronizado}
+                      className="w-full bg-transparent py-[11px] text-sm text-fg outline-none disabled:opacity-60"
                     />
                   </div>
                 )}
@@ -230,6 +236,11 @@ export const PatrimonyFormDialog = ({
               />
             </div>
           </div>
+
+          {/* Investimentos: atualizar pela corretora (só ativo já salvo) */}
+          {isEdit && !isPassivo && (
+            <InvestimentosConexaoField item={item!} onAplicado={close} />
+          )}
 
           {/* Data de aquisição + Pessoa */}
           <div className="grid grid-cols-2 gap-3">

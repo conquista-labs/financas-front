@@ -37,6 +37,19 @@ export interface Patrimonio {
   pessoaId?: string;
   createdAt: string;
   updatedAt: string;
+  /** Conexão Pluggy que atualiza o valorAtual todo dia (investimentos). */
+  pluggyItemId?: string | null;
+  /** ISO — última atualização pela conexão. */
+  sincronizadoEm?: string | null;
+  /** Posições ainda aplicadas (só nos sincronizados). */
+  posicoes?: Array<{
+    id: string;
+    nome: string;
+    tipo: string;
+    subtipo?: string | null;
+    saldo: number;
+    dataVencimento?: string | null;
+  }>;
 }
 export namespace Patrimonio {
   export type TipoEnum = "ativo" | "passivo";
