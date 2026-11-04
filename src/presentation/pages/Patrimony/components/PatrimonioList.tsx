@@ -120,7 +120,7 @@ export const PatrimonioList = ({
               <p className="text-[12.5px] text-muted">
                 {item.categoriaFormatada} · desde {mesAno(item.dataAquisicao)}
                 {fin?.taxaJuros
-                  ? ` · juros ${fin.taxaJuros.toLocaleString("pt-BR")}% a.m.`
+                  ? ` · juros ${fin.taxaJuros.toLocaleString("pt-BR")}% a.a.`
                   : ""}
               </p>
               {fin && (

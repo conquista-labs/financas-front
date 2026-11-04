@@ -44,7 +44,7 @@ export interface EditPatrimonioRequest {
    */
   saldoDevedor?: number;
   /**
-   * Taxa de juros mensal (%)
+   * Taxa de juros anual (% a.a.)
    */
   taxaJuros?: number;
   /**
