@@ -350,7 +350,7 @@ export const PatrimonyFormDialog = ({
                   )}
                 </div>
                 <div>
-                  <span className={labelCls}>Taxa de juros (% a.m.)</span>
+                  <span className={labelCls}>Taxa de juros (% a.a.)</span>
                   <Controller
                     name="taxaJuros"
                     control={control}
@@ -358,7 +358,7 @@ export const PatrimonyFormDialog = ({
                       <input
                         {...field}
                         inputMode="decimal"
-                        placeholder="Ex: 0,8"
+                        placeholder="Ex: 10,5"
                         className={fieldCls}
                       />
                     )}
