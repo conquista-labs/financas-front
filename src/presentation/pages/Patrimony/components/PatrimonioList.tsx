@@ -75,7 +75,10 @@ export const PatrimonioList = ({
       {linhasDaLista(rows).map((item) => {
         const isAtivo = item.tipo === "ativo";
         const d = delta(item);
-        const semVariacao = !item.valorInicial;
+        // Pela corretora o valor é o saldo de hoje (aplicações e resgates
+        // mudam o total): comparar com o valor de compra digitado à mão não
+        // diz nada — com tudo resgatado viraria um "prejuízo" falso.
+        const semVariacao = !item.valorInicial || !!item.pluggyItemId;
         // Bem financiado: o passivo ligado (para editar) e as contas da linha.
         const fin = isAtivo ? item.financiamento : null;
         const passivoDoBem = fin ? porId.get(fin.id) : undefined;
