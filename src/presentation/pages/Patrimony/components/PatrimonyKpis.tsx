@@ -9,7 +9,7 @@ interface PatrimonyKpisProps {
 
 /**
  * Três KPIs do topo: Patrimônio líquido (card em destaque com gradiente verde),
- * Ativos (verde) e Passivos (vermelho). Grid 1.4fr / 1fr / 1fr no desktop.
+ * Ativos (verde) e Dívidas (vermelho). Grid 1.4fr / 1fr / 1fr no desktop.
  */
 export const PatrimonyKpis = ({ resumo, isLoading }: PatrimonyKpisProps) => {
   if (isLoading || !resumo)
@@ -45,9 +45,9 @@ export const PatrimonyKpis = ({ resumo, isLoading }: PatrimonyKpisProps) => {
         </p>
       </div>
 
-      {/* Passivos */}
+      {/* Dívidas */}
       <div className="rounded-[20px] border border-line bg-card px-6 py-[22px]">
-        <p className="text-[13px] text-muted">Passivos</p>
+        <p className="text-[13px] text-muted">Dívidas</p>
         <p className="mt-[6px] font-display text-[26px] font-bold -tracking-[0.02em] text-danger">
           {formatCurrency(resumo.totalPassivos)}
         </p>

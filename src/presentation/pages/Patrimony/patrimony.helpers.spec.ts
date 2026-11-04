@@ -4,9 +4,14 @@ import type { Patrimonio } from "@/domain/models";
 
 import {
   emptyForm,
+  novoItem,
   toRequest,
 } from "./components/PatrimonyFormDialog/patrimonyForm.definitions";
-import { linhasDaLista, valorDivida } from "./patrimony.helpers";
+import {
+  linhasDaLista,
+  resumoPorGrupo,
+  valorDivida,
+} from "./patrimony.helpers";
 
 const item = (over: Partial<Patrimonio>): Patrimonio =>
   ({
@@ -42,9 +47,9 @@ describe("linhasDaLista", () => {
   });
 
   it("o financiamento ligado não aparece sozinho; bens antes, dívidas soltas depois", () => {
-    expect(linhasDaLista([emprestimo, lote, finCasa, casa]).map((r) => r.id)).toEqual(
-      ["casa", "lote", "emp"],
-    );
+    expect(
+      linhasDaLista([emprestimo, lote, finCasa, casa]).map((r) => r.id),
+    ).toEqual(["casa", "lote", "emp"]);
   });
 
   it("financiamento cujo bem não veio na lista aparece como dívida solta", () => {
@@ -77,10 +82,101 @@ describe("toRequest (formulário → API)", () => {
   });
 
   it('passivo sem bem manda "" (desliga); ativo nem manda o campo', () => {
-    const base = { ...emptyForm, saldoDevedor: "10,00", dataAquisicao: "2024-01-01" };
+    const base = {
+      ...emptyForm,
+      saldoDevedor: "10,00",
+      dataAquisicao: "2024-01-01",
+    };
     expect(toRequest({ ...base, tipo: "passivo" }).bemId).toBe("");
     expect(
       "bemId" in toRequest({ ...base, tipo: "ativo", valorAtual: "1,00" }),
     ).toBe(false);
+  });
+});
+
+describe("resumoPorGrupo (abas)", () => {
+  const casa = item({ id: "casa", valorAtual: 800000 });
+  const finCasa = item({
+    id: "fin",
+    tipo: "passivo",
+    categoria: "financiamento",
+    valorAtual: 180000,
+    saldoDevedor: 180000,
+    bemId: "casa",
+  });
+  const carro = item({ id: "carro", categoria: "veiculo", valorAtual: 60000 });
+  const xp = item({ id: "xp", categoria: "investimento", valorAtual: 0 });
+  const fgts = item({
+    id: "fgts",
+    categoria: "outros_ativos",
+    valorAtual: 40000,
+  });
+  const caixinha = item({
+    id: "cx",
+    categoria: "disponivel",
+    valorAtual: 1000,
+  });
+
+  it("separa por grupo; o financiamento entra no grupo do bem e desconta o líquido", () => {
+    const grupos = resumoPorGrupo([finCasa, casa, carro, xp, fgts, caixinha]);
+    expect(grupos.map((g) => g.grupo)).toEqual([
+      "imoveis",
+      "veiculos",
+      "reservas",
+    ]);
+    expect(grupos[0]).toMatchObject({
+      valor: 800000,
+      divida: 180000,
+      liquido: 620000,
+    });
+    expect(grupos[0].linhas.map((r) => r.id)).toEqual(["casa"]);
+    expect(grupos[2].linhas.map((r) => r.id)).toEqual(["fgts", "cx", "xp"]);
+    expect(grupos[2].liquido).toBe(41000);
+  });
+
+  it("dívida solta tem grupo próprio, e grupo vazio não aparece", () => {
+    const emp = item({
+      id: "emp",
+      tipo: "passivo",
+      categoria: "emprestimo",
+      saldoDevedor: 9000,
+    });
+    const grupos = resumoPorGrupo([emp]);
+    expect(grupos).toHaveLength(1);
+    expect(grupos[0]).toMatchObject({
+      grupo: "dividas",
+      valor: 0,
+      divida: 9000,
+      liquido: -9000,
+    });
+  });
+
+  it("financiamento de veículo vai para Veículos", () => {
+    const finCarro = item({
+      id: "fc",
+      tipo: "passivo",
+      saldoDevedor: 20000,
+      bemId: "carro",
+    });
+    const [veiculos] = resumoPorGrupo([carro, finCarro]);
+    expect(veiculos).toMatchObject({
+      grupo: "veiculos",
+      divida: 20000,
+      liquido: 40000,
+    });
+  });
+});
+
+describe("novoItem (criar a partir da aba)", () => {
+  it("vem na categoria da aba, com o tipo certo", () => {
+    expect(novoItem("veiculo")).toMatchObject({
+      categoria: "veiculo",
+      tipo: "ativo",
+    });
+    expect(novoItem("divida")).toMatchObject({
+      categoria: "divida",
+      tipo: "passivo",
+    });
+    expect(novoItem("")).toBe(emptyForm);
   });
 });

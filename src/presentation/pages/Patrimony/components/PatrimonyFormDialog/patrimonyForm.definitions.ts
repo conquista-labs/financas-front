@@ -39,6 +39,23 @@ export const emptyForm: PatrimonyFormValues = {
   bemId: "",
 };
 
+const CATEGORIAS_PASSIVO = new Set([
+  "financiamento",
+  "emprestimo",
+  "divida",
+  "outros_passivos",
+]);
+
+/** Form vazio de um item novo, já na categoria (e no tipo) da aba aberta. */
+export const novoItem = (categoria?: string): PatrimonyFormValues =>
+  categoria
+    ? {
+        ...emptyForm,
+        categoria,
+        tipo: CATEGORIAS_PASSIVO.has(categoria) ? "passivo" : "ativo",
+      }
+    : emptyForm;
+
 export const schema = object({
   tipo: string().required("Selecione o tipo"),
   categoria: string().required("Selecione a categoria"),
