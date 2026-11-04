@@ -1,5 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { X } from "lucide-react";
+import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -20,8 +21,8 @@ import {
 
 import { InvestimentosConexaoField } from "./InvestimentosConexaoField";
 import {
-  emptyForm,
   fromPatrimonio,
+  novoItem,
   type PatrimonyFormValues,
   schema,
   toRequest,
@@ -30,6 +31,8 @@ import {
 interface PatrimonyFormDialogProps {
   /** Item para editar; ausência = criar. */
   item?: Patrimonio | null;
+  /** Ao criar: categoria já escolhida (a da aba aberta). */
+  categoriaInicial?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -48,6 +51,7 @@ const LISTA_COMPLETA = { page: 1, limit: 200 };
  */
 export const PatrimonyFormDialog = ({
   item,
+  categoriaInicial,
   open,
   onOpenChange,
 }: PatrimonyFormDialogProps) => {
@@ -73,7 +77,10 @@ export const PatrimonyFormDialog = ({
     formState: { errors },
   } = useForm<PatrimonyFormValues>({
     resolver: yupResolver(schema) as never,
-    values: item ? fromPatrimonio(item) : emptyForm,
+    values: useMemo(
+      () => (item ? fromPatrimonio(item) : novoItem(categoriaInicial)),
+      [item, categoriaInicial],
+    ),
   });
 
   const isPassivo = watch("tipo") === "passivo";
@@ -122,8 +129,8 @@ export const PatrimonyFormDialog = ({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Tipo (pills) */}
-          <div>
+          {/* Tipo (pills). Ligado à corretora é sempre ativo. */}
+          <div className={cn(sincronizado && "hidden")}>
             <span className={labelCls}>Tipo</span>
             <Controller
               name="tipo"
@@ -202,7 +209,7 @@ export const PatrimonyFormDialog = ({
           </div>
 
           {/* Valores (passivo: a dívida é o saldo devedor, mais abaixo) */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className={cn("grid gap-3", !sincronizado && "grid-cols-2")}>
             <div className={cn(isPassivo && "hidden")}>
               <span className={labelCls}>
                 Valor atual{sincronizado ? " (pela corretora)" : ""}
@@ -229,7 +236,9 @@ export const PatrimonyFormDialog = ({
                 </span>
               )}
             </div>
-            <div>
+            {/* Pela corretora o total muda com aplicações e resgates: um
+                valor de compra fixo não diz nada. */}
+            <div className={cn(sincronizado && "hidden")}>
               <span className={labelCls}>
                 {isPassivo
                   ? "Valor financiado (opcional)"
@@ -258,9 +267,9 @@ export const PatrimonyFormDialog = ({
             <InvestimentosConexaoField item={item!} onAplicado={close} />
           )}
 
-          {/* Data de aquisição + Pessoa */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
+          {/* Data de aquisição + Pessoa (ligado à corretora: só a pessoa) */}
+          <div className={cn("grid gap-3", !sincronizado && "grid-cols-2")}>
+            <div className={cn(sincronizado && "hidden")}>
               <span className={labelCls}>Data de aquisição</span>
               <Controller
                 name="dataAquisicao"
@@ -298,9 +307,7 @@ export const PatrimonyFormDialog = ({
           {/* Campos de passivo (condicional) */}
           {isPassivo && (
             <div className="space-y-4 rounded-[12px] bg-danger/10 p-4">
-              <p className="text-[12.5px] font-bold text-danger">
-                Dívida
-              </p>
+              <p className="text-[12.5px] font-bold text-danger">Dívida</p>
               <div>
                 <span className={labelCls}>
                   Financiamento de qual bem? (opcional)

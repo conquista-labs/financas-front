@@ -1,27 +1,5 @@
 import type { Patrimonio, SerieItem } from "@/domain/models";
 
-/** Roxo primário como fallback de cor de categoria. */
-const FALLBACK_COLOR = "#5B4BE0";
-
-/**
- * Cor por categoria de patrimônio (usada nas barras de composição e realces).
- * Chaves = `categoria` crua do backend (não a formatada).
- */
-const CATEGORIA_COLOR: Record<string, string> = {
-  imovel: "#6C5CE7",
-  investimento: "#12A66A",
-  veiculo: "#2D9CDB",
-  disponivel: "#0EA5E9",
-  outros_ativos: "#E58E26",
-  financiamento: "#E5484D",
-  emprestimo: "#F0883E",
-  divida: "#D6409F",
-  outros_passivos: "#8B8B94",
-};
-
-export const categoriaColor = (categoria: string): string =>
-  CATEGORIA_COLOR[categoria] ?? FALLBACK_COLOR;
-
 const MESES_CURTOS = [
   "jan",
   "fev",
@@ -76,6 +54,80 @@ export const linhasDaLista = (rows: Patrimonio[]): Patrimonio[] => {
     .filter((r) => r.tipo === "passivo" && !(r.bemId && ids.has(r.bemId)))
     .sort((a, b) => valorDivida(b) - valorDivida(a));
   return [...ativos, ...passivosSoltos];
+};
+
+/** Abas da página. "resumo" é o consolidado; as outras são grupos. */
+export type Aba = "resumo" | "imoveis" | "veiculos" | "reservas" | "dividas";
+export type Grupo = Exclude<Aba, "resumo">;
+
+export const GRUPOS: Grupo[] = ["imoveis", "veiculos", "reservas", "dividas"];
+
+export const GRUPO_LABEL: Record<Grupo, string> = {
+  imoveis: "Imóveis",
+  veiculos: "Veículos",
+  reservas: "Investimentos e reservas",
+  dividas: "Dívidas",
+};
+
+/** Categoria sugerida ao criar um item a partir da aba. */
+export const CATEGORIA_DA_ABA: Record<Aba, string> = {
+  resumo: "",
+  imoveis: "imovel",
+  veiculos: "veiculo",
+  reservas: "investimento",
+  dividas: "divida",
+};
+
+/**
+ * Em que grupo um item cai. Financiamento ligado a um bem vai com o bem (a
+ * casa e a dívida dela ficam juntas); dívida solta tem grupo próprio.
+ */
+export const grupoDoItem = (
+  p: Patrimonio,
+  porId: Map<string, Patrimonio>,
+): Grupo => {
+  if (p.tipo === "passivo") {
+    const bem = p.bemId ? porId.get(p.bemId) : undefined;
+    return bem ? grupoDoItem(bem, porId) : "dividas";
+  }
+  if (p.categoria === "imovel") return "imoveis";
+  if (p.categoria === "veiculo") return "veiculos";
+  // Investimento, dinheiro parado e o resto (FGTS, previdência…).
+  return "reservas";
+};
+
+export interface ResumoGrupo {
+  grupo: Grupo;
+  /** Linhas da lista do grupo (financiamento ligado vai na linha do bem). */
+  linhas: Patrimonio[];
+  /** Soma do que vale (ativos). */
+  valor: number;
+  /** Soma do que se deve (financiamentos dos bens e dívidas soltas). */
+  divida: number;
+  /** valor - divida: quanto do grupo é de vocês. */
+  liquido: number;
+}
+
+/** Os itens separados por grupo, com os totais de cada um (grupos vazios saem). */
+export const resumoPorGrupo = (rows: Patrimonio[]): ResumoGrupo[] => {
+  const porId = new Map(rows.map((r) => [r.id, r]));
+  const linhas = linhasDaLista(rows);
+  return GRUPOS.map((grupo) => {
+    const doGrupo = rows.filter((r) => grupoDoItem(r, porId) === grupo);
+    const valor = doGrupo
+      .filter((r) => r.tipo === "ativo")
+      .reduce((s, r) => s + r.valorAtual, 0);
+    const divida = doGrupo
+      .filter((r) => r.tipo === "passivo")
+      .reduce((s, r) => s + valorDivida(r), 0);
+    return {
+      grupo,
+      linhas: linhas.filter((r) => grupoDoItem(r, porId) === grupo),
+      valor,
+      divida,
+      liquido: valor - divida,
+    };
+  }).filter((g) => g.linhas.length > 0);
 };
 
 export interface EvolucaoPoint {

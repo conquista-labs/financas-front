@@ -1,9 +1,22 @@
-import { Landmark, Link2, Loader2, Pencil, Trash2 } from "lucide-react";
+import {
+  Landmark,
+  Link2,
+  Loader2,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 import type { Patrimonio } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/presentation/components/ui";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Skeleton,
+} from "@/presentation/components/ui";
 
 import {
   delta,
@@ -28,6 +41,11 @@ interface PatrimonioListProps {
   deletingId?: string;
   onEdit: (item: Patrimonio) => void;
   onDelete: (item: Patrimonio) => void;
+  /**
+   * Linhas a exibir (ex.: as de um grupo). Sem isso, todas. `rows` continua
+   * sendo a lista inteira: é nela que se acha o financiamento de cada bem.
+   */
+  linhas?: Patrimonio[];
 }
 
 const actionBtn =
@@ -46,6 +64,7 @@ export const PatrimonioList = ({
   deletingId,
   onEdit,
   onDelete,
+  linhas,
 }: PatrimonioListProps) => {
   if (isLoading)
     return (
@@ -58,7 +77,7 @@ export const PatrimonioList = ({
       </div>
     );
 
-  if (!rows.length)
+  if (!(linhas ?? rows).length)
     return (
       <div className="rounded-[20px] border border-dashed border-line bg-card/50 px-6 py-16 text-center">
         <p className="text-sm font-semibold text-fg">Nenhum patrimônio ainda</p>
@@ -72,7 +91,7 @@ export const PatrimonioList = ({
 
   return (
     <div className="rounded-[20px] border border-line bg-card px-[22px] pb-3 pt-[6px]">
-      {linhasDaLista(rows).map((item) => {
+      {(linhas ?? linhasDaLista(rows)).map((item) => {
         const isAtivo = item.tipo === "ativo";
         const d = delta(item);
         // Pela corretora o valor é o saldo de hoje (aplicações e resgates
@@ -217,19 +236,8 @@ export const PatrimonioList = ({
               )}
             </div>
 
-            {/* Ações */}
+            {/* Ações: editar à mão; o resto (financiamento, excluir) no menu */}
             <div className="flex shrink-0 gap-[5px]">
-              {passivoDoBem && (
-                <button
-                  type="button"
-                  aria-label="Editar financiamento"
-                  title="Editar financiamento (saldo devedor, juros)"
-                  onClick={() => onEdit(passivoDoBem)}
-                  className={cn(actionBtn, "bg-bg text-fg2 hover:bg-track")}
-                >
-                  <Landmark className="size-4" strokeWidth={1.9} />
-                </button>
-              )}
               <button
                 type="button"
                 aria-label="Editar"
@@ -239,22 +247,40 @@ export const PatrimonioList = ({
               >
                 <Pencil className="size-4" strokeWidth={1.9} />
               </button>
-              <button
-                type="button"
-                aria-label="Excluir"
-                onClick={() => onDelete(item)}
-                disabled={deletingId === item.id}
-                className={cn(
-                  actionBtn,
-                  "bg-danger/10 text-danger hover:bg-danger/15",
-                )}
-              >
-                {deletingId === item.id ? (
-                  <Loader2 className="size-4 animate-spin" strokeWidth={2} />
-                ) : (
-                  <Trash2 className="size-4" strokeWidth={1.9} />
-                )}
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Mais ações"
+                    disabled={deletingId === item.id}
+                    className={cn(actionBtn, "bg-bg text-fg2 hover:bg-track")}
+                  >
+                    {deletingId === item.id ? (
+                      <Loader2
+                        className="size-4 animate-spin"
+                        strokeWidth={2}
+                      />
+                    ) : (
+                      <MoreHorizontal className="size-4" strokeWidth={1.9} />
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {passivoDoBem && (
+                    <DropdownMenuItem onSelect={() => onEdit(passivoDoBem)}>
+                      <Landmark className="size-4" strokeWidth={1.9} />
+                      Editar financiamento
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem
+                    onSelect={() => onDelete(item)}
+                    className="text-danger focus:text-danger"
+                  >
+                    <Trash2 className="size-4" strokeWidth={1.9} />
+                    Excluir
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         );
