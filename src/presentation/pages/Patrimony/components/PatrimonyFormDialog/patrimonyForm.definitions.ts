@@ -20,6 +20,8 @@ export interface PatrimonyFormValues {
   taxaJuros: string;
   dataVencimento: string;
   observacoes: string;
+  /** Passivo: o bem que ele financia ("" = nenhum). */
+  bemId: string;
 }
 
 export const emptyForm: PatrimonyFormValues = {
@@ -34,6 +36,7 @@ export const emptyForm: PatrimonyFormValues = {
   taxaJuros: "",
   dataVencimento: "",
   observacoes: "",
+  bemId: "",
 };
 
 export const schema = object({
@@ -43,7 +46,12 @@ export const schema = object({
     .required("Informe a descrição")
     .min(3, "Mínimo de 3 caracteres")
     .max(100, "Máximo de 100 caracteres"),
-  valorAtual: string().required("Informe o valor atual"),
+  // Passivo não tem "valor atual": a dívida é o saldo devedor.
+  valorAtual: string().when("tipo", {
+    is: "ativo",
+    then: (s) => s.required("Informe o valor atual"),
+    otherwise: (s) => s.optional(),
+  }),
   valorInicial: string().optional(),
   dataAquisicao: string().required("Informe a data de aquisição"),
   pessoaId: string().optional(),
@@ -70,6 +78,7 @@ export const fromPatrimonio = (p: Patrimonio): PatrimonyFormValues => ({
   taxaJuros: p.taxaJuros != null ? String(p.taxaJuros) : "",
   dataVencimento: (p.dataVencimento ?? "").slice(0, 10),
   observacoes: p.observacoes ?? "",
+  bemId: p.bemId ?? "",
 });
 
 /**
@@ -85,7 +94,8 @@ export const toRequest = (
     descricao: v.descricao,
     tipo: v.tipo as CreatePatrimonioRequest.TipoEnum,
     categoria: v.categoria as CreatePatrimonioRequest.CategoriaEnum,
-    valorAtual: parseAmount(v.valorAtual),
+    // Passivo: o valor é o próprio saldo devedor (o que os totais usam).
+    valorAtual: parseAmount(isPassivo ? v.saldoDevedor : v.valorAtual),
     dataAquisicao: v.dataAquisicao,
     ...(v.valorInicial ? { valorInicial: parseAmount(v.valorInicial) } : {}),
     ...(v.pessoaId ? { pessoaId: v.pessoaId } : {}),
@@ -93,7 +103,11 @@ export const toRequest = (
     ...(isPassivo && v.saldoDevedor
       ? { saldoDevedor: parseAmount(v.saldoDevedor) }
       : {}),
-    ...(isPassivo && v.taxaJuros ? { taxaJuros: Number(v.taxaJuros) } : {}),
+    ...(isPassivo && v.taxaJuros
+      ? { taxaJuros: Number(v.taxaJuros.replace(",", ".")) }
+      : {}),
+    // "" desliga o bem (a API grava null).
+    ...(isPassivo ? { bemId: v.bemId ?? "" } : {}),
     ...(isPassivo && v.dataVencimento
       ? { dataVencimento: v.dataVencimento }
       : {}),

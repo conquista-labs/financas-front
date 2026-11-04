@@ -55,6 +55,8 @@ export interface EditPatrimonioRequest {
    * ID da pessoa (opcional)
    */
   pessoaId?: string;
+  /** Só passivo: o bem que este financiamento paga. "" desliga. */
+  bemId?: string;
 }
 export namespace EditPatrimonioRequest {
   export type TipoEnum = "ativo" | "passivo";
