@@ -33,7 +33,11 @@ export const MOTIVOS_IGNORADO: Record<string, string> = {
 export const MOTIVOS_VINCULADO: Record<string, string> = {
   ja_lancado: "Já estava lançado",
   conta_recorrente: "Conta recorrente paga",
+  vinculado_manual: "Vocês ligaram",
 };
+
+/** Vínculos que dá para desfazer pela tela (o automático e o "Já lancei"). */
+export const VINCULOS_DESFAZIVEIS = new Set(["ja_lancado", "vinculado_manual"]);
 
 export type InboxVisao = "pendente" | "vinculado" | "ignorado";
 

@@ -1,4 +1,12 @@
-import { CheckCheck, CopyX, EyeOff, RefreshCw, Search } from "lucide-react";
+import {
+  CheckCheck,
+  CopyX,
+  EyeOff,
+  Link2,
+  RefreshCw,
+  Search,
+  Trash2,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -40,7 +48,9 @@ type Filtro = "todos" | "dica" | `pessoa:${string}`;
  * um), ou ignorar. Os ignorados automaticamente (fatura, Pix entre vocês,
  * investimentos) ficam numa lista à parte, restauráveis. O que bate com uma
  * transação já lançada (mesmo valor, dia e meio) é ligado sozinho e aparece em
- * "Já lançados", de onde dá para desvincular.
+ * "Já lançados", de onde dá para desvincular; o resto dá para ligar à mão
+ * ("Já lancei"). Excluir esconde de vez — a linha fica no banco só para a
+ * sincronização não trazer a mesma transação de novo.
  */
 const Inbox = () => {
   const [visao, setVisao] = useState<InboxVisao>("pendente");
@@ -50,6 +60,8 @@ const Inbox = () => {
   const [edits, setEdits] = useState<Record<string, InboxEdit>>({});
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const [ocupados, setOcupados] = useState<Set<string>>(new Set());
+  // "Limpar ignorados" pede um segundo clique (some de vez da tela).
+  const [confirmandoLimpar, setConfirmandoLimpar] = useState(false);
 
   const params = {
     page,
@@ -70,6 +82,9 @@ const Inbox = () => {
     ignorarParecidas,
     restaurar,
     desvincular,
+    vincular,
+    excluir,
+    limparIgnorados,
     sincronizar,
   } = useInboxMutations();
 
@@ -115,6 +130,7 @@ const Inbox = () => {
     setVisao(v);
     // "Com dica" só existe em pendentes; mantê-lo esvaziaria os ignorados.
     if (filtro === "dica") setFiltro("todos");
+    setConfirmandoLimpar(false);
     setPage(1);
     setSelecionados(new Set());
   };
@@ -225,6 +241,70 @@ const Inbox = () => {
         toast.success("Desvinculado. Voltou para a caixa para vocês revisarem."),
       onError: () => toast.error("Não foi possível desvincular."),
       onSettled: () => marcarOcupados(ids, false),
+    });
+  };
+
+  /** "Já lancei": com transacaoId liga à escolhida; sem, à melhor candidata. */
+  const handleVincular = (itens: { id: string; transacaoId?: string }[]) => {
+    const ids = itens.map((i) => i.id);
+    marcarOcupados(ids, true);
+    vincular.mutate(
+      { itens },
+      {
+        onSuccess: (r) => {
+          const { vinculados, marcadasPagas, erros } = r.data;
+          if (vinculados)
+            toast.success(
+              `${vinculados} ligado${vinculados === 1 ? "" : "s"} ao que já estava lançado` +
+                (marcadasPagas
+                  ? ` · ${marcadasPagas} marcada${marcadasPagas === 1 ? "" : "s"} como paga${marcadasPagas === 1 ? "" : "s"}`
+                  : ""),
+            );
+          if (erros.length)
+            toast.warning(
+              erros.length === 1
+                ? erros[0].erro
+                : `${erros.length} sem transação para ligar (ficaram na caixa).`,
+            );
+          limparLocais(ids.filter((id) => !erros.some((e) => e.id === id)));
+        },
+        onError: () => toast.error("Não foi possível ligar. Tente de novo."),
+        onSettled: () => marcarOcupados(ids, false),
+      },
+    );
+  };
+
+  const handleExcluir = (ids: string[]) => {
+    marcarOcupados(ids, true);
+    excluir.mutate(ids, {
+      onSuccess: (r) => {
+        const n = r.data.excluidos;
+        toast.success(
+          `${n} excluído${n === 1 ? "" : "s"}. Não volta na sincronização.`,
+        );
+        limparLocais(ids);
+      },
+      onError: () => toast.error("Não foi possível excluir. Tente de novo."),
+      onSettled: () => marcarOcupados(ids, false),
+    });
+  };
+
+  const handleLimparIgnorados = () => {
+    if (!confirmandoLimpar) {
+      setConfirmandoLimpar(true);
+      return;
+    }
+    limparIgnorados.mutate(undefined, {
+      onSuccess: (r) => {
+        const n = r.data.excluidos;
+        toast.success(
+          n
+            ? `${n} excluído${n === 1 ? "" : "s"} de Ignorados.`
+            : "Ignorados já estava vazio.",
+        );
+      },
+      onError: () => toast.error("Não foi possível limpar. Tente de novo."),
+      onSettled: () => setConfirmandoLimpar(false),
     });
   };
 
@@ -414,6 +494,44 @@ const Inbox = () => {
                 contentClassName="min-w-[200px]"
               />
             )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  disabled={!selecionadosRows.length || vincular.isPending}
+                  onClick={() =>
+                    handleVincular(selecionadosRows.map((l) => ({ id: l.id })))
+                  }
+                  className="flex items-center gap-[6px] rounded-[10px] border border-line px-3 py-[7px] text-[12.5px] font-semibold text-fg2 transition-colors hover:bg-track disabled:opacity-50"
+                >
+                  <Link2 className="size-[15px]" strokeWidth={2} />
+                  Já lancei
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-[260px]">
+                Liga cada selecionado à transação mais parecida que vocês já
+                lançaram (mesmo valor, mesmo meio, data mais próxima). O que não
+                tiver par fica na caixa.
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  disabled={!selecionadosRows.length || excluir.isPending}
+                  onClick={() =>
+                    handleExcluir(selecionadosRows.map((l) => l.id))
+                  }
+                  className="flex items-center gap-[6px] rounded-[10px] border border-line px-3 py-[7px] text-[12.5px] font-semibold text-fg2 transition-colors hover:border-danger/40 hover:text-danger disabled:opacity-50"
+                >
+                  <Trash2 className="size-[15px]" strokeWidth={2} />
+                  Excluir
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Some da caixa e de Ignorados, e não volta na sincronização
+              </TooltipContent>
+            </Tooltip>
             <button
               type="button"
               disabled={!selecionadosRows.length || ignorar.isPending}
@@ -431,6 +549,45 @@ const Inbox = () => {
             >
               <CheckCheck className="size-[15px]" strokeWidth={2.2} />
               Aceitar selecionados ({selecionadosRows.length})
+            </button>
+          </div>
+        )}
+
+        {/* Ignorados: limpar de uma vez (a lista não cresce sem fim) */}
+        {visao === "ignorado" && rows.length > 0 && (
+          <div className="flex flex-wrap items-center gap-3 border-b border-line2 py-[10px] text-[12.5px]">
+            <span className="text-muted">
+              Ignorados ficam aqui para restaurar. Os que não precisam mais
+              podem ser excluídos — não voltam na sincronização.
+            </span>
+            <span className="flex-1" />
+            {confirmandoLimpar && (
+              <button
+                type="button"
+                onClick={() => setConfirmandoLimpar(false)}
+                className="font-semibold text-muted hover:text-fg"
+              >
+                Cancelar
+              </button>
+            )}
+            <button
+              type="button"
+              disabled={limparIgnorados.isPending}
+              onClick={handleLimparIgnorados}
+              className={cn(
+                "flex items-center gap-[6px] rounded-[10px] border px-3 py-[7px] font-semibold transition-colors disabled:opacity-50",
+                confirmandoLimpar
+                  ? "border-danger bg-danger text-white hover:bg-danger/90"
+                  : "border-line text-fg2 hover:border-danger/40 hover:text-danger",
+              )}
+            >
+              <Trash2 className="size-[15px]" strokeWidth={2} />
+              {confirmandoLimpar
+                ? // Limpa TODOS os ignorados, não só os do filtro/busca atual.
+                  resumo.data?.data?.ignorados === 1
+                  ? "Excluir o ignorado"
+                  : `Excluir todos os ${resumo.data?.data?.ignorados ?? ""} ignorados`
+                : "Limpar ignorados"}
             </button>
           </div>
         )}
@@ -481,6 +638,10 @@ const Inbox = () => {
                 onIgnorar={() => handleIgnorar([l.id])}
                 onRestaurar={() => handleRestaurar([l.id])}
                 onDesvincular={() => handleDesvincular([l.id])}
+                onJaLancei={(transacaoId) =>
+                  handleVincular([{ id: l.id, transacaoId }])
+                }
+                onExcluir={() => handleExcluir([l.id])}
               />
             ))
           )}
