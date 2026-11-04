@@ -174,3 +174,4 @@ export * from "./caixaEntradaResponses";
 export * from "./lancamentoExterno";
 export * from "./concluirMetaRequest";
 export * from "./realizarDesejoRequest";
+export * from "./conexaoInvestimento";

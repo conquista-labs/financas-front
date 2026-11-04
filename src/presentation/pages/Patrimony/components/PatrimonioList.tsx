@@ -1,4 +1,4 @@
-import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { Link2, Loader2, Pencil, Trash2 } from "lucide-react";
 
 import type { Patrimonio } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
@@ -6,6 +6,15 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/presentation/components/ui";
 
 import { delta, mesAno } from "../patrimony.helpers";
+
+/** ISO → "04/11 18:02" (horário local). */
+const dataHora = (iso: string) =>
+  new Date(iso).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 interface PatrimonioListProps {
   rows: Patrimonio[];
@@ -22,7 +31,8 @@ const actionBtn =
 /**
  * Lista de itens de patrimônio (card único). Cada linha: tag Ativo/Passivo,
  * descrição + "categoria · desde MM/AAAA", valor + variação (verde/vermelho) e
- * ações editar/excluir.
+ * ações editar/excluir. Ligado a uma corretora: selo "Pela corretora" e as
+ * posições aplicadas.
  */
 export const PatrimonioList = ({
   rows,
@@ -83,6 +93,39 @@ export const PatrimonioList = ({
               <p className="text-[12.5px] text-muted">
                 {item.categoriaFormatada} · desde {mesAno(item.dataAquisicao)}
               </p>
+              {item.pluggyItemId && (
+                <div className="mt-[6px]">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-[2px] text-[11px] font-bold text-primary">
+                    <Link2 className="size-[11px]" strokeWidth={2.4} />
+                    Pela corretora
+                    {item.sincronizadoEm &&
+                      ` · atualizado ${dataHora(item.sincronizadoEm)}`}
+                  </span>
+                  {(item.posicoes ?? []).length > 0 ? (
+                    <ul className="mt-[6px] space-y-[3px]">
+                      {item.posicoes!.map((p) => (
+                        <li
+                          key={p.id}
+                          className="flex items-center justify-between gap-3 text-[12px]"
+                        >
+                          <span className="min-w-0 truncate text-fg2">
+                            {p.nome}
+                            {p.dataVencimento &&
+                              ` · vence ${mesAno(p.dataVencimento)}`}
+                          </span>
+                          <span className="shrink-0 font-semibold text-fg">
+                            {formatCurrency(p.saldo)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-[4px] text-[12px] text-muted">
+                      Nenhuma posição aplicada agora.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Valor + variação */}
