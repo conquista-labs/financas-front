@@ -22,6 +22,7 @@ import {
   delta,
   linhasDaLista,
   mesAno,
+  mostraVariacao,
   valorDivida,
 } from "../patrimony.helpers";
 
@@ -94,10 +95,7 @@ export const PatrimonioList = ({
       {(linhas ?? linhasDaLista(rows)).map((item) => {
         const isAtivo = item.tipo === "ativo";
         const d = delta(item);
-        // Pela corretora o valor é o saldo de hoje (aplicações e resgates
-        // mudam o total): comparar com o valor de compra digitado à mão não
-        // diz nada — com tudo resgatado viraria um "prejuízo" falso.
-        const semVariacao = !item.valorInicial || !!item.pluggyItemId;
+        const semVariacao = !mostraVariacao(item);
         // Bem financiado: o passivo ligado (para editar) e as contas da linha.
         const fin = isAtivo ? item.financiamento : null;
         const passivoDoBem = fin ? porId.get(fin.id) : undefined;
