@@ -36,6 +36,14 @@ export const labelMesRef = (mesReferencia: string): string => {
 export const delta = (p: Patrimonio): number =>
   p.valorAtual - (p.valorInicial ?? 0);
 
+/**
+ * Mostrar o "desde a compra"? Só quando diz algo: precisa do valor de compra,
+ * de diferença, de valor hoje (zerado = vendido/resgatado, a "perda" seria
+ * falsa) e não pode vir da corretora (aplicações e resgates mudam o total).
+ */
+export const mostraVariacao = (p: Patrimonio): boolean =>
+  !!p.valorInicial && !p.pluggyItemId && p.valorAtual > 0 && delta(p) !== 0;
+
 /** Quanto se deve num passivo: o saldo devedor (o mesmo que os totais usam). */
 export const valorDivida = (p: Patrimonio): number =>
   p.saldoDevedor ?? p.valorAtual;

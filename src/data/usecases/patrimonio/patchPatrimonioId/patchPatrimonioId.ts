@@ -1,11 +1,21 @@
 import { type HttpClient, HttpStatusCode } from "@/data/protocols";
-import { InvalidCredentialsError, UnexpectedError } from "@/domain/errors";
+import {
+  InvalidCredentialsError,
+  UnexpectedError,
+  UnprocessableEntity,
+} from "@/domain/errors";
 import type {
   PatchPatrimonioIdModel,
   PatchPatrimonioIdParams,
   PatchPatrimonioIdRequest,
   PatchPatrimonioIdUseCase,
 } from "@/domain/usecases";
+
+/** Validação da API (400) com a mensagem dela — a tela mostra no toast. */
+const mensagemDaApi = (b: unknown): string | undefined => {
+  const m = (b as { message?: string | string[] } | undefined)?.message;
+  return Array.isArray(m) ? m[0] : m;
+};
 
 export class PatchPatrimonioId implements PatchPatrimonioIdUseCase {
   constructor(
@@ -26,6 +36,8 @@ export class PatchPatrimonioId implements PatchPatrimonioIdUseCase {
     switch (httpResponse.statusCode) {
       case HttpStatusCode.ok:
         return httpResponse.body;
+      case HttpStatusCode.badRequest:
+        throw new UnprocessableEntity(mensagemDaApi(httpResponse.body));
       case HttpStatusCode.unauthorized:
         throw new InvalidCredentialsError();
       default:

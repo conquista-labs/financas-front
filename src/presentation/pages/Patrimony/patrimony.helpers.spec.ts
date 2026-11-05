@@ -9,6 +9,7 @@ import {
 } from "./components/PatrimonyFormDialog/patrimonyForm.definitions";
 import {
   linhasDaLista,
+  mostraVariacao,
   resumoPorGrupo,
   valorDivida,
 } from "./patrimony.helpers";
@@ -178,5 +179,31 @@ describe("novoItem (criar a partir da aba)", () => {
       tipo: "passivo",
     });
     expect(novoItem("")).toBe(emptyForm);
+  });
+});
+
+describe('mostraVariacao ("desde a compra")', () => {
+  it("mostra quando valorizou ou desvalorizou", () => {
+    expect(
+      mostraVariacao(item({ valorAtual: 80000, valorInicial: 55000 })),
+    ).toBe(true);
+    expect(
+      mostraVariacao(item({ valorAtual: 67174, valorInicial: 71800 })),
+    ).toBe(true);
+  });
+
+  it("esconde sem diferença, zerado (vendido), sem valor de compra ou pela corretora", () => {
+    expect(
+      mostraVariacao(item({ valorAtual: 72000, valorInicial: 72000 })),
+    ).toBe(false);
+    expect(mostraVariacao(item({ valorAtual: 0, valorInicial: 71800 }))).toBe(
+      false,
+    );
+    expect(mostraVariacao(item({ valorAtual: 1000 }))).toBe(false);
+    expect(
+      mostraVariacao(
+        item({ valorAtual: 100, valorInicial: 50, pluggyItemId: "x" }),
+      ),
+    ).toBe(false);
   });
 });
