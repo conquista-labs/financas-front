@@ -8,11 +8,10 @@ import {
   EditTransactions,
   Goals,
   Home,
-  Import,
-  Inbox,
   NotFound,
   Patrimony,
   Registers,
+  Revisar,
   Transactions,
 } from "@/presentation/pages";
 import {
@@ -23,7 +22,9 @@ import {
 /** Redireciona uma rota antiga para a nova, mantendo query string e hash. */
 const LegacyRedirect: React.FC<{ to: string }> = ({ to }) => {
   const { search, hash } = useLocation();
-  return <Navigate to={`${to}${search}${hash}`} replace />;
+  // `to` pode já ter query (ex.: /revisar?importar=1): junta com "&".
+  const extra = search && to.includes("?") ? `&${search.slice(1)}` : search;
+  return <Navigate to={`${to}${extra}${hash}`} replace />;
 };
 
 const PrivateRoute: React.FC = () => (
@@ -87,18 +88,10 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.revisarImportar}
-        element={
-          <Suspense>
-            <Import />
-          </Suspense>
-        }
-      />
-      <Route
         path={urlRouters.revisar}
         element={
           <Suspense>
-            <Inbox />
+            <Revisar />
           </Suspense>
         }
       />

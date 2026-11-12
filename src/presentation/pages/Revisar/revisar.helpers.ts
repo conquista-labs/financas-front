@@ -53,9 +53,14 @@ export interface InboxEdit {
   criarFuturas?: boolean;
 }
 
-/** Categoria efetiva da linha: a escolhida, senão a sugerida. */
+/**
+ * Categoria efetiva da linha: a escolhida, senão a sugerida — mas só se a
+ * sugerida for do mesmo tipo (a sincronização às vezes sugere uma categoria de
+ * despesa para um Pix recebido; aceitar assim lançaria a receita errado).
+ */
 export const categoriaDe = (l: LancamentoExterno, edit?: InboxEdit) =>
-  edit?.categoriaId ?? l.categoriaSugerida?.id ?? "";
+  edit?.categoriaId ??
+  (l.categoriaSugerida?.tipo === l.tipo ? l.categoriaSugerida.id : "");
 
 /** "2026-10-09" → "09/10". */
 export const diaMes = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
