@@ -119,7 +119,7 @@ const Registers = () => {
   return (
     <div className="animate-om-fade">
       <h1 className="mb-4 font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
-        Cadastros
+        Ajustes
       </h1>
 
       {/* Abas + Novo */}

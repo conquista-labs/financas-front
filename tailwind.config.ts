@@ -27,6 +27,15 @@ export default {
         line: "rgb(var(--line) / <alpha-value>)",
         line2: "rgb(var(--line2) / <alpha-value>)",
         track: "rgb(var(--track) / <alpha-value>)",
+        sidebar: {
+          DEFAULT: "rgb(var(--sidebar) / <alpha-value>)",
+          fg: "rgb(var(--sidebar-fg) / <alpha-value>)",
+          fg2: "rgb(var(--sidebar-fg2) / <alpha-value>)",
+          fg3: "rgb(var(--sidebar-fg3) / <alpha-value>)",
+          avatar: "rgb(var(--sidebar-avatar) / <alpha-value>)",
+          "avatar-fg": "rgb(var(--sidebar-avatar-fg) / <alpha-value>)",
+          edge: "rgb(var(--sidebar-edge) / <alpha-value>)",
+        },
         fg: "rgb(var(--fg) / <alpha-value>)",
         fg2: "rgb(var(--fg2) / <alpha-value>)",
         muted: {

@@ -8,12 +8,38 @@ import PrivateRoute from "./private-route";
 import PublicRoutes from "./public-route";
 
 /**
- * Bypass de auth para validação visual local (rebrand). Ligado apenas quando
- * VITE_SKIP_AUTH === "true" (ver .env.dev). Injeta um usuário fake no store e
- * libera as rotas privadas sem login — para inspecionar telas sem autenticar.
- * Desligado em qualquer outro ambiente.
+ * Bypass de auth para desenvolvimento local. Ligado apenas quando
+ * VITE_SKIP_AUTH === "true" e nunca num build de produção.
+ *
+ * Com VITE_DEV_TOKEN (gerado por `financas-api/scripts/gerar-token-dev.js` em
+ * `.env.dev.local`), entra com um JWT real do banco de dev: as telas carregam
+ * dados. Sem ele, injeta um usuário fake só para inspecionar layout — a API
+ * responde 401 e as telas ficam vazias.
  */
-const SKIP_AUTH = import.meta.env.VITE_SKIP_AUTH === "true";
+const SKIP_AUTH =
+  import.meta.env.VITE_SKIP_AUTH === "true" && !import.meta.env.PROD;
+const DEV_TOKEN = import.meta.env.VITE_DEV_TOKEN as string | undefined;
+
+const devAuth = () =>
+  DEV_TOKEN
+    ? {
+        token: DEV_TOKEN,
+        user: {
+          id: import.meta.env.VITE_DEV_USER_ID ?? "dev",
+          nome: import.meta.env.VITE_DEV_USER_NOME ?? "Dev",
+          email: import.meta.env.VITE_DEV_USER_EMAIL ?? "",
+          isGoogleUser: import.meta.env.VITE_DEV_USER_GOOGLE === "true",
+        },
+      }
+    : {
+        token: "dev-skip-auth",
+        user: {
+          id: "dev",
+          nome: "Mavi & Júnior",
+          email: "conta@nossagrana.dev",
+          isGoogleUser: false,
+        },
+      };
 
 const ProxyRoute: React.FC = () => {
   const navigate = useNavigate();
@@ -23,16 +49,12 @@ const ProxyRoute: React.FC = () => {
   const { auth, setAuth } = useAuthStore();
 
   useEffect(() => {
-    if (SKIP_AUTH && !auth?.token) {
-      setAuth({
-        token: "dev-skip-auth",
-        user: {
-          id: "dev",
-          nome: "Mavi & Júnior",
-          email: "conta@nossagrana.dev",
-          isGoogleUser: false,
-        },
-      });
+    // Também troca um token antigo/fake pelo token de dev atual.
+    if (
+      SKIP_AUTH &&
+      (!auth?.token || (DEV_TOKEN && auth.token !== DEV_TOKEN))
+    ) {
+      setAuth(devAuth());
     }
   }, [auth?.token, setAuth]);
 

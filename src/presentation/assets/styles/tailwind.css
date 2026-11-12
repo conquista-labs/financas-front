@@ -26,6 +26,15 @@
   --warning: 183 110 0; /* #B76E00 */
   --star: 245 179 1; /* #F5B301 */
 
+  /* Sidebar do "Repaginado": escura nos dois temas (protótipo v2). */
+  --sidebar: 22 21 28; /* #16151C */
+  --sidebar-fg: 255 255 255;
+  --sidebar-fg2: 207 203 218; /* #CFCBDA — itens inativos */
+  --sidebar-fg3: 217 214 227; /* #D9D6E3 — busca e ícones do rodapé */
+  --sidebar-avatar: 46 42 82; /* #2E2A52 */
+  --sidebar-avatar-fg: 207 200 255; /* #CFC8FF */
+  --sidebar-edge: 22 21 28; /* sem borda visível no tema claro */
+
   /**
    * Ponte de tokens shadcn → nossos tokens.
    * Componentes shadcn referenciam bg-background, text-foreground, border-border,
@@ -65,6 +74,8 @@
   --fg2: 180 176 190; /* #B4B0BE */
   --muted: 138 134 144; /* #8A8690 */
   --accent-soft: 47 42 91; /* ≈ rgba(91,75,224,.28) sobre o card */
+  --sidebar: 21 20 27; /* #15141B */
+  --sidebar-edge: 36 35 44; /* #24232C */
   /* primary / success / danger / warning / star mantêm o mesmo hex */
 }
 

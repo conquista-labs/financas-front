@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 
 import { AppShell, Suspense } from "@/presentation/components";
 import {
@@ -15,7 +15,16 @@ import {
   Registers,
   Transactions,
 } from "@/presentation/pages";
-import { urlRouters } from "@/presentation/router/router.definitions";
+import {
+  legacyRedirects,
+  urlRouters,
+} from "@/presentation/router/router.definitions";
+
+/** Redireciona uma rota antiga para a nova, mantendo query string e hash. */
+const LegacyRedirect: React.FC<{ to: string }> = ({ to }) => {
+  const { search, hash } = useLocation();
+  return <Navigate to={`${to}${search}${hash}`} replace />;
+};
 
 const PrivateRoute: React.FC = () => (
   <Routes>
@@ -38,7 +47,7 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.calendar}
+        path={urlRouters.agenda}
         element={
           <Suspense>
             <Calendar />
@@ -70,7 +79,7 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.registers}
+        path={urlRouters.ajustes}
         element={
           <Suspense>
             <Registers />
@@ -78,7 +87,7 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.import}
+        path={urlRouters.revisarImportar}
         element={
           <Suspense>
             <Import />
@@ -86,7 +95,7 @@ const PrivateRoute: React.FC = () => (
         }
       />
       <Route
-        path={urlRouters.inbox}
+        path={urlRouters.revisar}
         element={
           <Suspense>
             <Inbox />
@@ -109,6 +118,9 @@ const PrivateRoute: React.FC = () => (
           </Suspense>
         }
       />
+      {Object.entries(legacyRedirects).map(([from, to]) => (
+        <Route key={from} path={from} element={<LegacyRedirect to={to} />} />
+      ))}
     </Route>
     <Route path="*" element={<NotFound />} />
   </Routes>

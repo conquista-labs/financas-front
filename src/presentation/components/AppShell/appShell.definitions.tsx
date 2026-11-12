@@ -1,16 +1,18 @@
 import {
   ArrowLeftRight,
-  Box,
   CalendarDays,
+  House,
   Inbox,
   Landmark,
-  LayoutDashboard,
   type LucideIcon,
+  Settings,
   Target,
-  Upload,
 } from "lucide-react";
 
 import { urlRouters } from "@/presentation/router/router.definitions";
+
+/** Contadores que um item de navegação pode exibir ao lado do label. */
+export type NavBadge = "revisar";
 
 export interface NavItem {
   id: string;
@@ -19,21 +21,17 @@ export interface NavItem {
   icon: LucideIcon;
   /** Rota ainda não implementada (placeholder visual, ex.: Importar/Etapa 3). */
   soon?: boolean;
+  /** Contador ao lado do label (ex.: itens pendentes em Revisar). */
+  badge?: NavBadge;
 }
 
 /**
- * Itens de navegação da Sidebar (nova identidade "Nossa Grana"), fiéis ao
- * protótipo: Visão geral, Transações, Calendário, Patrimônio, Cadastros
- * (agrupa Categorias/Pessoas/Meios), Caixa de entrada, Importar. Ícones do
- * lucide-react.
+ * Itens de navegação da Sidebar no "Repaginado": menos telas, cada uma
+ * resolvendo mais. Visão geral → Início; Caixa de entrada + Importar →
+ * Revisar; Calendário → Agenda; Cadastros → Ajustes.
  */
 export const NAV_ITEMS: NavItem[] = [
-  {
-    id: "home",
-    label: "Visão geral",
-    to: urlRouters.home,
-    icon: LayoutDashboard,
-  },
+  { id: "home", label: "Início", to: urlRouters.home, icon: House },
   {
     id: "transactions",
     label: "Transações",
@@ -41,41 +39,21 @@ export const NAV_ITEMS: NavItem[] = [
     icon: ArrowLeftRight,
   },
   {
-    id: "calendar",
-    label: "Calendário",
-    to: urlRouters.calendar,
-    icon: CalendarDays,
+    id: "revisar",
+    label: "Revisar",
+    to: urlRouters.revisar,
+    icon: Inbox,
+    badge: "revisar",
   },
+  { id: "agenda", label: "Agenda", to: urlRouters.agenda, icon: CalendarDays },
   {
     id: "patrimony",
     label: "Patrimônio",
     to: urlRouters.patrimony,
     icon: Landmark,
   },
-  {
-    id: "goals",
-    label: "Metas & desejos",
-    to: urlRouters.goals,
-    icon: Target,
-  },
-  {
-    id: "registers",
-    label: "Cadastros",
-    to: urlRouters.registers,
-    icon: Box,
-  },
-  {
-    id: "inbox",
-    label: "Caixa de entrada",
-    to: urlRouters.inbox,
-    icon: Inbox,
-  },
-  {
-    id: "import",
-    label: "Importar",
-    to: urlRouters.import,
-    icon: Upload,
-  },
+  { id: "goals", label: "Metas", to: urlRouters.goals, icon: Target },
+  { id: "ajustes", label: "Ajustes", to: urlRouters.ajustes, icon: Settings },
 ];
 
 /**
@@ -84,7 +62,7 @@ export const NAV_ITEMS: NavItem[] = [
  * no meio da barra, renderizado à parte.
  */
 export const TAB_ITEMS: NavItem[] = [
-  { id: "home", label: "Início", to: urlRouters.home, icon: LayoutDashboard },
+  { id: "home", label: "Início", to: urlRouters.home, icon: House },
   {
     id: "transactions",
     label: "Extrato",
@@ -92,9 +70,9 @@ export const TAB_ITEMS: NavItem[] = [
     icon: ArrowLeftRight,
   },
   {
-    id: "calendar",
+    id: "agenda",
     label: "Agenda",
-    to: urlRouters.calendar,
+    to: urlRouters.agenda,
     icon: CalendarDays,
   },
   {
