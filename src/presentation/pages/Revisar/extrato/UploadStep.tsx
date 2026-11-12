@@ -7,7 +7,7 @@ import {
   type ImportFmt,
   promptClipboard,
   promptDisplay,
-} from "../import.prompts";
+} from "./extrato.prompts";
 
 interface UploadStepProps {
   onFile: (file: File) => void;

@@ -13,6 +13,7 @@ import {
   usePostLogoutGoogle,
 } from "@/presentation/hooks/api";
 import { useAuthStore } from "@/presentation/store";
+import { useExtratoPendentes } from "@/presentation/store/filaExtrato";
 
 import { QUICK_ADD_SHORTCUT_LABEL, useQuickAdd } from "../../QuickAdd";
 import { NAV_ITEMS, type NavBadge } from "../appShell.definitions";
@@ -55,8 +56,10 @@ export const Sidebar = () => {
   const { data: resumo } = useGetCaixaEntradaResumo({
     refetchInterval: 2 * 60 * 1000,
   });
+  // Revisar = pendentes do banco + linhas de extrato esperando no navegador.
+  const extratoPendentes = useExtratoPendentes();
   const counts: Record<NavBadge, number | undefined> = {
-    revisar: resumo?.data.pendentes,
+    revisar: (resumo?.data.pendentes ?? 0) + extratoPendentes,
   };
 
   const user = auth?.user;

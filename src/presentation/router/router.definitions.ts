@@ -30,11 +30,10 @@ export const urlRouters = {
   // Repaginado: Cadastros vira "Ajustes" (Categorias/Pessoas/Meios numa
   // página-hub com abas; criar/editar via modal na própria página).
   ajustes: "/ajustes",
-  // Repaginado: Caixa de entrada + Importar viram "Revisar".
-  // Por ora: /revisar é a fila da sincronização bancária e /revisar/importar
-  // o wizard de extrato (POST /importacoes/*). A fila única vem na fase 3.
+  // Repaginado: Caixa de entrada + Importar viram "Revisar" — uma fila só com
+  // o que veio do banco e do extrato. `?importar=1` abre o painel de extrato.
   revisar: "/revisar",
-  revisarImportar: "/revisar/importar",
+  revisarImportar: "/revisar?importar=1",
   error: "/error",
 };
 
@@ -47,4 +46,5 @@ export const legacyRedirects: Record<string, string> = {
   "/cadastros": urlRouters.ajustes,
   "/caixa-de-entrada": urlRouters.revisar,
   "/importar": urlRouters.revisarImportar,
+  "/revisar/importar": urlRouters.revisarImportar,
 };

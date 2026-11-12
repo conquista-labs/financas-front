@@ -21,7 +21,7 @@ import {
  * Ações da caixa de entrada (mesmo padrão de useGoalsMutations: só as
  * factories existem, o hook consolida e invalida). Toasts ficam na tela.
  */
-export const useInboxMutations = () => {
+export const useRevisarMutations = () => {
   const queryClient = useQueryClient();
 
   const invalidateCaixa = () => {
