@@ -10,6 +10,7 @@ export * from "./meiosPagamento";
 export * from "./metas";
 export * from "./patrimonio";
 export * from "./pessoas";
+export * from "./recorrencias";
 export * from "./relatorios";
 export * from "./resumoFinanceiro";
 export * from "./tags";
