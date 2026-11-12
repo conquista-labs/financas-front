@@ -9,6 +9,10 @@ interface YearTableProps {
   rows?: SaldosPorMes[];
   currentMonth: number; // 1-12
   isLoading?: boolean;
+  /** Sem cartão e sem título (para viver dentro de outra seção). */
+  bare?: boolean;
+  /** Clique num mês troca o período da página. */
+  onSelectMonth?: (mes: number) => void;
 }
 
 const MESES = [
@@ -59,6 +63,8 @@ export const YearTable = ({
   rows,
   currentMonth,
   isLoading,
+  bare = false,
+  onSelectMonth,
 }: YearTableProps) => {
   if (isLoading || !rows)
     return <Skeleton className="h-[420px] rounded-card" />;
@@ -67,15 +73,17 @@ export const YearTable = ({
   const totalRec = rows.reduce((s, r) => s + (r.receita ?? 0), 0);
 
   return (
-    <div className={panel()}>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-display text-[17px] font-bold text-fg">
-          Resumo do ano — receitas e despesas
-        </h2>
-        <span className="text-[12.5px] text-muted">
-          saldo acumulado mês a mês
-        </span>
-      </div>
+    <div className={bare ? undefined : panel()}>
+      {!bare && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-display text-[17px] font-bold text-fg">
+            Resumo do ano — receitas e despesas
+          </h2>
+          <span className="text-[12.5px] text-muted">
+            saldo acumulado mês a mês
+          </span>
+        </div>
+      )}
       <div className="overflow-x-auto">
         <div className={cn("grid", COLS)}>
           {/* header */}
@@ -105,7 +113,14 @@ export const YearTable = ({
             const atual = mesNum === currentMonth;
             const level = chipLevel(r.percentualGasto);
             return (
-              <div key={r.mes ?? i} className="contents">
+              <div
+                key={r.mes ?? i}
+                className={cn(
+                  "contents",
+                  onSelectMonth && "[&>*]:cursor-pointer",
+                )}
+                onClick={onSelectMonth && (() => onSelectMonth(mesNum))}
+              >
                 <div
                   className={cn(
                     "border-b border-line2 py-[11px] pl-[10px] text-sm font-semibold text-fg",
@@ -113,7 +128,21 @@ export const YearTable = ({
                   )}
                   style={{ borderLeft: `3px solid ${ACCENT[level]}` }}
                 >
-                  {MESES[i]}
+                  {onSelectMonth ? (
+                    <button
+                      type="button"
+                      aria-current={atual || undefined}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectMonth(mesNum);
+                      }}
+                      className="text-left hover:text-primary"
+                    >
+                      {MESES[i]}
+                    </button>
+                  ) : (
+                    MESES[i]
+                  )}
                 </div>
                 <Cell atual={atual} className="text-danger">
                   {formatCurrency(r.despesa)}

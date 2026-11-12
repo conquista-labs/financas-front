@@ -1,12 +1,12 @@
-export { BalanceHero } from "./BalanceHero";
+export { AnoMesAMes } from "./AnoMesAMes";
 export { BudgetList } from "./BudgetList";
 export { CategoryMatrix } from "./CategoryMatrix";
-export type { DonutCategoria } from "./ExpenseDonut";
-export { ExpenseDonut } from "./ExpenseDonut";
 export { HealthCard } from "./HealthCard";
+export { HeroSaldo } from "./HeroSaldo";
 export { IncomeExpenseChart } from "./IncomeExpenseChart";
 export { KpiCards } from "./KpiCards";
 export { MeiosPagamentoCard } from "./MeiosPagamentoCard";
+export { ParaOndeFoi } from "./ParaOndeFoi";
+export { PedeAtencao } from "./PedeAtencao";
 export { RecentTransactions } from "./RecentTransactions";
-export { TopCategoriasCard } from "./TopCategoriasCard";
 export { YearTable } from "./YearTable";
