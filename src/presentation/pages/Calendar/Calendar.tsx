@@ -57,7 +57,7 @@ const Calendar = () => {
   return (
     <div className="animate-om-fade pb-8">
       <h1 className="mb-5 font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
-        Calendário
+        Agenda
       </h1>
 
       {/* Sub-tabs */}

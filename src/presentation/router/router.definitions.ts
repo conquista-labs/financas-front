@@ -16,7 +16,8 @@ export const urlRouters = {
   root: "/",
   home: "/",
   login: "/login",
-  calendar: "/calendar",
+  // Repaginado: Calendário + Contas a pagar viram "Agenda".
+  agenda: "/agenda",
   transactions: "/transactions",
   createTransactions: "/transactions/create",
   editTransactions: "/transactions/edit/:id",
@@ -26,12 +27,24 @@ export const urlRouters = {
   // Metas & Desejos: página-hub com abas (Metas/Desejos), KPIs e grids.
   // Criar/editar/aportar via modal na própria página.
   goals: "/metas",
-  // Rebrand "Nossa Grana": Cadastros agrupa Categorias/Pessoas/Meios numa
-  // página-hub com abas. Criar/editar via modal na própria página.
-  registers: "/cadastros",
-  // Importar extrato — wizard analisar/confirmar (POST /importacoes/*).
-  import: "/importar",
-  // Caixa de entrada — revisão do que a sincronização bancária trouxe.
-  inbox: "/caixa-de-entrada",
+  // Repaginado: Cadastros vira "Ajustes" (Categorias/Pessoas/Meios numa
+  // página-hub com abas; criar/editar via modal na própria página).
+  ajustes: "/ajustes",
+  // Repaginado: Caixa de entrada + Importar viram "Revisar".
+  // Por ora: /revisar é a fila da sincronização bancária e /revisar/importar
+  // o wizard de extrato (POST /importacoes/*). A fila única vem na fase 3.
+  revisar: "/revisar",
+  revisarImportar: "/revisar/importar",
   error: "/error",
+};
+
+/**
+ * Rotas da versão anterior → rota nova. Mantidas como redirect para não
+ * quebrar favoritos e links antigos.
+ */
+export const legacyRedirects: Record<string, string> = {
+  "/calendar": urlRouters.agenda,
+  "/cadastros": urlRouters.ajustes,
+  "/caixa-de-entrada": urlRouters.revisar,
+  "/importar": urlRouters.revisarImportar,
 };

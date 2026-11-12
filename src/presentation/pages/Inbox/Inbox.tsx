@@ -6,8 +6,10 @@ import {
   RefreshCw,
   Search,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { LancamentoExterno } from "@/domain/models";
@@ -27,6 +29,7 @@ import {
   useGetMeiosPagamento,
   useGetPessoas,
 } from "@/presentation/hooks/api";
+import { urlRouters } from "@/presentation/router/router.definitions";
 
 import { InboxKpis, InboxRow } from "./components";
 import {
@@ -360,13 +363,14 @@ const Inbox = () => {
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
-            Caixa de entrada
+            Revisar
           </h1>
           <p className="mt-[6px] text-sm text-muted">
             O que chegou dos bancos. Confira a categoria e aceite, o resto a
             gente já separou.
           </p>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={handleSincronizar}
@@ -379,6 +383,14 @@ const Inbox = () => {
           />
           {sincronizar.isPending ? "Sincronizando…" : "Sincronizar agora"}
         </button>
+        <Link
+          to={urlRouters.revisarImportar}
+          className="flex items-center gap-[7px] rounded-[12px] bg-fg px-[15px] py-[10px] text-sm font-semibold text-card transition-opacity hover:opacity-90"
+        >
+          <Upload className="size-4" strokeWidth={2.2} />
+          Importar extrato
+        </Link>
+        </div>
       </div>
 
       <InboxKpis resumo={resumo.data?.data} isLoading={resumo.isLoading} />

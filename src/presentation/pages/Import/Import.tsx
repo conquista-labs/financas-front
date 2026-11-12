@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { MeioPagamento } from "@/domain/models";
@@ -162,6 +162,12 @@ const Import = () => {
   return (
     <div className="animate-om-fade">
       <div className="mb-1">
+        <Link
+          to={urlRouters.revisar}
+          className="mb-2 inline-flex items-center gap-1 text-[13px] font-semibold text-muted transition-colors hover:text-primary"
+        >
+          ← Revisar
+        </Link>
         <h1 className="font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
           Importar extrato
         </h1>
