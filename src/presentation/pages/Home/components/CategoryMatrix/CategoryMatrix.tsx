@@ -10,6 +10,8 @@ interface CategoryMatrixProps {
   /** Um item por mês, cada um com suas categorias de despesa. */
   data?: DespesaPorCategoriaMes[];
   isLoading?: boolean;
+  /** Sem cartão e sem título (para viver dentro de outra seção). */
+  bare?: boolean;
 }
 
 const MESES_SHORT = [
@@ -71,7 +73,11 @@ const short = (v: number) => {
  * Matriz "Despesas por categoria — mês a mês". Grid com primeira coluna sticky
  * (nome da categoria) + 12 meses + total. Scroll horizontal em telas estreitas.
  */
-export const CategoryMatrix = ({ data, isLoading }: CategoryMatrixProps) => {
+export const CategoryMatrix = ({
+  data,
+  isLoading,
+  bare = false,
+}: CategoryMatrixProps) => {
   if (isLoading || !data)
     return <Skeleton className="h-[360px] rounded-card" />;
 
@@ -79,12 +85,14 @@ export const CategoryMatrix = ({ data, isLoading }: CategoryMatrixProps) => {
   const COLS = "grid-cols-[150px_repeat(12,minmax(56px,1fr))_92px]";
 
   return (
-    <div className={panel()}>
-      <h2 className="font-display text-[17px] font-bold text-fg">
-        Despesas por categoria — mês a mês
-      </h2>
+    <div className={bare ? undefined : panel()}>
+      {!bare && (
+        <h2 className="font-display text-[17px] font-bold text-fg">
+          Despesas por categoria — mês a mês
+        </h2>
+      )}
       <p className="mb-4 text-[12.5px] text-muted">
-        valores acima do teto em vermelho
+        Despesas de cada categoria por mês · acima do teto em vermelho
       </p>
 
       {rows.length === 0 ? (

@@ -9,6 +9,8 @@ import { panel } from "../../home.styles";
 interface IncomeExpenseChartProps {
   rows?: SaldosPorMes[];
   isLoading?: boolean;
+  /** Sem cartão e sem título (para viver dentro de outra seção). */
+  bare?: boolean;
 }
 
 /** Cores do protótipo para as séries. */
@@ -88,6 +90,7 @@ const LegendItem = ({ color, label }: { color: string; label: string }) => (
 export const IncomeExpenseChart = ({
   rows,
   isLoading,
+  bare = false,
 }: IncomeExpenseChartProps) => {
   if (isLoading || !rows)
     return <Skeleton className="h-[300px] rounded-card" />;
@@ -100,11 +103,13 @@ export const IncomeExpenseChart = ({
   }));
 
   return (
-    <div className={panel()}>
+    <div className={bare ? undefined : panel()}>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-display text-[17px] font-bold text-fg">
-          Receitas e despesas
-        </h2>
+        {!bare && (
+          <h2 className="font-display text-[17px] font-bold text-fg">
+            Receitas e despesas
+          </h2>
+        )}
         <div className="flex gap-3">
           <LegendItem color={COLORS.receita} label="Receitas" />
           <LegendItem color={COLORS.saldoAnt} label="Saldo anterior" />

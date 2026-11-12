@@ -1,140 +1,184 @@
-import { RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { addDays, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Plus, RefreshCw } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { MonthPicker } from "@/presentation/components";
+import { useQuickAdd } from "@/presentation/components/QuickAdd";
 import {
-  useGetAnalyticsCategorias,
   useGetAnalyticsMeiosPagamento,
   useGetAnalyticsOrcamento,
+  useGetCaixaEntradaResumo,
+  useGetMetas,
   useGetQuickStats,
   useGetResumoFinanceiro,
   useGetTransacoes,
   usePostResumoFinanceiro,
 } from "@/presentation/hooks/api";
+import { urlRouters } from "@/presentation/router/router.definitions";
 import { useAuthStore } from "@/presentation/store";
+import { useFilaExtrato } from "@/presentation/store/filaExtrato";
 
 import {
-  BalanceHero,
+  AnoMesAMes,
   BudgetList,
-  CategoryMatrix,
-  ExpenseDonut,
   HealthCard,
-  IncomeExpenseChart,
+  HeroSaldo,
   KpiCards,
   MeiosPagamentoCard,
+  ParaOndeFoi,
+  PedeAtencao,
   RecentTransactions,
-  TopCategoriasCard,
-  YearTable,
 } from "./components";
-import { monthNavButton, segButton } from "./home.styles";
+import { monthNavButton } from "./home.styles";
+import {
+  dataPorExtenso,
+  diasDasTransacoes,
+  itensAtencao,
+  saudacao,
+  serieSaldoDoMes,
+} from "./inicio.helpers";
 
-const now = new Date();
+const ISO = "yyyy-MM-dd";
 
 /**
- * Dashboard "Visão geral" (nova identidade Nossa Grana). KPIs + hero de saldo +
- * resumo do ano + gráficos (bar/donut via Recharts) + orçamentos + últimos
- * lançamentos. Aba "Análises" fica para a próxima entrega.
+ * Início do "Repaginado": Visão geral + Análises numa página só. Saldo do mês
+ * em destaque com a previsão até o fim do mês, o que pede atenção agora, o
+ * ano mês a mês (tabela, gráfico, por categoria) e os cartões do mês.
  */
 const Home = () => {
+  const hoje = useMemo(() => new Date(), []);
   const { auth } = useAuthStore();
-  const [ano, setAno] = useState(now.getFullYear());
-  const [mes, setMes] = useState(now.getMonth() + 1); // 1-12
-  const [tab, setTab] = useState<"geral" | "analises">("geral");
+  const { openQuickAdd } = useQuickAdd();
+  const [ano, setAno] = useState(hoje.getFullYear());
+  const [mes, setMes] = useState(hoje.getMonth() + 1); // 1-12
 
-  const {
-    data: resumo,
-    isLoading: loadingResumo,
-    refetch: refetchResumo,
-  } = useGetResumoFinanceiro({ ano });
-  const {
-    data: quickStats,
-    isLoading: loadingStats,
-    refetch: refetchStats,
-  } = useGetQuickStats({ ano, mes });
-  const {
-    data: orcamento,
-    isLoading: loadingOrc,
-    refetch: refetchOrc,
-  } = useGetAnalyticsOrcamento({ ano, mes });
-  const {
-    data: transacoes,
-    isLoading: loadingTx,
-    refetch: refetchTx,
-  } = useGetTransacoes({ page: 1, limit: 6 });
+  // ── Dados do período ───────────────────────────────────────────────────
+  const resumo = useGetResumoFinanceiro({ ano });
+  const stats = useGetQuickStats({ ano, mes });
+  const orcamento = useGetAnalyticsOrcamento({ ano, mes });
+  const meios = useGetAnalyticsMeiosPagamento({ ano, mes });
+  // Todas as transações do mês, para a linha do saldo dia a dia.
+  const doPeriodo = useGetTransacoes({
+    page: 1,
+    limit: 1000,
+    startDate: format(new Date(ano, mes - 1, 1), ISO),
+    endDate: format(new Date(ano, mes, 0), ISO),
+  });
+  const ultimas = useGetTransacoes({ page: 1, limit: 6 });
 
-  // Aba Análises (categorias e meios do mês).
-  const {
-    data: categorias,
-    isLoading: loadingCat,
-    refetch: refetchCat,
-  } = useGetAnalyticsCategorias({ ano, mes });
-  const {
-    data: meios,
-    isLoading: loadingMeios,
-    refetch: refetchMeios,
-  } = useGetAnalyticsMeiosPagamento({ ano, mes });
+  // ── "Pede atenção" (sempre sobre hoje, não sobre o mês escolhido) ──────
+  const caixa = useGetCaixaEntradaResumo();
+  const extrato = useFilaExtrato((s) => s.linhas);
+  // limit 1: só a mais antiga para o texto; o total vem da paginação.
+  const atrasadas = useGetTransacoes({
+    page: 1,
+    limit: 1,
+    status: "atrasada",
+  });
+  const proximas = useGetTransacoes({
+    page: 1,
+    limit: 50,
+    status: "pendente",
+    startDate: format(hoje, ISO),
+    endDate: format(addDays(hoje, 7), ISO),
+  });
+  const metas = useGetMetas({ status: "ativa" });
 
   const { mutateAsync: recalcularResumo } = usePostResumoFinanceiro();
-
-  const [refreshing, setRefreshing] = useState(false);
-  const handleRefresh = async () => {
-    setRefreshing(true);
+  const [atualizando, setAtualizando] = useState(false);
+  const atualizar = async () => {
+    setAtualizando(true);
     try {
-      // Recalcula o resumo do ano no backend (saldos por mês) e só então
-      // recarrega as queries, para os dados virem já atualizados.
+      // Recalcula os saldos do ano no backend antes de recarregar.
       await recalcularResumo({ year: ano });
     } catch {
-      // O hook já mostra o toast de erro; segue para o refetch mesmo assim.
+      // O hook já mostra o erro; recarrega mesmo assim.
     }
-    await Promise.all([
-      refetchResumo(),
-      refetchStats(),
-      refetchOrc(),
-      refetchTx(),
-      refetchCat(),
-      refetchMeios(),
-    ]);
-    setRefreshing(false);
+    await Promise.all(
+      [
+        resumo,
+        stats,
+        orcamento,
+        meios,
+        doPeriodo,
+        ultimas,
+        caixa,
+        atrasadas,
+        proximas,
+        metas,
+      ].map((q) => q.refetch()),
+    );
+    setAtualizando(false);
   };
 
-  const resumoData = resumo?.data;
-  const saldosMes = resumoData?.saldosMes ?? [];
-  const mesAtual = saldosMes[mes - 1];
-  const donutCategorias =
-    resumoData?.despesasPorCategoriaMes?.[mes - 1]?.categorias ?? [];
-  const matrizData = resumoData?.despesasPorCategoriaMes ?? [];
+  // ── Derivados ──────────────────────────────────────────────────────────
+  const saldosMes = resumo.data?.data?.saldosMes ?? [];
+  const doMes = saldosMes[mes - 1];
+  const porCategoria = resumo.data?.data?.despesasPorCategoriaMes ?? [];
+  const orcamentoRows = orcamento.data?.data?.orcamentoCategorias ?? [];
+  const diasNoMes = new Date(ano, mes, 0).getDate();
+  const { pontos, corte } = serieSaldoDoMes(
+    diasDasTransacoes(doPeriodo.data?.data?.rows ?? [], diasNoMes),
+    { ano, mes, hoje },
+  );
 
-  const stats = quickStats?.data;
-  const orcamentoRows = orcamento?.data?.orcamentoCategorias ?? [];
-  const saude = orcamento?.data?.saudeFinanceira;
-  const categoriasRows = categorias?.data?.categorias ?? [];
-  const meiosRows = meios?.data?.meiosPagamento ?? [];
+  const extratoPend = extrato.filter((l) => l.status === "pendente");
+  const atencao = itensAtencao({
+    paraRevisar: (caixa.data?.data?.pendentes ?? 0) + extratoPend.length,
+    dicasDuplicidade:
+      (caixa.data?.data?.possiveisDuplicadas ?? 0) +
+      extratoPend.filter((l) => l.possivelDuplicada).length,
+    contasAtrasadas: {
+      total: atrasadas.data?.data?.meta?.total ?? 0,
+      primeira: atrasadas.data?.data?.rows?.[0] && {
+        descricao: atrasadas.data.data.rows[0].descricao,
+        valor: Number(atrasadas.data.data.rows[0].valor),
+      },
+    },
+    contasProximas: {
+      total: proximas.data?.data?.meta?.total ?? 0,
+      valor: (proximas.data?.data?.rows ?? []).reduce(
+        (soma, t) => soma + Number(t.valor),
+        0,
+      ),
+    },
+    estouradas: orcamentoRows
+      .filter((o) => o.valorOrcado > 0 && o.valorRealizado > o.valorOrcado)
+      .map((o) => ({
+        nome: o.categoriaNome,
+        realizado: o.valorRealizado,
+        orcado: o.valorOrcado,
+      })),
+    metasAtingidas: (metas.data?.data ?? [])
+      .filter((m) => m.status === "ativa" && m.percentual >= 100)
+      .map((m) => ({ titulo: m.titulo })),
+    rotas: {
+      revisar: urlRouters.revisar,
+      agenda: urlRouters.agenda,
+      ajustes: urlRouters.ajustes,
+      metas: urlRouters.goals,
+    },
+  });
+  const carregandoAtencao =
+    caixa.isLoading || atrasadas.isLoading || proximas.isLoading;
+
   const primeiroNome = (auth.user?.nome ?? "").split(" ")[0];
+  const mesNome = format(new Date(ano, mes - 1, 1), "MMMM", { locale: ptBR });
 
   return (
-    <div className="animate-om-fade pb-8">
-      {/* Header + seletor de mês */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div className="flex animate-om-fade flex-col gap-4 pb-8">
+      {/* Cabeçalho */}
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-muted">Olá, {primeiroNome} 👋</p>
-          <h1 className="font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
-            Visão geral
+          <p className="text-sm text-fg2">{dataPorExtenso(hoje)}</p>
+          <h1 className="mt-[2px] font-display text-[32px] font-bold -tracking-[0.03em] text-fg">
+            {saudacao(hoje)}
+            {primeiroNome && `, ${primeiroNome}`}
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-label="Atualizar dados"
-            title="Atualizar dados"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className={cn(monthNavButton(), "disabled:opacity-60")}
-          >
-            <RefreshCw
-              className={cn("size-[17px]", refreshing && "animate-spin")}
-            />
-          </button>
           <MonthPicker
             month={mes}
             year={ano}
@@ -143,70 +187,89 @@ const Home = () => {
               setAno(y);
             }}
           />
-        </div>
-      </div>
-
-      {/* Tabs segmentadas */}
-      <div className="mb-5 inline-flex max-w-[320px] gap-1 rounded-[13px] bg-track p-1">
-        <button
-          type="button"
-          onClick={() => setTab("geral")}
-          className={segButton({ active: tab === "geral" })}
-        >
-          Visão geral
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("analises")}
-          className={segButton({ active: tab === "analises" })}
-        >
-          Análises
-        </button>
-      </div>
-
-      {tab === "geral" ? (
-        <div className="flex flex-col gap-4">
-          <KpiCards
-            gastoSemana={stats?.gastoSemana}
-            economiaMes={stats?.economiaMes}
-            maiorCategoria={stats?.maiorCategoria}
-            transacaoMaior={stats?.transacaoMaior}
-            isLoading={loadingStats}
-          />
-          <BalanceHero
-            saldo={mesAtual?.valor}
-            receitas={mesAtual?.receita}
-            despesas={mesAtual?.despesa}
-            isLoading={loadingResumo}
-          />
-          <YearTable
-            rows={saldosMes}
-            currentMonth={mes}
-            isLoading={loadingResumo}
-          />
-          <IncomeExpenseChart rows={saldosMes} isLoading={loadingResumo} />
-          <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-            <BudgetList rows={orcamentoRows} isLoading={loadingOrc} />
-            <ExpenseDonut
-              categorias={donutCategorias}
-              isLoading={loadingResumo}
+          <button
+            type="button"
+            aria-label="Atualizar dados"
+            title="Recalcula o resumo do ano"
+            onClick={atualizar}
+            disabled={atualizando}
+            className={cn(monthNavButton(), "disabled:opacity-60")}
+          >
+            <RefreshCw
+              className={cn("size-[17px]", atualizando && "animate-spin")}
             />
-          </div>
-          <RecentTransactions
-            rows={transacoes?.data?.rows}
-            isLoading={loadingTx}
+          </button>
+          <button
+            type="button"
+            onClick={openQuickAdd}
+            className="flex h-[42px] items-center gap-[6px] rounded-full bg-primary px-[18px] text-sm font-bold text-white shadow-primary transition-colors hover:bg-primary-strong"
+          >
+            <Plus className="size-4" strokeWidth={2.6} /> Lançar
+          </button>
+        </div>
+      </header>
+
+      {/* Saldo + Pede atenção */}
+      <div className="flex flex-wrap gap-4">
+        <div className="min-w-0 flex-[2_1_540px]">
+          <HeroSaldo
+            mesNome={mesNome}
+            // Como no protótipo: o que sobrou no mês (entrou − saiu).
+            saldo={
+              doMes ? (doMes.receita ?? 0) - (doMes.despesa ?? 0) : undefined
+            }
+            receitas={doMes?.receita}
+            despesas={doMes?.despesa}
+            pontos={pontos}
+            corte={corte}
+            diasNoMes={diasNoMes}
+            isLoading={resumo.isLoading}
           />
         </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-            <TopCategoriasCard rows={categoriasRows} isLoading={loadingCat} />
-            <HealthCard saude={saude} isLoading={loadingOrc} />
-          </div>
-          <MeiosPagamentoCard rows={meiosRows} isLoading={loadingMeios} />
-          <CategoryMatrix data={matrizData} isLoading={loadingResumo} />
+        <div className="flex min-w-0 flex-[1_1_300px] flex-col [&>section]:flex-1">
+          <PedeAtencao itens={atencao} isLoading={carregandoAtencao} />
         </div>
-      )}
+      </div>
+
+      <AnoMesAMes
+        saldosMes={saldosMes}
+        porCategoria={porCategoria}
+        mes={mes}
+        onSelectMonth={setMes}
+        isLoading={resumo.isLoading}
+      />
+
+      <KpiCards
+        gastoSemana={stats.data?.data?.gastoSemana}
+        economiaMes={stats.data?.data?.economiaMes}
+        maiorCategoria={stats.data?.data?.maiorCategoria}
+        transacaoMaior={stats.data?.data?.transacaoMaior}
+        isLoading={stats.isLoading}
+      />
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <BudgetList rows={orcamentoRows} isLoading={orcamento.isLoading} />
+        <ParaOndeFoi
+          categorias={porCategoria[mes - 1]?.categorias ?? []}
+          isLoading={resumo.isLoading}
+        />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <HealthCard
+          saude={orcamento.data?.data?.saudeFinanceira}
+          isLoading={orcamento.isLoading}
+        />
+        <MeiosPagamentoCard
+          rows={meios.data?.data?.meiosPagamento ?? []}
+          isLoading={meios.isLoading}
+        />
+      </div>
+
+      <RecentTransactions
+        rows={ultimas.data?.data?.rows}
+        isLoading={ultimas.isLoading}
+      />
     </div>
   );
 };
