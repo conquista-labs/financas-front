@@ -12,7 +12,7 @@ import {
 import { urlRouters } from "@/presentation/router/router.definitions";
 
 /** Contadores que um item de navegação pode exibir ao lado do label. */
-export type NavBadge = "revisar";
+export type NavBadge = "revisar" | "agenda";
 
 export interface NavItem {
   id: string;
@@ -45,7 +45,13 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Inbox,
     badge: "revisar",
   },
-  { id: "agenda", label: "Agenda", to: urlRouters.agenda, icon: CalendarDays },
+  {
+    id: "agenda",
+    label: "Agenda",
+    to: urlRouters.agenda,
+    icon: CalendarDays,
+    badge: "agenda",
+  },
   {
     id: "patrimony",
     label: "Patrimônio",

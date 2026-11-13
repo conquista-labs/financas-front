@@ -82,7 +82,7 @@ const diaMes = (iso: string) =>
  * pessoa ajusta à mão vence a frase.
  */
 export const QuickAddModal = () => {
-  const { open, setOpen, closeQuickAdd } = useQuickAdd();
+  const { open, setOpen, closeQuickAdd, preset } = useQuickAdd();
   const navigate = useNavigate();
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -212,12 +212,24 @@ export const QuickAddModal = () => {
     setTodasCats(false);
   };
 
+  // Situação que veio do preset (ex.: "+ Nova conta" → A pagar). Vale só para
+  // aquela abertura: ao abrir de novo sem preset, ela sai do rascunho.
+  const statusDoPreset = useRef<Situacao | undefined>(undefined);
   useEffect(() => {
-    if (open) {
-      setSalvo(null);
-      requestAnimationFrame(() => inputRef.current?.focus());
+    if (!open) return;
+    setSalvo(null);
+    if (preset?.status) {
+      statusDoPreset.current = preset.status;
+      setAjustes((atual) => ({ ...atual, status: preset.status }));
+    } else if (statusDoPreset.current) {
+      const veio = statusDoPreset.current;
+      statusDoPreset.current = undefined;
+      setAjustes(({ status, ...resto }) =>
+        status === veio ? resto : { ...resto, status },
+      );
     }
-  }, [open]);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }, [open, preset]);
 
   const abrirFormCompleto = () => {
     closeQuickAdd();

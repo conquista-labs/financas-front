@@ -6,15 +6,21 @@ import type { CalendarKpiData } from "../calendar.helpers";
 
 interface CalendarKpisProps {
   kpis: CalendarKpiData;
+  /** Contas ainda não pagas no mês. */
+  aPagar: number;
   isLoading?: boolean;
 }
 
 /** 4 KPIs do mês no topo do calendário (Receitas, Despesas, Saldo, Maior gasto). */
-export const CalendarKpis = ({ kpis, isLoading }: CalendarKpisProps) => {
+export const CalendarKpis = ({
+  kpis,
+  aPagar,
+  isLoading,
+}: CalendarKpisProps) => {
   if (isLoading)
     return (
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-[84px] rounded-[16px]" />
         ))}
       </div>
@@ -23,7 +29,7 @@ export const CalendarKpis = ({ kpis, isLoading }: CalendarKpisProps) => {
   const saldoPositivo = kpis.saldo >= 0;
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
       <Kpi
         label="Receitas"
         value={formatCurrency(kpis.receitas)}
@@ -40,10 +46,18 @@ export const CalendarKpis = ({ kpis, isLoading }: CalendarKpisProps) => {
         color={saldoPositivo ? "text-success" : "text-danger"}
       />
       <Kpi
-        label="Maior gasto"
+        label={
+          kpis.maiorGastoDia
+            ? `Maior gasto · dia ${kpis.maiorGastoDia}`
+            : "Maior gasto"
+        }
         value={formatCurrency(kpis.maiorGasto)}
-        sub={kpis.maiorGastoDia ? `dia ${kpis.maiorGastoDia}` : undefined}
         color="text-fg"
+      />
+      <Kpi
+        label="A pagar no mês"
+        value={formatCurrency(aPagar)}
+        color="text-warning"
       />
     </div>
   );

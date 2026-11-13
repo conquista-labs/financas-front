@@ -7,9 +7,18 @@ import {
   useState,
 } from "react";
 
+/** Ponto de partida ao abrir o Lançar (ex.: "+ Nova conta" já em A pagar). */
+export interface QuickAddPreset {
+  status?: "paga" | "pendente";
+}
+
 interface QuickAddContextValue {
   open: boolean;
   openQuickAdd: () => void;
+  /** Abre o Lançar com campos já escolhidos. */
+  openQuickAddCom: (preset: QuickAddPreset) => void;
+  /** Preset da abertura atual (o modal aplica e limpa). */
+  preset: QuickAddPreset | null;
   closeQuickAdd: () => void;
   setOpen: (open: boolean) => void;
 }
@@ -34,8 +43,16 @@ export const QuickAddProvider = ({
   children: React.ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
+  const [preset, setPreset] = useState<QuickAddPreset | null>(null);
 
-  const openQuickAdd = useCallback(() => setOpen(true), []);
+  const openQuickAdd = useCallback(() => {
+    setPreset(null);
+    setOpen(true);
+  }, []);
+  const openQuickAddCom = useCallback((p: QuickAddPreset) => {
+    setPreset(p);
+    setOpen(true);
+  }, []);
   const closeQuickAdd = useCallback(() => setOpen(false), []);
 
   // ⌘K / Ctrl+K abre (ou fecha) o Lançar de qualquer tela.
@@ -45,6 +62,8 @@ export const QuickAddProvider = ({
       if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey)
         return;
       event.preventDefault();
+      // Pelo atalho é sempre uma abertura "limpa", sem preset de antes.
+      setPreset(null);
       setOpen((current) => !current);
     };
     window.addEventListener("keydown", onKeyDown);
@@ -52,8 +71,15 @@ export const QuickAddProvider = ({
   }, []);
 
   const value = useMemo(
-    () => ({ open, openQuickAdd, closeQuickAdd, setOpen }),
-    [open, openQuickAdd, closeQuickAdd],
+    () => ({
+      open,
+      openQuickAdd,
+      openQuickAddCom,
+      preset,
+      closeQuickAdd,
+      setOpen,
+    }),
+    [open, openQuickAdd, openQuickAddCom, preset, closeQuickAdd],
   );
 
   return (

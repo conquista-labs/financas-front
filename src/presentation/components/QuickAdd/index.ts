@@ -1,5 +1,6 @@
 export {
   QUICK_ADD_SHORTCUT_LABEL,
+  type QuickAddPreset,
   QuickAddProvider,
   useQuickAdd,
 } from "./QuickAddContext";

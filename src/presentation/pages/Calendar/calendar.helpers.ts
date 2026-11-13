@@ -1,4 +1,4 @@
-import type { DiaCalendario, TransacaoCalendario } from "@/domain/models";
+import type { DiaCalendario } from "@/domain/models";
 
 export const WEEK_DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -110,19 +110,3 @@ export const isToday = (
     hoje.getDate() === dia.dia
   );
 };
-
-/** Fim de semana? (Dom/Sáb). */
-export const isWeekend = (
-  dia: DiaCalendario,
-  ano: number,
-  mes: number,
-): boolean => {
-  const dow = new Date(ano, mes - 1, dia.dia).getDay();
-  return dow === 0 || dow === 6;
-};
-
-/** As primeiras N transações do dia (barrinhas). */
-export const entradasDoDia = (
-  dia: DiaCalendario,
-  limite = 2,
-): TransacaoCalendario[] => (dia.transacoes ?? []).slice(0, limite);
