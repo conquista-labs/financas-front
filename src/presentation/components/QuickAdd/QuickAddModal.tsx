@@ -218,6 +218,8 @@ export const QuickAddModal = () => {
   useEffect(() => {
     if (!open) return;
     setSalvo(null);
+    if (preset?.repeticao)
+      setAjustes((atual) => ({ ...atual, repeticao: preset.repeticao }));
     if (preset?.status) {
       statusDoPreset.current = preset.status;
       setAjustes((atual) => ({ ...atual, status: preset.status }));

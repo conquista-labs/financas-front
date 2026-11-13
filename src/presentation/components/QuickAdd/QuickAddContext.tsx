@@ -10,6 +10,8 @@ import {
 /** Ponto de partida ao abrir o Lançar (ex.: "+ Nova conta" já em A pagar). */
 export interface QuickAddPreset {
   status?: "paga" | "pendente";
+  /** "mensal" abre já como conta recorrente. */
+  repeticao?: "unico" | "mensal" | "parcelar";
 }
 
 interface QuickAddContextValue {
