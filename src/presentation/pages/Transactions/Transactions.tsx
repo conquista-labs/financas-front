@@ -26,7 +26,7 @@ import {
   DeleteTransactionDialog,
 } from "./components/DeleteTransactionDialog";
 import { DetailPanel } from "./components/DetailPanel";
-import { FilterBar,type FiltrosBarra } from "./components/FilterBar";
+import { FilterBar, type FiltrosBarra } from "./components/FilterBar";
 import type { TransactionFilters } from "./components/FiltersSheet";
 import { FiltersSheet } from "./components/FiltersSheet";
 import { ListaPorDia } from "./components/ListaPorDia";
@@ -274,8 +274,10 @@ const Transactions = () => {
     });
 
   return (
-    <div className="flex flex-wrap items-start gap-5 pb-8">
-      <div className="flex min-w-0 flex-[3_1_560px] flex-col gap-[14px]">
+    // Em telas largas a página cabe na altura da tela (o main tem py-8 = 4rem):
+    // a lista rola por dentro em vez de esticar a página.
+    <div className="flex flex-wrap items-start gap-5 pb-8 xl:h-[calc(100dvh-4rem)] xl:pb-0">
+      <div className="flex min-w-0 flex-[3_1_560px] flex-col gap-[14px] xl:h-full">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
             Transações
@@ -423,7 +425,7 @@ const Transactions = () => {
       </div>
 
       {aberta && (
-        <div className="min-w-0 flex-[1_1_320px] lg:sticky lg:top-6">
+        <div className="min-w-0 flex-[1_1_320px] lg:sticky lg:top-6 xl:max-h-full xl:overflow-y-auto">
           <DetailPanel
             key={aberta.id}
             transacao={aberta}
