@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 
 import { cn } from "@/lib/utils";
@@ -80,6 +80,14 @@ const Registers = () => {
   );
   const secao = (secaoParam in TEXTOS ? secaoParam : "categorias") as Secao;
   const { openQuickAddCom } = useQuickAdd();
+  // Celular: centraliza o chip da seção escolhida (só rolagem lateral).
+  const chipsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const c = chipsRef.current;
+    const el = c?.querySelector<HTMLElement>("[aria-current=page]");
+    if (c && el && c.scrollWidth > c.clientWidth)
+      c.scrollLeft = el.offsetLeft - (c.clientWidth - el.clientWidth) / 2;
+  }, [secao]);
   const [dialog, setDialog] = useState<{
     open: boolean;
     kind: CadastroKind;
@@ -118,30 +126,36 @@ const Registers = () => {
     <div className="flex animate-om-fade flex-wrap items-start gap-6 pb-8">
       <nav
         aria-label="Seções de ajustes"
-        className="flex max-w-[260px] flex-[1_1_220px] flex-col gap-1"
+        className="flex w-full flex-col gap-1 lg:w-auto lg:max-w-[260px] lg:flex-[1_1_220px]"
       >
-        <h1 className="mb-3 font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+        <h1 className="mb-3 font-display text-[26px] font-bold -tracking-[0.03em] text-fg sm:text-[30px]">
           Ajustes
         </h1>
-        {menu.map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            aria-current={secao === m.id ? "page" : undefined}
-            onClick={() => setSecao(m.id === "categorias" ? undefined : m.id)}
-            className={cn(
-              "flex h-11 items-center justify-between rounded-[12px] px-3 text-sm font-semibold transition-colors",
-              secao === m.id
-                ? "bg-card text-fg shadow-[0_1px_3px_rgba(0,0,0,.06)]"
-                : "text-fg2 hover:bg-card/60",
-            )}
-          >
-            <span>{TEXTOS[m.id].titulo}</span>
-            {m.n !== undefined && (
-              <span className="font-medium text-muted">{m.n}</span>
-            )}
-          </button>
-        ))}
+        {/* Celular: seções numa linha de chips com rolagem; desktop: lista. */}
+        <div
+          ref={chipsRef}
+          className="relative flex gap-1 max-lg:-mx-4 max-lg:overflow-x-auto max-lg:px-4 max-lg:[scrollbar-width:none] lg:flex-col"
+        >
+          {menu.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              aria-current={secao === m.id ? "page" : undefined}
+              onClick={() => setSecao(m.id === "categorias" ? undefined : m.id)}
+              className={cn(
+                "flex shrink-0 items-center justify-between gap-2 whitespace-nowrap text-sm font-semibold transition-colors max-lg:h-9 max-lg:rounded-full max-lg:border max-lg:px-[14px] lg:h-11 lg:rounded-[12px] lg:px-3",
+                secao === m.id
+                  ? "bg-card text-fg shadow-[0_1px_3px_rgba(0,0,0,.06)] max-lg:border-primary"
+                  : "text-fg2 hover:bg-card/60 max-lg:border-line",
+              )}
+            >
+              <span>{TEXTOS[m.id].titulo}</span>
+              {m.n !== undefined && (
+                <span className="font-medium text-muted">{m.n}</span>
+              )}
+            </button>
+          ))}
+        </div>
       </nav>
 
       <div className="flex min-w-0 flex-[3_1_520px] flex-col gap-[14px]">

@@ -74,9 +74,9 @@ const Kpi = ({
   color: string;
   sub?: string;
 }) => (
-  <div className="rounded-[16px] border border-line bg-card px-[18px] py-4">
+  <div className="rounded-[16px] border border-line bg-card px-4 py-3 sm:px-[18px] sm:py-4">
     <p className="text-[12.5px] font-semibold text-muted">{label}</p>
-    <p className={cn("font-display text-[20px] font-bold", color)}>
+    <p className={cn("font-display text-lg font-bold sm:text-[20px]", color)}>
       {value}
       {sub && (
         <span className="ml-1 text-[12px] font-normal text-muted">· {sub}</span>

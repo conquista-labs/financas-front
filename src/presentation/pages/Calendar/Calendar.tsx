@@ -70,7 +70,7 @@ const Calendar = () => {
   return (
     <div className="flex animate-om-fade flex-col gap-4 pb-8">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+        <h1 className="font-display text-[26px] font-bold -tracking-[0.03em] text-fg sm:text-[30px]">
           Agenda
         </h1>
         <div className="flex items-center gap-2">
@@ -78,9 +78,11 @@ const Calendar = () => {
           <button
             type="button"
             onClick={() => openQuickAddCom({ status: "pendente" })}
-            className="flex h-[42px] items-center gap-[6px] rounded-full bg-primary px-[18px] text-sm font-bold text-white shadow-primary transition-colors hover:bg-primary-strong"
+            className="flex h-[42px] items-center gap-[6px] whitespace-nowrap rounded-full bg-primary px-3 text-sm font-bold text-white shadow-primary transition-colors hover:bg-primary-strong sm:px-[18px]"
           >
-            <Plus className="size-4" strokeWidth={2.6} /> Nova conta
+            <Plus className="size-4" strokeWidth={2.6} />
+            <span className="sm:hidden">Conta</span>
+            <span className="hidden sm:inline">Nova conta</span>
           </button>
         </div>
       </header>

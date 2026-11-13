@@ -125,7 +125,7 @@ export const MonthSelector = ({
             type="button"
             disabled={disabled}
             className={cn(
-              "min-w-[140px] rounded-[11px] border border-transparent px-2 py-[6px] text-center font-display text-[15px] font-semibold capitalize text-fg transition-colors hover:border-line",
+              "min-w-[110px] rounded-[11px] border border-transparent px-1 py-[6px] text-center font-display text-sm sm:min-w-[140px] sm:px-2 sm:text-[15px] font-semibold capitalize text-fg transition-colors hover:border-line",
               open && "border-primary",
             )}
           >

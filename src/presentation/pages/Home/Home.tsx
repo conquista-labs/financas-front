@@ -170,10 +170,10 @@ const Home = () => {
   return (
     <div className="flex animate-om-fade flex-col gap-4 pb-8">
       {/* Cabeçalho */}
-      <header className="flex flex-wrap items-center justify-between gap-3">
+      <header className="-order-2 flex flex-wrap items-center justify-between gap-3 lg:order-none">
         <div>
           <p className="text-sm text-fg2">{dataPorExtenso(hoje)}</p>
-          <h1 className="mt-[2px] font-display text-[32px] font-bold -tracking-[0.03em] text-fg">
+          <h1 className="mt-[2px] font-display text-[26px] font-bold sm:text-[32px] -tracking-[0.03em] text-fg">
             {saudacao(hoje)}
             {primeiroNome && `, ${primeiroNome}`}
           </h1>
@@ -193,7 +193,10 @@ const Home = () => {
             title="Recalcula o resumo do ano"
             onClick={atualizar}
             disabled={atualizando}
-            className={cn(monthNavButton(), "disabled:opacity-60")}
+            className={cn(
+              monthNavButton(),
+              "hidden disabled:opacity-60 lg:grid",
+            )}
           >
             <RefreshCw
               className={cn("size-[17px]", atualizando && "animate-spin")}
@@ -202,7 +205,7 @@ const Home = () => {
           <button
             type="button"
             onClick={openQuickAdd}
-            className="flex h-[42px] items-center gap-[6px] rounded-full bg-primary px-[18px] text-sm font-bold text-white shadow-primary transition-colors hover:bg-primary-strong"
+            className="hidden h-[42px] items-center gap-[6px] rounded-full bg-primary px-[18px] lg:flex text-sm font-bold text-white shadow-primary transition-colors hover:bg-primary-strong"
           >
             <Plus className="size-4" strokeWidth={2.6} /> Lançar
           </button>
@@ -210,7 +213,7 @@ const Home = () => {
       </header>
 
       {/* Saldo + Pede atenção */}
-      <div className="flex flex-wrap gap-4">
+      <div className="-order-1 flex flex-wrap gap-4 lg:order-none">
         <div className="min-w-0 flex-[2_1_540px]">
           <HeroSaldo
             mesNome={mesNome}
@@ -231,13 +234,17 @@ const Home = () => {
         </div>
       </div>
 
-      <AnoMesAMes
+      {/* No celular a ordem segue o protótipo mobile: saldo, pede atenção e
+          orçamento primeiro; a tabela do ano vai para o fim. */}
+      <div className="order-last lg:order-none">
+        <AnoMesAMes
         saldosMes={saldosMes}
         porCategoria={porCategoria}
         mes={mes}
         onSelectMonth={setMes}
         isLoading={resumo.isLoading}
-      />
+        />
+      </div>
 
       <KpiCards
         gastoSemana={stats.data?.data?.gastoSemana}
@@ -247,7 +254,7 @@ const Home = () => {
         isLoading={stats.isLoading}
       />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="-order-1 grid gap-4 lg:order-none lg:grid-cols-2">
         <BudgetList rows={orcamentoRows} isLoading={orcamento.isLoading} />
         <ParaOndeFoi
           categorias={porCategoria[mes - 1]?.categorias ?? []}

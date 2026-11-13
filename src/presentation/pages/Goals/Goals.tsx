@@ -33,6 +33,10 @@ const OPT_LIMIT = { page: 1, limit: 100 };
  */
 const Goals = () => {
   const [todosDesejos, setTodosDesejos] = useState(false);
+  // Celular: uma coluna por vez (abas); no desktop as três lado a lado.
+  const [colunaCelular, setColunaCelular] = useState<
+    "queremos" | "rumo" | "conquistado"
+  >("rumo");
 
   // Modais.
   const [concluir, setConcluir] = useState<MetaResponse | null>(null);
@@ -169,10 +173,10 @@ const Goals = () => {
     <div className="flex animate-om-fade flex-col gap-4 pb-8">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+          <h1 className="font-display text-[26px] font-bold -tracking-[0.03em] text-fg sm:text-[30px]">
             Metas
           </h1>
-          <p className="mt-1 text-sm text-fg2">
+          <p className="mt-1 hidden text-sm text-fg2 sm:block">
             Do &quot;a gente quer&quot; ao &quot;conseguimos&quot;.
           </p>
         </div>
@@ -193,12 +197,47 @@ const Goals = () => {
         </div>
       </header>
 
+      <div
+        role="tablist"
+        aria-label="Colunas"
+        className="flex gap-1 rounded-full bg-track p-1 lg:hidden"
+      >
+        {(
+          [
+            ["queremos", "Queremos", desejosRows.length],
+            ["rumo", "Rumo a", metasRows.length],
+            [
+              "conquistado",
+              "Conquistado",
+              metasConcluidas.length + desejosRealizados.length,
+            ],
+          ] as const
+        ).map(([id, t, n]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={colunaCelular === id}
+            onClick={() => setColunaCelular(id)}
+            className={cn(
+              "h-9 flex-1 rounded-full text-[13px] font-semibold transition-colors",
+              colunaCelular === id
+                ? "bg-card text-fg shadow-[0_1px_3px_rgba(0,0,0,.08)]"
+                : "text-fg2",
+            )}
+          >
+            {t} <span className="opacity-60">{n}</span>
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
         {/* Queremos */}
         <Coluna
           titulo="Queremos"
           quantidade={desejosRows.length}
           tom="bg-track"
+          oculta={colunaCelular !== "queremos"}
           acao={{ label: "Desejo", onClick: openNewDesejo, primaria: false }}
         >
           {desejos.isLoading ? (
@@ -243,6 +282,7 @@ const Goals = () => {
           titulo="Rumo a"
           quantidade={metasRows.length}
           tom="bg-primary-soft/70"
+          oculta={colunaCelular !== "rumo"}
           acao={{ label: "Meta", onClick: openNewMeta, primaria: true }}
         >
           {metas.isLoading ? (
@@ -270,6 +310,7 @@ const Goals = () => {
           titulo={`Conquistado`}
           quantidade={metasConcluidas.length + desejosRealizados.length}
           tom="bg-success/10"
+          oculta={colunaCelular !== "conquistado"}
         >
           {metas.isLoading || realizados.isLoading ? (
             <Esqueleto />
@@ -326,17 +367,24 @@ const Coluna = ({
   quantidade,
   tom,
   acao,
+  oculta,
   children,
 }: {
   titulo: string;
   quantidade: number;
   tom: string;
+  /** Escondida só no celular (aba não selecionada). */
+  oculta?: boolean;
   acao?: { label: string; onClick: () => void; primaria: boolean };
   children: React.ReactNode;
 }) => (
   <section
     aria-label={titulo}
-    className={cn("flex flex-col gap-[10px] rounded-[24px] p-[14px]", tom)}
+    className={cn(
+      "flex flex-col gap-[10px] rounded-[24px] p-[14px]",
+      tom,
+      oculta && "max-lg:hidden",
+    )}
   >
     <div className="flex items-center justify-between px-[6px] pb-1 pt-1">
       <h2 className="text-[15px] font-bold">

@@ -65,11 +65,11 @@ export const HeroSaldo = ({
   const marco = reais.at(-1);
 
   return (
-    <section className="relative flex min-w-0 flex-col gap-4 overflow-hidden rounded-[26px] bg-sidebar p-6 text-white">
+    <section className="relative flex min-w-0 flex-col gap-4 overflow-hidden rounded-[26px] bg-sidebar p-5 text-white sm:p-6">
       <div className="flex flex-wrap justify-between gap-4">
         <div>
           <p className="text-sm text-[#B9B5C6]">Saldo de {mesNome}</p>
-          <p className="mt-[6px] font-display text-[44px] font-bold leading-none -tracking-[0.03em] tabular-nums sm:text-[52px]">
+          <p className="mt-[6px] font-display text-[40px] font-bold leading-none -tracking-[0.03em] tabular-nums sm:text-[52px]">
             {formatCurrency(saldo ?? 0)}
           </p>
           <span
@@ -87,13 +87,13 @@ export const HeroSaldo = ({
         <div className="flex gap-[22px]">
           <div>
             <p className="text-[12.5px] text-[#B9B5C6]">Entrou</p>
-            <p className="mt-1 font-display text-[22px] font-bold tabular-nums text-[#7FE0B0]">
+            <p className="mt-1 font-display text-lg font-bold tabular-nums text-[#7FE0B0] sm:text-[22px]">
               {formatCurrency(receitas ?? 0)}
             </p>
           </div>
           <div>
             <p className="text-[12.5px] text-[#B9B5C6]">Saiu</p>
-            <p className="mt-1 font-display text-[22px] font-bold tabular-nums text-[#FF9EA2]">
+            <p className="mt-1 font-display text-lg font-bold tabular-nums text-[#FF9EA2] sm:text-[22px]">
               {formatCurrency(despesas ?? 0)}
             </p>
           </div>
@@ -101,7 +101,8 @@ export const HeroSaldo = ({
       </div>
 
       {pts.length > 1 && (
-        <>
+        // No celular fica só o número (como no protótipo mobile).
+        <div className="hidden sm:contents">
           <svg
             viewBox={`0 0 ${W} ${H}`}
             width="100%"
@@ -141,7 +142,7 @@ export const HeroSaldo = ({
               ? "Saldo acumulado dia a dia no mês."
               : "Linha tracejada: previsão até o fim do mês com as contas a pagar."}
           </p>
-        </>
+        </div>
       )}
     </section>
   );
