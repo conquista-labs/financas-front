@@ -12,12 +12,15 @@ export class PostCaixaEntradaExcluir implements PostCaixaEntradaExcluirUseCase {
     private readonly httpClient: HttpClient,
   ) {}
 
-  async post(params: PostCaixaEntradaExcluirParams): Promise<PostCaixaEntradaExcluirModel> {
-    const httpResponse = await this.httpClient.request<PostCaixaEntradaExcluirModel>({
-      url: this.url,
-      method: "post",
-      body: params,
-    });
+  async post(
+    params: PostCaixaEntradaExcluirParams,
+  ): Promise<PostCaixaEntradaExcluirModel> {
+    const httpResponse =
+      await this.httpClient.request<PostCaixaEntradaExcluirModel>({
+        url: this.url,
+        method: "post",
+        body: params,
+      });
 
     switch (httpResponse.statusCode) {
       case HttpStatusCode.ok:

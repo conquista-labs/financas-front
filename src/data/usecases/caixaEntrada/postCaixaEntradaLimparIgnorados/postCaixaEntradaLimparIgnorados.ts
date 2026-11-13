@@ -5,17 +5,20 @@ import type {
   PostCaixaEntradaLimparIgnoradosUseCase,
 } from "@/domain/usecases";
 
-export class PostCaixaEntradaLimparIgnorados implements PostCaixaEntradaLimparIgnoradosUseCase {
+export class PostCaixaEntradaLimparIgnorados
+  implements PostCaixaEntradaLimparIgnoradosUseCase
+{
   constructor(
     private readonly url: string,
     private readonly httpClient: HttpClient,
   ) {}
 
   async post(): Promise<PostCaixaEntradaLimparIgnoradosModel> {
-    const httpResponse = await this.httpClient.request<PostCaixaEntradaLimparIgnoradosModel>({
-      url: this.url,
-      method: "post",
-    });
+    const httpResponse =
+      await this.httpClient.request<PostCaixaEntradaLimparIgnoradosModel>({
+        url: this.url,
+        method: "post",
+      });
 
     switch (httpResponse.statusCode) {
       case HttpStatusCode.ok:

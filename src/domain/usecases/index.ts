@@ -3,6 +3,7 @@ export * from "./auth";
 export * from "./caixaEntrada";
 export * from "./calendario";
 export * from "./categorias";
+export * from "./contasVinculadas";
 export * from "./desejos";
 export * from "./enums";
 export * from "./importacoes";

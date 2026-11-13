@@ -6,18 +6,23 @@ import type {
   PostCaixaEntradaVincularUseCase,
 } from "@/domain/usecases";
 
-export class PostCaixaEntradaVincular implements PostCaixaEntradaVincularUseCase {
+export class PostCaixaEntradaVincular
+  implements PostCaixaEntradaVincularUseCase
+{
   constructor(
     private readonly url: string,
     private readonly httpClient: HttpClient,
   ) {}
 
-  async post(params: PostCaixaEntradaVincularParams): Promise<PostCaixaEntradaVincularModel> {
-    const httpResponse = await this.httpClient.request<PostCaixaEntradaVincularModel>({
-      url: this.url,
-      method: "post",
-      body: params,
-    });
+  async post(
+    params: PostCaixaEntradaVincularParams,
+  ): Promise<PostCaixaEntradaVincularModel> {
+    const httpResponse =
+      await this.httpClient.request<PostCaixaEntradaVincularModel>({
+        url: this.url,
+        method: "post",
+        body: params,
+      });
 
     switch (httpResponse.statusCode) {
       case HttpStatusCode.ok:

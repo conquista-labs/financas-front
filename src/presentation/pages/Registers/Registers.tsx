@@ -1,199 +1,175 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { StringParam, useQueryParam, withDefault } from "use-query-params";
 
-import type { Tag } from "@/domain/models";
-import type { CadastroKind } from "@/presentation/hooks/api";
+import { cn } from "@/lib/utils";
+import { useQuickAdd } from "@/presentation/components/QuickAdd";
 import {
-  useCadastroMutations,
+  type CadastroKind,
   useGetCategorias,
+  useGetContasVinculadas,
   useGetMeiosPagamento,
   useGetPessoas,
+  useGetRecorrencias,
   useGetTags,
-  useTagMutations,
 } from "@/presentation/hooks/api";
 
 import {
-  CategoriaList,
-  MeioList,
-  PessoaList,
-  RegisterFormDialog,
-  type RegisterItem,
-  TagList,
-} from "./components";
-import { registerTab } from "./registers.styles";
+  SecaoAparencia,
+  SecaoBancos,
+  SecaoCategorias,
+  SecaoMeios,
+  SecaoPessoas,
+  SecaoRecorrentes,
+  SecaoTags,
+} from "./ajustes/Secoes";
+import { RegisterFormDialog, type RegisterItem } from "./components";
 
-/** Aba de cadastro com CRUD (categoria/pessoa/meio). */
-type RegisterKind = CadastroKind;
+const OPT = { page: 1, limit: 100 };
 
-const OPT_LIMIT = { page: 1, limit: 100 };
+type Secao =
+  | "categorias"
+  | "pessoas"
+  | "meios"
+  | "recorrentes"
+  | "tags"
+  | "bancos"
+  | "aparencia";
 
-type Tab = RegisterKind | "recorrente" | "tag";
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "categoria", label: "Categorias" },
-  { id: "pessoa", label: "Pessoas" },
-  { id: "meio", label: "Meios de pagamento" },
-  { id: "recorrente", label: "Recorrentes" },
-  { id: "tag", label: "Tags" },
-];
-
-/** É uma aba de cadastro com CRUD (categoria/pessoa/meio)? */
-const isRegisterKind = (tab: Tab): tab is RegisterKind =>
-  tab === "categoria" || tab === "pessoa" || tab === "meio";
+const TEXTOS: Record<Secao, { titulo: string; sub: string; novo?: string }> = {
+  categorias: {
+    titulo: "Categorias",
+    sub: "Teto e cor direto na linha. As favoritas aparecem primeiro no Lançar.",
+    novo: "+ Nova categoria",
+  },
+  pessoas: {
+    titulo: "Pessoas",
+    sub: "De quem é cada lançamento.",
+    novo: "+ Nova pessoa",
+  },
+  meios: {
+    titulo: "Meios de pagamento",
+    sub: "Cartões, contas e Pix. Cartão de crédito com vencimento lança na data da fatura.",
+    novo: "+ Novo meio",
+  },
+  recorrentes: {
+    titulo: "Contas recorrentes",
+    sub: "Contas que se repetem todo mês e aparecem na Agenda.",
+    novo: "+ Nova conta",
+  },
+  tags: {
+    titulo: "Tags",
+    sub: "Agrupam gastos entre categorias (ex.: #viagem-praia).",
+  },
+  bancos: {
+    titulo: "Bancos conectados",
+    sub: "Contas do Open Finance (Pluggy) que trazem lançamentos para o Revisar.",
+  },
+  aparencia: { titulo: "Aparência", sub: "Tema claro ou escuro." },
+};
 
 /**
- * Hub de Cadastros (nova identidade). Abas Categorias/Pessoas/Meios com CRUD
- * completo + favorito; Recorrentes/Tags como placeholder (Etapa 3). Criar/
- * editar via modal único.
+ * Ajustes do "Repaginado": menu de seções à esquerda (com contagens) e a
+ * seção escolhida à direita, no padrão de lista do protótipo v2. A seção fica
+ * na URL (?secao=), para dar para linkar direto (ex.: do "Pede atenção").
  */
 const Registers = () => {
-  const [tab, setTab] = useState<Tab>("categoria");
+  const [secaoParam, setSecao] = useQueryParam(
+    "secao",
+    withDefault(StringParam, "categorias"),
+  );
+  const secao = (secaoParam in TEXTOS ? secaoParam : "categorias") as Secao;
+  const { openQuickAddCom } = useQuickAdd();
   const [dialog, setDialog] = useState<{
     open: boolean;
-    kind: RegisterKind;
+    kind: CadastroKind;
     item: RegisterItem | null;
   }>({ open: false, kind: "categoria", item: null });
 
-  const categorias = useGetCategorias(OPT_LIMIT);
-  const pessoas = useGetPessoas(OPT_LIMIT);
-  const meios = useGetMeiosPagamento(OPT_LIMIT);
+  const categorias = useGetCategorias(OPT);
+  const pessoas = useGetPessoas(OPT);
+  const meios = useGetMeiosPagamento(OPT);
+  const recorrencias = useGetRecorrencias();
   const tags = useGetTags();
+  const contas = useGetContasVinculadas();
 
-  // Mutations da aba ativa (fallback categoria nas abas sem CRUD).
-  const activeKind: RegisterKind = isRegisterKind(tab) ? tab : "categoria";
-  const { remove, toggleFavorito } = useCadastroMutations(activeKind);
-  const tagMutations = useTagMutations();
+  const menu: { id: Secao; n?: number }[] = [
+    { id: "categorias", n: categorias.data?.data?.rows?.length },
+    { id: "pessoas", n: pessoas.data?.data?.rows?.length },
+    { id: "meios", n: meios.data?.data?.rows?.length },
+    { id: "recorrentes", n: recorrencias.data?.data?.length },
+    { id: "tags", n: tags.data?.data?.length },
+    { id: "bancos", n: contas.data?.data?.length },
+    { id: "aparencia" },
+  ];
 
-  // Id do item em exclusão (spinner na linha certa). O `remove` é o da aba
-  // ativa; as tags têm mutation própria.
-  const deletingId = remove.isPending ? remove.variables : undefined;
-  const deletingTagId = tagMutations.remove.isPending
-    ? tagMutations.remove.variables
-    : undefined;
-
-  const openNew = () => {
-    if (tab === "tag") {
-      toast.info("Tags são criadas ao lançar uma transação.");
-      return;
-    }
-    if (!isRegisterKind(tab)) {
-      toast.info("Recorrentes chegam em breve.");
-      return;
-    }
-    setDialog({ open: true, kind: tab, item: null });
-  };
-
-  const handleRenameTag = (id: string, nome: string) =>
-    tagMutations.rename.mutate(
-      { id, nome },
-      {
-        onSuccess: () => toast.success("Tag renomeada."),
-        onError: (e) => toast.error(e.message),
-      },
-    );
-
-  const handleDeleteTag = (tag: Tag) =>
-    tagMutations.remove.mutate(tag.id, {
-      onSuccess: () =>
-        toast.success(
-          tag.count > 0
-            ? `Tag "${tag.nome}" removida de ${tag.count} transaç${tag.count === 1 ? "ão" : "ões"}.`
-            : `Tag "${tag.nome}" excluída.`,
-        ),
-      onError: (e) => toast.error(e.message),
-    });
-
-  const openEdit = (kind: RegisterKind) => (item: RegisterItem) =>
+  const abrir = (kind: CadastroKind, item: RegisterItem | null) =>
     setDialog({ open: true, kind, item });
-
-  const handleDelete = (id: string) =>
-    remove.mutate(id, {
-      onSuccess: () => toast.success("Cadastro excluído."),
-      onError: (e) => toast.error(e.message),
-    });
-
-  const handleFavorito = (id: string, favorito: boolean) =>
-    toggleFavorito.mutate({ id, favorito });
+  const novo = () => {
+    if (secao === "categorias") abrir("categoria", null);
+    else if (secao === "pessoas") abrir("pessoa", null);
+    else if (secao === "meios") abrir("meio", null);
+    else if (secao === "recorrentes")
+      openQuickAddCom({ repeticao: "mensal", status: "pendente" });
+  };
+  const t = TEXTOS[secao];
 
   return (
-    <div className="animate-om-fade">
-      <h1 className="mb-4 font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
-        Ajustes
-      </h1>
-
-      {/* Abas + Novo */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        {TABS.map((t) => (
+    <div className="flex animate-om-fade flex-wrap items-start gap-6 pb-8">
+      <nav
+        aria-label="Seções de ajustes"
+        className="flex max-w-[260px] flex-[1_1_220px] flex-col gap-1"
+      >
+        <h1 className="mb-3 font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+          Ajustes
+        </h1>
+        {menu.map((m) => (
           <button
-            key={t.id}
+            key={m.id}
             type="button"
-            onClick={() => setTab(t.id)}
-            className={registerTab({ active: tab === t.id })}
+            aria-current={secao === m.id ? "page" : undefined}
+            onClick={() => setSecao(m.id === "categorias" ? undefined : m.id)}
+            className={cn(
+              "flex h-11 items-center justify-between rounded-[12px] px-3 text-sm font-semibold transition-colors",
+              secao === m.id
+                ? "bg-card text-fg shadow-[0_1px_3px_rgba(0,0,0,.06)]"
+                : "text-fg2 hover:bg-card/60",
+            )}
           >
-            {t.label}
+            <span>{TEXTOS[m.id].titulo}</span>
+            {m.n !== undefined && (
+              <span className="font-medium text-muted">{m.n}</span>
+            )}
           </button>
         ))}
-        {tab !== "tag" && (
-          <button
-            type="button"
-            onClick={openNew}
-            className="ml-auto flex items-center gap-[7px] rounded-[12px] bg-primary px-[17px] py-[11px] text-sm font-semibold text-white shadow-primary transition-colors hover:bg-primary-strong"
-          >
-            <Plus className="size-4" strokeWidth={2.4} />
-            Novo
-          </button>
-        )}
-      </div>
+      </nav>
 
-      {/* Conteúdo da aba */}
-      {tab === "categoria" && (
-        <CategoriaList
-          rows={categorias.data?.data?.rows ?? []}
-          isLoading={categorias.isLoading}
-          deletingId={deletingId}
-          onEdit={openEdit("categoria")}
-          onDelete={handleDelete}
-          onToggleFavorito={handleFavorito}
-        />
-      )}
-      {tab === "pessoa" && (
-        <PessoaList
-          rows={pessoas.data?.data?.rows ?? []}
-          isLoading={pessoas.isLoading}
-          deletingId={deletingId}
-          onEdit={openEdit("pessoa")}
-          onDelete={handleDelete}
-          onToggleFavorito={handleFavorito}
-        />
-      )}
-      {tab === "meio" && (
-        <MeioList
-          rows={meios.data?.data?.rows ?? []}
-          isLoading={meios.isLoading}
-          deletingId={deletingId}
-          onEdit={openEdit("meio")}
-          onDelete={handleDelete}
-          onToggleFavorito={handleFavorito}
-        />
-      )}
-      {tab === "tag" && (
-        <TagList
-          rows={tags.data?.data ?? []}
-          isLoading={tags.isLoading}
-          deletingId={deletingTagId}
-          onRename={handleRenameTag}
-          onDelete={handleDeleteTag}
-        />
-      )}
-      {tab === "recorrente" && (
-        <div className="rounded-card border border-dashed border-line bg-card/50 px-6 py-16 text-center">
-          <p className="text-sm font-semibold text-fg">Contas recorrentes</p>
-          <p className="mt-1 text-sm text-muted">
-            Contas a pagar recorrentes chegam em breve.
-          </p>
+      <div className="flex min-w-0 flex-[3_1_520px] flex-col gap-[14px]">
+        <div className="flex flex-wrap items-center justify-between gap-[10px]">
+          <div>
+            <h2 className="font-display text-[22px] font-bold">{t.titulo}</h2>
+            <p className="mt-[2px] text-[13.5px] text-fg2">{t.sub}</p>
+          </div>
+          {t.novo && (
+            <button
+              type="button"
+              onClick={novo}
+              className="flex h-10 items-center gap-[6px] rounded-full bg-primary px-4 text-[13.5px] font-semibold text-white hover:bg-primary-strong"
+            >
+              <Plus className="size-4" strokeWidth={2.6} />
+              {t.novo.replace("+ ", "")}
+            </button>
+          )}
         </div>
-      )}
+
+        {secao === "categorias" && <SecaoCategorias abrir={abrir} />}
+        {secao === "pessoas" && <SecaoPessoas abrir={abrir} />}
+        {secao === "meios" && <SecaoMeios abrir={abrir} />}
+        {secao === "recorrentes" && <SecaoRecorrentes />}
+        {secao === "tags" && <SecaoTags />}
+        {secao === "bancos" && <SecaoBancos />}
+        {secao === "aparencia" && <SecaoAparencia />}
+      </div>
 
       <RegisterFormDialog
         kind={dialog.kind}

@@ -6,17 +6,22 @@ import type {
   GetCaixaEntradaCandidatasUseCase,
 } from "@/domain/usecases";
 
-export class GetCaixaEntradaCandidatas implements GetCaixaEntradaCandidatasUseCase {
+export class GetCaixaEntradaCandidatas
+  implements GetCaixaEntradaCandidatasUseCase
+{
   constructor(
     private readonly url: string,
     private readonly httpClient: HttpClient,
   ) {}
 
-  async get(params: GetCaixaEntradaCandidatasParams): Promise<GetCaixaEntradaCandidatasModel> {
-    const httpResponse = await this.httpClient.request<GetCaixaEntradaCandidatasModel>({
-      url: this.url.replace(":id", params.id),
-      method: "get",
-    });
+  async get(
+    params: GetCaixaEntradaCandidatasParams,
+  ): Promise<GetCaixaEntradaCandidatasModel> {
+    const httpResponse =
+      await this.httpClient.request<GetCaixaEntradaCandidatasModel>({
+        url: this.url.replace(":id", params.id),
+        method: "get",
+      });
 
     switch (httpResponse.statusCode) {
       case HttpStatusCode.ok:
