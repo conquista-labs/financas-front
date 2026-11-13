@@ -1,9 +1,9 @@
-import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import type { Patrimonio } from "@/domain/models";
+import { formatCurrency } from "@/lib/format";
+import { Skeleton } from "@/presentation/components/ui";
 import {
   useGetEvolucaoPatrimonio,
   useGetPatrimonios,
@@ -11,38 +11,24 @@ import {
   usePatrimonioMutations,
 } from "@/presentation/hooks/api";
 
+import { GrupoCard, PatrimonioHero, PatrimonyFormDialog } from "./components";
 import {
-  EvolucaoChart,
-  PatrimonioList,
-  PatrimonyFormDialog,
-  PatrimonyKpis,
-  PatrimonyTabs,
-  ReservasResumo,
-  ResumoGrupos,
-} from "./components";
-import {
-  type Aba,
-  CATEGORIA_DA_ABA,
+  COR_DO_GRUPO,
   evolucaoRange,
+  fatiasDaBarra,
+  GRUPO_LABEL,
+  NOVOS,
   resumoPorGrupo,
   toEvolucaoPoints,
 } from "./patrimony.helpers";
 
 const LISTA_COMPLETA = { page: 1, limit: 200 };
 
-const NOVO_LABEL: Record<Aba, string> = {
-  resumo: "Novo item",
-  imoveis: "Novo imóvel",
-  veiculos: "Novo veículo",
-  reservas: "Novo investimento",
-  dividas: "Nova dívida",
-};
-
 /**
- * Patrimônio (nova identidade). KPIs (líquido/ativos/dívidas) e abas: Resumo
- * (evolução + consolidado por grupo) e uma por grupo (Imóveis, Veículos,
- * Investimentos e reservas, Dívidas soltas) com a lista dele. A aba fica na
- * URL (?aba=). Criar/editar via modal; excluir com desfazer.
+ * Patrimônio do "Repaginado": card escuro com o líquido e a evolução, barra
+ * de composição por grupo e um card por grupo com os itens. "+ Imóvel / +
+ * Veículo / + Investimento / + Dívida" abrem o formulário já na categoria.
+ * Excluir tem "Desfazer" (recria a partir do item).
  */
 const Patrimony = () => {
   const [dialog, setDialog] = useState<{
@@ -51,10 +37,9 @@ const Patrimony = () => {
     categoria?: string;
   }>({ open: false, item: null });
 
-  // Janela do gráfico de evolução: últimos 12 meses (estável no mount).
+  // Janela da evolução: últimos 12 meses (estável no mount).
   const range = useMemo(() => evolucaoRange(new Date()), []);
 
-  // Todos os itens (o padrão da API é 10 por página e a tela não pagina).
   const patrimonios = useGetPatrimonios(LISTA_COMPLETA);
   const resumo = useGetResumoPatrimonio();
   const evolucao = useGetEvolucaoPatrimonio(range);
@@ -65,22 +50,12 @@ const Patrimony = () => {
     [patrimonios.data],
   );
   const grupos = useMemo(() => resumoPorGrupo(rows), [rows]);
-
-  // Aba na URL (?aba=imoveis): volta e recarregar mantêm. Grupo sem itens
-  // (ou valor inválido) cai no Resumo.
-  const [params, setParams] = useSearchParams();
-  const pedida = params.get("aba");
-  const grupoAtual = grupos.find((g) => g.grupo === pedida);
-  const aba: Aba = grupoAtual?.grupo ?? "resumo";
-  const irPara = (nova: Aba) =>
-    setParams(nova === "resumo" ? {} : { aba: nova }, { replace: true });
-  const evolucaoPoints = useMemo(
+  const fatias = fatiasDaBarra(grupos);
+  const pontos = useMemo(
     () => toEvolucaoPoints(evolucao.data?.data?.series ?? []),
     [evolucao.data],
   );
 
-  const openNew = () =>
-    setDialog({ open: true, item: null, categoria: CATEGORIA_DA_ABA[aba] });
   const openEdit = (item: Patrimonio) => setDialog({ open: true, item });
 
   const handleDelete = (item: Patrimonio) =>
@@ -97,58 +72,79 @@ const Patrimony = () => {
     });
 
   return (
-    <div className="animate-om-fade">
-      {/* Header */}
-      <div className="mb-5 flex items-center justify-between">
-        <h1 className="font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
+    <div className="flex animate-om-fade flex-col gap-4 pb-8">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
           Patrimônio
         </h1>
-        <button
-          type="button"
-          onClick={openNew}
-          className="flex items-center gap-[7px] rounded-[12px] bg-primary px-[17px] py-[11px] text-sm font-semibold text-white shadow-primary transition-colors hover:bg-primary-strong"
+        <div className="flex flex-wrap gap-[6px]">
+          {NOVOS.map((n) => (
+            <button
+              key={n.categoria}
+              type="button"
+              onClick={() =>
+                setDialog({ open: true, item: null, categoria: n.categoria })
+              }
+              className="h-10 rounded-full border border-line bg-card px-[14px] text-[13px] font-semibold text-fg transition-colors hover:bg-bg"
+            >
+              + {n.label}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      <PatrimonioHero
+        resumo={resumo.data?.data}
+        pontos={pontos}
+        isLoading={resumo.isLoading}
+      />
+
+      {fatias.length > 1 && (
+        <div
+          role="img"
+          aria-label={`Composição do patrimônio: ${fatias
+            .map((f) => `${GRUPO_LABEL[f.grupo]} ${formatCurrency(f.valor)}`)
+            .join(", ")}`}
+          className="flex h-[14px] gap-[3px] overflow-hidden rounded-full"
         >
-          <Plus className="size-4" strokeWidth={2.4} />
-          {NOVO_LABEL[aba]}
-        </button>
-      </div>
+          {fatias.map((f) => (
+            <span
+              key={f.grupo}
+              title={`${GRUPO_LABEL[f.grupo]}: ${formatCurrency(f.valor)}`}
+              style={{ flex: f.valor, backgroundColor: COR_DO_GRUPO[f.grupo] }}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* KPIs */}
-      <PatrimonyKpis resumo={resumo.data?.data} isLoading={resumo.isLoading} />
-
-      <div className="mt-5">
-        <PatrimonyTabs aba={aba} grupos={grupos} onChange={irPara} />
-      </div>
-
-      {aba === "resumo" ? (
-        <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-          <EvolucaoChart
-            points={evolucaoPoints}
-            isLoading={evolucao.isLoading}
-          />
-          <ResumoGrupos
-            grupos={grupos}
-            isLoading={patrimonios.isLoading}
-            onAbrir={irPara}
-          />
+      {patrimonios.isLoading ? (
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-[200px] rounded-[24px]" />
+          ))}
+        </div>
+      ) : grupos.length === 0 ? (
+        <div className="rounded-[24px] border border-dashed border-line bg-card/50 px-6 py-16 text-center">
+          <p className="text-sm font-semibold text-fg">
+            Nenhum patrimônio ainda
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            Adicione seus bens e dívidas para acompanhar o patrimônio líquido.
+          </p>
         </div>
       ) : (
-        <>
-          {aba === "reservas" && (
-            <ReservasResumo
-              linhas={grupoAtual?.linhas ?? []}
-              saldoDisponivel={resumo.data?.data?.saldoDisponivel ?? 0}
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-start gap-4">
+          {grupos.map((g) => (
+            <GrupoCard
+              key={g.grupo}
+              grupo={g}
+              rows={rows}
+              deletingId={remove.isPending ? remove.variables : undefined}
+              onEdit={openEdit}
+              onDelete={handleDelete}
             />
-          )}
-          <PatrimonioList
-            rows={rows}
-            linhas={grupoAtual?.linhas ?? []}
-            isLoading={patrimonios.isLoading}
-            deletingId={remove.isPending ? remove.variables : undefined}
-            onEdit={openEdit}
-            onDelete={handleDelete}
-          />
-        </>
+          ))}
+        </div>
       )}
 
       <PatrimonyFormDialog
