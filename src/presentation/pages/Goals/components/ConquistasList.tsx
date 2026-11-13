@@ -8,7 +8,6 @@ import { dataCurta } from "../goals.helpers";
 interface ConquistasListProps {
   metas: MetaResponse[];
   desejos: DesejoResponse[];
-  resumo?: { ano: number; quantidade: number; valor: number };
   /** id da meta/desejo sendo reaberto (spinner no botão). */
   reabrindo?: string | null;
   onReabrirMeta: (meta: MetaResponse) => void;
@@ -20,14 +19,12 @@ type Item =
   | { tipo: "desejo"; data: string; desejo: DesejoResponse };
 
 /**
- * Aba Conquistas: metas concluídas e desejos realizados, do mais recente para
+ * Coluna "Conquistado": metas concluídas e desejos realizados, do mais recente para
  * o mais antigo, com quanto custou (ou o alvo) e "Reabrir" (marcou por engano).
- * No topo, o resumo do ano.
  */
 export const ConquistasList = ({
   metas,
   desejos,
-  resumo,
   reabrindo,
   onReabrirMeta,
   onReabrirDesejo,
@@ -47,17 +44,7 @@ export const ConquistasList = ({
 
   return (
     <div>
-      {resumo && resumo.quantidade > 0 && (
-        <div className="mb-4 flex items-center gap-3 rounded-[16px] bg-success/10 px-5 py-4">
-          <Trophy className="size-5 text-success" strokeWidth={2} />
-          <p className="text-[14px] font-semibold text-fg">
-            {resumo.ano}: {resumo.quantidade} conquista
-            {resumo.quantidade === 1 ? "" : "s"} ·{" "}
-            {formatCurrency(resumo.valor)} realizados
-          </p>
-        </div>
-      )}
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="flex flex-col gap-[10px]">
         {itens.map((item) => {
           const id = item.tipo === "meta" ? item.meta.id : item.desejo.id;
           const titulo =
@@ -76,9 +63,9 @@ export const ConquistasList = ({
           return (
             <div
               key={`${item.tipo}-${id}`}
-              className="flex items-center gap-3 rounded-[18px] border border-line bg-card px-5 py-4"
+              className="flex items-start gap-3 rounded-[18px] bg-card px-4 py-[14px] shadow-[0_1px_2px_rgba(0,0,0,.04)]"
             >
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-success/10 text-success">
+              <span className="grid size-9 shrink-0 place-items-center rounded-[11px] bg-success/10 text-success">
                 {item.tipo === "meta" ? (
                   <Trophy className="size-[18px]" strokeWidth={2} />
                 ) : (
@@ -89,12 +76,12 @@ export const ConquistasList = ({
                 <p className="flex items-center gap-2 truncate text-[14.5px] font-semibold text-fg">
                   {titulo}
                   {item.tipo === "desejo" && (
-                    <span className="rounded-full bg-primary/10 px-2 py-[1px] text-[10.5px] font-bold text-primary">
+                    <span className="rounded-full bg-primary-soft px-2 py-[1px] text-[10.5px] font-bold text-primary-strong dark:text-[#B3A9FF]">
                       desejo
                     </span>
                   )}
                 </p>
-                <p className="truncate text-[12.5px] text-muted">
+                <p className="text-[12.5px] text-fg2">
                   {item.tipo === "meta" ? "Conquistada" : "Realizado"} em{" "}
                   {dataCurta(item.data)} · {detalhe}
                 </p>

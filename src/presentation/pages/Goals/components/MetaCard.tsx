@@ -1,4 +1,4 @@
-import { CalendarDays, Loader2, Pencil, Trash2, Trophy } from "lucide-react";
+import { CalendarDays, Loader2, Trash2, Trophy } from "lucide-react";
 
 import type { MetaResponse } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
@@ -35,56 +35,47 @@ export const MetaCard = ({
   const dono = meta.pessoa?.nome ?? "Casal";
 
   return (
-    <div className="flex items-center gap-4 rounded-[20px] border border-line bg-card px-[22px] py-5">
+    <article className="flex flex-col gap-3 rounded-[18px] bg-card p-4 shadow-[0_1px_2px_rgba(0,0,0,.04)]">
       <button
         type="button"
         onClick={() => onEdit(meta)}
         title="Editar meta"
-        className="flex min-w-0 flex-1 flex-col gap-[5px] text-left"
+        className="flex min-w-0 flex-col text-left"
       >
-        <span className="truncate text-[15.5px] font-semibold text-fg">
+        <span className="truncate text-[15px] font-bold text-fg hover:text-primary">
           {meta.titulo}
         </span>
-        <span className="font-display text-[20px] font-bold -tracking-[0.02em] text-fg">
+        <span className="mt-1 font-display text-[22px] font-bold -tracking-[0.02em] text-fg">
           {formatCurrency(meta.valorAlvo)}
         </span>
-        <span className="flex items-center gap-[6px] text-[12.5px] font-medium text-muted">
+        <span className="mt-[2px] flex items-center gap-[6px] text-[12.5px] text-fg2">
           <CalendarDays className="size-[13px]" strokeWidth={2} />
           {quando} · {dono}
         </span>
       </button>
-
-      <div className="flex shrink-0 items-center gap-[6px]">
+      <div className="flex gap-[6px]">
         <button
           type="button"
           onClick={() => onConcluir(meta)}
-          className="flex items-center gap-[6px] rounded-[10px] bg-success/10 px-[13px] py-[9px] text-[13px] font-bold text-success transition-colors hover:bg-success/15"
+          className="flex h-[38px] flex-1 items-center justify-center gap-[6px] rounded-[11px] bg-fg text-[13.5px] font-bold text-card transition-opacity hover:opacity-90"
         >
           <Trophy className="size-[14px]" strokeWidth={2.2} />
           Concluir
         </button>
         <button
           type="button"
-          aria-label="Editar meta"
-          onClick={() => onEdit(meta)}
-          className={`${iconBtn} bg-bg text-fg2 hover:bg-track`}
-        >
-          <Pencil className="size-4" strokeWidth={1.8} />
-        </button>
-        <button
-          type="button"
           aria-label="Arquivar meta"
           onClick={() => onArchive(meta)}
           disabled={isArchiving}
-          className={`${iconBtn} bg-danger/10 text-danger hover:bg-danger/15`}
+          className={`${iconBtn} size-[38px] rounded-[11px] border border-line bg-card text-fg2 hover:text-danger`}
         >
           {isArchiving ? (
             <Loader2 className="size-4 animate-spin" strokeWidth={2} />
           ) : (
-            <Trash2 className="size-4" strokeWidth={1.8} />
+            <Trash2 className="size-[15px]" strokeWidth={1.8} />
           )}
         </button>
       </div>
-    </div>
+    </article>
   );
 };

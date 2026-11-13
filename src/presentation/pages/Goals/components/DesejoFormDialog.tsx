@@ -200,7 +200,7 @@ export const DesejoFormDialog = ({
                     className={cn(
                       "flex-1 rounded-[11px] border py-[10px] text-[13px] font-semibold transition-colors",
                       active
-                        ? "border-primary bg-primary/soft text-primary-strong"
+                        ? "border-primary bg-primary-soft text-primary-strong"
                         : "border-line bg-card text-fg2 hover:border-primary/40",
                     )}
                   >
