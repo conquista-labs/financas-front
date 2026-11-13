@@ -279,7 +279,7 @@ const Transactions = () => {
     <div className="flex flex-wrap items-start gap-5 pb-8 xl:h-[calc(100dvh-4rem)] xl:pb-0">
       <div className="flex min-w-0 flex-[3_1_560px] flex-col gap-[14px] xl:h-full">
         <header className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+          <h1 className="font-display text-[26px] font-bold -tracking-[0.03em] text-fg sm:text-[30px]">
             Transações
           </h1>
           <div className="flex flex-wrap items-center gap-2">
@@ -298,7 +298,7 @@ const Transactions = () => {
               type="button"
               onClick={exportar}
               disabled={exportando}
-              className="flex h-[42px] items-center gap-[6px] rounded-full border border-line bg-card px-[14px] text-sm font-semibold hover:border-primary/40 disabled:opacity-60"
+              className="hidden h-[42px] items-center gap-[6px] rounded-full border border-line bg-card px-[14px] text-sm font-semibold hover:border-primary/40 disabled:opacity-60 lg:flex"
             >
               <Download className="size-4" />
               {exportando ? "Exportando…" : "Exportar"}
@@ -306,7 +306,7 @@ const Transactions = () => {
             <button
               type="button"
               onClick={openQuickAdd}
-              className="flex h-[42px] items-center gap-[6px] rounded-full bg-primary px-4 text-sm font-bold text-white shadow-primary hover:bg-primary-strong"
+              className="hidden h-[42px] items-center gap-[6px] rounded-full bg-primary px-4 text-sm font-bold text-white shadow-primary hover:bg-primary-strong lg:flex"
             >
               <Plus className="size-4" strokeWidth={2.6} /> Lançar
             </button>
@@ -425,18 +425,27 @@ const Transactions = () => {
       </div>
 
       {aberta && (
-        <div className="min-w-0 flex-[1_1_320px] lg:sticky lg:top-6 xl:max-h-full xl:overflow-y-auto">
-          <DetailPanel
-            key={aberta.id}
-            transacao={aberta}
-            onFechar={() => setAbertaId(undefined)}
-            onExcluir={setDeleteTarget}
-            onFormularioCompleto={(id) =>
-              navigate(
-                `${urlRouters.editTransactions.replace(":id", id)}${window.location.search}`,
-              )
-            }
-          />
+        // Celular/tablet: o detalhe abre como folha por cima da lista (toque
+        // fora fecha). Desktop: painel ao lado.
+        <div
+          className="min-w-0 flex-[1_1_320px] max-lg:fixed max-lg:inset-0 max-lg:z-50 max-lg:flex max-lg:items-end max-lg:bg-black/40 lg:sticky lg:top-6 xl:max-h-full xl:overflow-y-auto"
+          onClick={(e) =>
+            e.target === e.currentTarget && setAbertaId(undefined)
+          }
+        >
+          <div className="w-full max-lg:max-h-[90dvh] max-lg:overflow-y-auto max-lg:rounded-t-[24px] max-lg:pb-[env(safe-area-inset-bottom)] max-lg:[&>aside]:rounded-b-none">
+            <DetailPanel
+              key={aberta.id}
+              transacao={aberta}
+              onFechar={() => setAbertaId(undefined)}
+              onExcluir={setDeleteTarget}
+              onFormularioCompleto={(id) =>
+                navigate(
+                  `${urlRouters.editTransactions.replace(":id", id)}${window.location.search}`,
+                )
+              }
+            />
+          </div>
         </div>
       )}
 

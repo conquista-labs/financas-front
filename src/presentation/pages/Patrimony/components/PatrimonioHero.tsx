@@ -91,7 +91,7 @@ export const PatrimonioHero = ({
       </div>
 
       {pontos.length > 1 && (
-        <div className="min-w-0 flex-[1_1_320px]">
+        <div className="hidden min-w-0 flex-[1_1_320px] sm:block">
           <svg
             viewBox={`0 0 ${W} ${H}`}
             width="100%"

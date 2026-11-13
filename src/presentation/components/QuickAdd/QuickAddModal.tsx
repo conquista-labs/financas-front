@@ -393,9 +393,9 @@ export const QuickAddModal = () => {
                 }}
                 placeholder="Ex: mercado 120 nubank 3x"
                 aria-label="Descreva o lançamento"
-                className="min-w-0 flex-1 bg-transparent font-display text-[22px] font-semibold outline-none placeholder:text-muted"
+                className="min-w-0 flex-1 bg-transparent font-display text-lg font-semibold outline-none placeholder:text-muted sm:text-[22px]"
               />
-              <kbd className="rounded-[7px] bg-track px-2 py-[3px] font-sans text-xs text-fg2">
+              <kbd className="hidden rounded-[7px] bg-track px-2 py-[3px] font-sans text-xs text-fg2 sm:inline">
                 esc
               </kbd>
             </div>

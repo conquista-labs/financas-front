@@ -74,10 +74,10 @@ const Patrimony = () => {
   return (
     <div className="flex animate-om-fade flex-col gap-4 pb-8">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+        <h1 className="font-display text-[26px] font-bold -tracking-[0.03em] text-fg sm:text-[30px]">
           Patrimônio
         </h1>
-        <div className="flex flex-wrap gap-[6px]">
+        <div className="flex gap-[6px] max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none] sm:flex-wrap [&>*]:shrink-0">
           {NOVOS.map((n) => (
             <button
               key={n.categoria}

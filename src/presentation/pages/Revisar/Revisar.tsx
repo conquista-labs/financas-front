@@ -74,6 +74,8 @@ const Revisar = () => {
   const [ocupados, setOcupados] = useState<Set<string>>(new Set());
   const [atualId, setAtualId] = useState<string>();
   const [confirmandoLimpar, setConfirmandoLimpar] = useState(false);
+  // Celular: um item por vez (como no protótipo mobile); a fila abre à parte.
+  const [filaNoCelular, setFilaNoCelular] = useState(false);
   const importAberto = searchParams.get("importar") === "1";
   const listaRef = useRef<HTMLDivElement>(null);
 
@@ -592,10 +594,10 @@ const Revisar = () => {
       {/* Cabeçalho */}
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+          <h1 className="font-display text-[26px] font-bold -tracking-[0.03em] text-fg sm:text-[30px]">
             Revisar
           </h1>
-          <p className="mt-1 text-sm text-fg2">
+          <p className="mt-1 hidden text-sm text-fg2 sm:block">
             Tudo que chegou do banco ou do extrato, numa fila só. Confira e
             aceite — o resto a gente já separou.
           </p>
@@ -613,14 +615,21 @@ const Revisar = () => {
                 m.sincronizar.isPending && "animate-spin",
               )}
             />
-            {m.sincronizar.isPending ? "Sincronizando…" : "Sincronizar bancos"}
+            {m.sincronizar.isPending ? (
+              "Sincronizando…"
+            ) : (
+              <span>
+                Sincronizar<span className="hidden sm:inline"> bancos</span>
+              </span>
+            )}
           </button>
           <button
             type="button"
             onClick={() => setImportAberto(!importAberto)}
             className="flex h-[42px] items-center gap-2 rounded-full bg-fg px-4 text-sm font-semibold text-card transition-opacity hover:opacity-90"
           >
-            <Upload className="size-4" /> Importar extrato
+            <Upload className="size-4" /> Importar
+            <span className="-ml-1 hidden sm:inline">extrato</span>
           </button>
         </div>
       </header>
@@ -636,8 +645,8 @@ const Revisar = () => {
         />
       )}
 
-      {/* Visões + fontes + filtros */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Visões + fontes + filtros (no celular: uma linha com rolagem) */}
+      <div className="flex items-center gap-2 max-sm:-mx-4 max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none] sm:flex-wrap [&>*]:shrink-0">
         <div role="tablist" className="flex gap-1 rounded-full bg-track p-1">
           {visoes.map((v) => (
             <button
@@ -714,11 +723,33 @@ const Revisar = () => {
         </label>
       </div>
 
+      {/* Celular: progresso + alternar entre o item e a fila */}
+      {fila.length > 0 && (
+        <div className="flex items-center gap-3 lg:hidden">
+          <div className="h-[6px] flex-1 overflow-hidden rounded-full bg-track">
+            <div
+              className="h-full rounded-full bg-primary transition-[width]"
+              style={{ width: `${(posicao / fila.length) * 100}%` }}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setFilaNoCelular((v) => !v)}
+            className="h-8 shrink-0 rounded-full border border-line bg-card px-3 text-[12.5px] font-semibold"
+          >
+            {filaNoCelular ? "Voltar ao item" : `Ver fila (${fila.length})`}
+          </button>
+        </div>
+      )}
+
       {/* Fila + item */}
       <div className="flex flex-wrap items-start gap-4">
         <section
           aria-label="Fila"
-          className="min-w-0 flex-[1_1_380px] overflow-hidden rounded-[22px] border border-line bg-card"
+          className={cn(
+            "min-w-0 flex-[1_1_380px] overflow-hidden rounded-[22px] border border-line bg-card",
+            !filaNoCelular && atual && "max-lg:hidden",
+          )}
         >
           {/* Barra da fila: contagem ou ações em lote */}
           <div className="flex min-h-[50px] flex-wrap items-center gap-2 border-b border-line2 px-[14px] py-2 text-[12.5px]">
@@ -893,7 +924,10 @@ const Revisar = () => {
                     ativo={item.id === atual?.id}
                     selecionado={selecionados.has(item.id)}
                     ocupado={ocupados.has(item.id)}
-                    onAbrir={() => setAtualId(item.id)}
+                    onAbrir={() => {
+                      setAtualId(item.id);
+                      setFilaNoCelular(false);
+                    }}
                     onToggle={() => toggle(item.id)}
                   />
                 </div>
@@ -929,7 +963,12 @@ const Revisar = () => {
         </section>
 
         {atual && (
-          <div className="min-w-0 flex-[1.4_1_460px] lg:sticky lg:top-6">
+          <div
+            className={cn(
+              "min-w-0 flex-[1.4_1_460px] lg:sticky lg:top-6",
+              filaNoCelular && "max-lg:hidden",
+            )}
+          >
             <PainelItem
               key={atual.id}
               item={atual}

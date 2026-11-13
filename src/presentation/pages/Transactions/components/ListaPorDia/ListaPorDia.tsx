@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import type { TransacaoResponse } from "@/domain/models";
 import { enhance } from "@/lib/color";
@@ -49,6 +49,13 @@ export const ListaPorDia = ({
 }: ListaPorDiaProps) => {
   const [expandidos, setExpandidos] = useState<Set<string>>(new Set());
   const grupos = agruparPorDia(linhas);
+  // Celular: segurar a linha seleciona (e entra no modo seleção, em que o
+  // toque marca/desmarca); fora dele o checkbox some para sobrar espaço.
+  const modoSelecao = selecionados.size > 0;
+  const timer = useRef<number>();
+  const segurou = useRef(false);
+  const cancelar = () => window.clearTimeout(timer.current);
+  const toque = () => window.matchMedia("(pointer: coarse)").matches;
 
   return (
     <section className="flex flex-col overflow-hidden rounded-[22px] border border-line bg-card xl:min-h-0 xl:flex-1">
@@ -90,7 +97,7 @@ export const ListaPorDia = ({
                     <div
                       key={t.id}
                       className={cn(
-                        "flex items-center gap-3 border-b border-line2 px-[18px] py-[10px] last:border-0",
+                        "flex items-center gap-3 border-b border-line2 px-4 py-[10px] last:border-0 sm:px-[18px]",
                         t.id === abertaId
                           ? "bg-primary-soft/60 shadow-[inset_3px_0_0_rgb(var(--primary))]"
                           : sel
@@ -105,7 +112,8 @@ export const ListaPorDia = ({
                         aria-label={`Selecionar ${t.descricao}`}
                         onClick={() => onToggle(t.id)}
                         className={cn(
-                          "grid size-[18px] shrink-0 place-items-center rounded-[5px] border",
+                          "size-[18px] shrink-0 place-items-center rounded-[5px] border",
+                          modoSelecao ? "grid" : "hidden sm:grid",
                           sel
                             ? "border-primary bg-primary text-white"
                             : "border-line bg-card",
@@ -115,8 +123,28 @@ export const ListaPorDia = ({
                       </button>
                       <button
                         type="button"
-                        onClick={() => onAbrir(t)}
-                        className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                        onPointerDown={(e) => {
+                          if (e.pointerType !== "touch") return;
+                          segurou.current = false;
+                          timer.current = window.setTimeout(() => {
+                            segurou.current = true;
+                            onToggle(t.id);
+                            navigator.vibrate?.(10);
+                          }, 450);
+                        }}
+                        onPointerUp={cancelar}
+                        onPointerLeave={cancelar}
+                        onPointerCancel={cancelar}
+                        onContextMenu={(e) => toque() && e.preventDefault()}
+                        onClick={() => {
+                          if (segurou.current) {
+                            segurou.current = false;
+                            return;
+                          }
+                          if (modoSelecao && toque()) onToggle(t.id);
+                          else onAbrir(t);
+                        }}
+                        className="flex min-w-0 flex-1 select-none items-center gap-3 text-left"
                       >
                         <span
                           className="grid size-9 shrink-0 place-items-center rounded-[11px] text-[13px] font-bold text-white"
@@ -185,6 +213,11 @@ export const ListaPorDia = ({
           })
         )}
       </div>
+      {grupos.length > 0 && (
+        <p className="border-t border-line2 px-4 py-3 text-center text-xs text-muted sm:hidden">
+          Toque para ver e editar; segure para selecionar vários.
+        </p>
+      )}
       {rodape}
     </section>
   );

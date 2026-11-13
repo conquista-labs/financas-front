@@ -202,7 +202,7 @@ export const PainelItem = ({
   return (
     <section
       aria-label="Item em revisão"
-      className="flex min-w-0 flex-col gap-[14px] rounded-[26px] border-2 border-primary bg-card p-[22px]"
+      className="flex min-w-0 flex-col gap-[14px] rounded-[26px] border-2 border-primary bg-card p-4 sm:p-[22px]"
     >
       {/* Posição + origem */}
       <div className="flex items-center justify-between gap-3 text-[12.5px] text-fg2">
@@ -241,7 +241,7 @@ export const PainelItem = ({
       </div>
 
       {/* Descrição + valor */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
         <input
           value={descricao}
           onChange={(ev) =>
@@ -251,11 +251,11 @@ export const PainelItem = ({
           }
           disabled={!pendente}
           aria-label="Descrição"
-          className="h-11 min-w-0 flex-1 rounded-[12px] border border-transparent bg-bg px-3 font-display text-[20px] font-bold outline-none focus:border-primary disabled:bg-transparent disabled:px-0"
+          className="h-11 min-w-[180px] flex-1 rounded-[12px] border border-transparent bg-bg px-3 font-display text-[20px] font-bold outline-none focus:border-primary disabled:bg-transparent disabled:px-0"
         />
         <p
           className={cn(
-            "shrink-0 pt-[6px] font-display text-[26px] font-bold tabular-nums -tracking-[0.02em]",
+            "shrink-0 pt-[6px] font-display text-[22px] font-bold sm:text-[26px] tabular-nums -tracking-[0.02em]",
             receita ? "text-success" : "text-fg",
           )}
         >
@@ -388,15 +388,15 @@ export const PainelItem = ({
         <Candidatas id={b.id} onLigar={(id) => onJaLancei(id)} />
       )}
 
-      {/* Ações */}
-      <div className="flex flex-wrap gap-2">
+      {/* Ações (no celular ficam presas embaixo, acima da barra de abas) */}
+      <div className="flex gap-2 max-lg:sticky sm:flex-wrap max-lg:bottom-[calc(88px+env(safe-area-inset-bottom))] max-lg:z-10 max-lg:-mx-4 max-lg:-mb-4 max-lg:rounded-b-[24px] max-lg:bg-card max-lg:px-4 max-lg:py-3 max-lg:shadow-[0_-8px_16px_-12px_rgba(0,0,0,.25)]">
         {pendente ? (
           <>
             <button
               type="button"
               onClick={onAceitar}
               disabled={ocupado}
-              className="flex h-12 min-w-[140px] flex-1 items-center justify-center gap-2 rounded-[13px] bg-primary px-5 text-[15px] font-bold text-white transition-colors hover:bg-primary-strong disabled:opacity-60"
+              className="flex h-12 min-w-[120px] flex-1 items-center justify-center gap-2 rounded-[13px] bg-primary px-5 text-[15px] font-bold text-white transition-colors hover:bg-primary-strong disabled:opacity-60"
             >
               <Check className="size-[18px]" strokeWidth={2.6} /> Aceitar
             </button>
@@ -411,7 +411,8 @@ export const PainelItem = ({
               }
               className="flex h-12 items-center gap-2 rounded-[13px] border border-line bg-card px-4 text-sm font-semibold disabled:opacity-60"
             >
-              <Link2 className="size-4" /> Já lancei
+              <Link2 className="size-4" />
+              <span className="max-sm:sr-only">Já lancei</span>
             </button>
             <button
               type="button"
@@ -419,7 +420,8 @@ export const PainelItem = ({
               disabled={ocupado}
               className="flex h-12 items-center gap-2 rounded-[13px] border border-line bg-card px-4 text-sm font-semibold disabled:opacity-60"
             >
-              <EyeOff className="size-4" /> Ignorar
+              <EyeOff className="size-4" />
+              <span className="max-sm:sr-only">Ignorar</span>
             </button>
             <button
               type="button"
@@ -427,7 +429,8 @@ export const PainelItem = ({
               disabled={ocupado}
               className="flex h-12 items-center gap-2 rounded-[13px] bg-danger/10 px-4 text-sm font-semibold text-danger disabled:opacity-60"
             >
-              <Trash2 className="size-4" /> Excluir
+              <Trash2 className="size-4" />
+              <span className="max-sm:sr-only">Excluir</span>
             </button>
           </>
         ) : visao === "ignorado" ? (
@@ -464,7 +467,7 @@ export const PainelItem = ({
         )}
       </div>
       {pendente && (
-        <p className="text-xs leading-relaxed text-fg2">
+        <p className="hidden text-xs leading-relaxed text-fg2 sm:block">
           {b
             ? "Ignorar deixa em Ignorados (dá para restaurar). Excluir some e não volta na sincronização."
             : "Ignorar deixa em Ignorados. Excluir e Já lancei tiram da fila sem lançar."}{" "}

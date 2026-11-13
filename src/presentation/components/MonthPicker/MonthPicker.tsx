@@ -97,7 +97,7 @@ export const MonthPicker = ({ month, year, onChange }: MonthPickerProps) => {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="min-w-[150px] rounded-[11px] border border-line bg-card px-[14px] py-[9px] text-center text-[15px] font-semibold text-fg transition-colors hover:border-primary/40"
+            className="min-w-[124px] rounded-[11px] border border-line bg-card px-[10px] py-[9px] text-center text-sm font-semibold sm:min-w-[150px] sm:px-[14px] sm:text-[15px] text-fg transition-colors hover:border-primary/40"
           >
             {MESES_LONG[month - 1]} {year}
           </button>
