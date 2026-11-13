@@ -1,15 +1,14 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { StringParam, useQueryParam, withDefault } from "use-query-params";
 
 import type { DesejoResponse, MetaResponse } from "@/domain/models";
+import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/presentation/components/ui";
 import {
   useGetDesejos,
   useGetMetas,
-  useGetMetasResumo,
   useGetPessoas,
 } from "@/presentation/hooks/api";
 
@@ -18,7 +17,6 @@ import {
   ConquistasList,
   DesejoCard,
   DesejoFormDialog,
-  GoalsKpis,
   MetaCard,
   MetaFormDialog,
   RealizarDesejoDialog,
@@ -27,25 +25,14 @@ import { useGoalsMutations } from "./useGoalsMutations";
 
 const OPT_LIMIT = { page: 1, limit: 100 };
 
-type Tab = "metas" | "desejos" | "conquistas";
-
 /**
- * Metas & Desejos. Meta é só um marco (título, valor, quando, de quem) — o
- * sistema não acompanha quanto já foi juntado. Aba Metas: total das metas e
- * conquistas do ano + grid de metas (concluir/editar/arquivar). Aba Desejos:
- * voto do casal, "virar meta" e "Já realizei". Arquivar com desfazer.
- * Aba Conquistas: metas concluídas ("Concluir meta" ou alvo batido) e desejos
- * realizados ("Já realizei"), com "Reabrir".
+ * Metas do "Repaginado": um quadro do "a gente quer" ao "conseguimos".
+ * Queremos (desejos, com voto do casal, "Virar meta" e "Já realizei") →
+ * Rumo a (metas em andamento: concluir/editar/arquivar) → Conquistado
+ * (metas concluídas e desejos realizados, com "Reabrir"). Arquivar tem desfazer.
  */
 const Goals = () => {
-  // Aba persistida na URL (?tab=metas|desejos|conquistas) — sobrevive ao F5.
-  const [tabParam, setTabParam] = useQueryParam(
-    "tab",
-    withDefault(StringParam, "metas"),
-  );
-  const tab: Tab =
-    tabParam === "desejos" || tabParam === "conquistas" ? tabParam : "metas";
-  const setTab = (t: Tab) => setTabParam(t);
+  const [todosDesejos, setTodosDesejos] = useState(false);
 
   // Modais.
   const [concluir, setConcluir] = useState<MetaResponse | null>(null);
@@ -61,7 +48,6 @@ const Goals = () => {
   }>({ open: false, desejo: null });
 
   const metas = useGetMetas();
-  const resumo = useGetMetasResumo();
   const desejos = useGetDesejos();
   const realizados = useGetDesejos({ realizados: true });
   const pessoas = useGetPessoas(OPT_LIMIT);
@@ -168,139 +154,60 @@ const Goals = () => {
       onError: (e) => toast.error(e.message),
     });
 
-  const newLabel = tab === "desejos" ? "Novo desejo" : "Nova meta";
-  const onNew = tab === "desejos" ? openNewDesejo : openNewMeta;
+  const totalMetas = metasRows.reduce((soma, m) => soma + m.valorAlvo, 0);
+  const anoAtual = new Date().getFullYear();
+  const conquistasDoAno =
+    metasConcluidas.filter((m) => m.concluidaEm?.startsWith(String(anoAtual)))
+      .length +
+    desejosRealizados.filter((d) => d.realizadoEm?.startsWith(String(anoAtual)))
+      .length;
+  const desejosVisiveis = todosDesejos
+    ? desejosRows
+    : desejosRows.slice(0, DESEJOS_VISIVEIS);
 
   return (
-    <div className="animate-om-fade">
-      {/* Header */}
-      <div className="mb-5 flex items-end justify-between">
+    <div className="flex animate-om-fade flex-col gap-4 pb-8">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
-            Metas &amp; desejos
+          <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+            Metas
           </h1>
-          <p className="mt-[6px] text-sm text-muted">
-            O que a gente quer, e o quanto já caminhou até lá.
+          <p className="mt-1 text-sm text-fg2">
+            Do &quot;a gente quer&quot; ao &quot;conseguimos&quot;.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onNew}
-          className="flex items-center gap-[7px] rounded-[12px] bg-primary px-[17px] py-[11px] text-sm font-semibold text-white shadow-primary transition-colors hover:bg-primary-strong"
+        <div className="flex flex-wrap gap-[10px] text-[13px]">
+          <span className="rounded-[16px] border border-line bg-card px-[14px] py-[10px]">
+            <strong className="font-display text-[17px]">
+              {metasRows.length}
+            </strong>{" "}
+            {metasRows.length === 1 ? "meta" : "metas"} ·{" "}
+            {formatCurrency(totalMetas)}
+          </span>
+          <span className="rounded-[16px] bg-success/10 px-[14px] py-[10px] text-success">
+            <strong className="font-display text-[17px]">
+              {conquistasDoAno}
+            </strong>{" "}
+            {conquistasDoAno === 1 ? "conquista" : "conquistas"} em {anoAtual}
+          </span>
+        </div>
+      </header>
+
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        {/* Queremos */}
+        <Coluna
+          titulo="Queremos"
+          quantidade={desejosRows.length}
+          tom="bg-track"
+          acao={{ label: "Desejo", onClick: openNewDesejo, primaria: false }}
         >
-          <Plus className="size-4" strokeWidth={2.4} />
-          {newLabel}
-        </button>
-      </div>
-
-      {/* Abas */}
-      <div className="mb-[18px] flex max-w-[560px] gap-[6px] rounded-[14px] bg-track p-[5px]">
-        {(
-          [
-            { id: "metas", label: `Metas (${metasRows.length})` },
-            { id: "desejos", label: `Desejos (${desejosRows.length})` },
-            {
-              id: "conquistas",
-              label: `Conquistas (${metasConcluidas.length + desejosRealizados.length})`,
-            },
-          ] as const
-        ).map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={cn(
-              "flex-1 rounded-[10px] px-[14px] py-[10px] text-sm font-semibold transition-all",
-              tab === t.id
-                ? "bg-card text-primary shadow-[0_2px_6px_rgba(0,0,0,.08)]"
-                : "text-muted",
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Conteúdo */}
-      {tab === "metas" ? (
-        <>
-          <GoalsKpis resumo={resumo.data?.data} isLoading={resumo.isLoading} />
-
-          {metas.isLoading ? (
-            <div className="mt-4 grid gap-4 lg:grid-cols-2">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-[124px] rounded-[20px]" />
-              ))}
-            </div>
-          ) : metasRows.length === 0 ? (
-            <EmptyState
-              title="Nenhuma meta ainda"
-              subtitle="Crie uma meta e vincule uma tag para acompanhar o progresso."
-            />
-          ) : (
-            <div className="mt-4 grid gap-4 lg:grid-cols-2">
-              {metasRows.map((meta) => (
-                <MetaCard
-                  key={meta.id}
-                  meta={meta}
-                  isArchiving={
-                    archiveMeta.isPending && archiveMeta.variables === meta.id
-                  }
-                  onEdit={openEditMeta}
-                  onArchive={handleArchiveMeta}
-                  onConcluir={openConcluir}
-                />
-              ))}
-            </div>
-          )}
-
-          <p className="mt-4 text-[12.5px] text-muted">
-            Meta é um marco: quando conseguirem, use "Concluir".
-          </p>
-        </>
-      ) : tab === "conquistas" ? (
-        <>
-          {metas.isLoading || realizados.isLoading ? (
-            <div className="grid gap-3 lg:grid-cols-2">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <Skeleton key={i} className="h-[76px] rounded-[18px]" />
-              ))}
-            </div>
-          ) : metasConcluidas.length + desejosRealizados.length === 0 ? (
-            <EmptyState
-              title="As conquistas aparecem aqui"
-              subtitle='Use o troféu numa meta ou "Já realizei" num desejo quando vocês conseguirem.'
-            />
-          ) : (
-            <ConquistasList
-              metas={metasConcluidas}
-              desejos={desejosRealizados}
-              resumo={resumo.data?.data?.conquistas}
-              reabrindo={reabrindo}
-              onReabrirMeta={handleReabrirMeta}
-              onReabrirDesejo={handleReabrirDesejo}
-            />
-          )}
-          <p className="mt-4 text-[12.5px] text-muted">
-            Marcou por engano? "Reabrir" volta para as metas ou desejos.
-          </p>
-        </>
-      ) : (
-        <>
           {desejos.isLoading ? (
-            <div className="grid gap-4 lg:grid-cols-2">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-[168px] rounded-[20px]" />
-              ))}
-            </div>
-          ) : desejosRows.length === 0 ? (
-            <EmptyState
-              title="Nenhum desejo ainda"
-              subtitle="Anote o que vocês querem — vira meta quando decidirem juntos."
-            />
+            <Esqueleto />
+          ) : !desejosRows.length ? (
+            <Vazio texto="Anote o que vocês querem — vira meta quando decidirem juntos." />
           ) : (
-            <div className="grid gap-4 lg:grid-cols-2">
-              {desejosRows.map((desejo) => (
+            <>
+              {desejosVisiveis.map((desejo) => (
                 <DesejoCard
                   key={desejo.id}
                   desejo={desejo}
@@ -316,15 +223,74 @@ const Goals = () => {
                   onRealizar={setRealizar}
                 />
               ))}
-            </div>
+              {desejosRows.length > DESEJOS_VISIVEIS && (
+                <button
+                  type="button"
+                  onClick={() => setTodosDesejos((v) => !v)}
+                  className="h-10 rounded-[14px] border border-dashed border-muted/60 text-[13px] font-semibold text-primary-strong hover:bg-card/60 dark:text-[#B3A9FF]"
+                >
+                  {todosDesejos
+                    ? "Ver menos"
+                    : `Ver mais ${desejosRows.length - DESEJOS_VISIVEIS} desejos`}
+                </button>
+              )}
+            </>
           )}
+        </Coluna>
 
-          <p className="mt-4 text-[12.5px] text-muted">
-            Desejo não tem compromisso: vira meta quando vocês decidem juntos.
-            Ordenado por votos e prioridade.
-          </p>
-        </>
-      )}
+        {/* Rumo a */}
+        <Coluna
+          titulo="Rumo a"
+          quantidade={metasRows.length}
+          tom="bg-primary-soft/70"
+          acao={{ label: "Meta", onClick: openNewMeta, primaria: true }}
+        >
+          {metas.isLoading ? (
+            <Esqueleto />
+          ) : !metasRows.length ? (
+            <Vazio texto="Nenhuma meta em andamento. Transforme um desejo ou crie uma." />
+          ) : (
+            metasRows.map((meta) => (
+              <MetaCard
+                key={meta.id}
+                meta={meta}
+                isArchiving={
+                  archiveMeta.isPending && archiveMeta.variables === meta.id
+                }
+                onEdit={openEditMeta}
+                onArchive={handleArchiveMeta}
+                onConcluir={openConcluir}
+              />
+            ))
+          )}
+        </Coluna>
+
+        {/* Conquistado */}
+        <Coluna
+          titulo={`Conquistado`}
+          quantidade={metasConcluidas.length + desejosRealizados.length}
+          tom="bg-success/10"
+        >
+          {metas.isLoading || realizados.isLoading ? (
+            <Esqueleto />
+          ) : !metasConcluidas.length && !desejosRealizados.length ? (
+            <Vazio texto="Quando concluírem uma meta ou realizarem um desejo, aparece aqui." />
+          ) : (
+            <ConquistasList
+              metas={metasConcluidas}
+              desejos={desejosRealizados}
+              reabrindo={reabrindo}
+              onReabrirMeta={handleReabrirMeta}
+              onReabrirDesejo={handleReabrirDesejo}
+            />
+          )}
+        </Coluna>
+      </div>
+
+      <p className="text-[12.5px] text-fg2">
+        Desejo não tem compromisso: vira meta quando vocês decidem juntos.
+        Marcou por engano? &quot;Reabrir&quot; volta para as metas ou desejos.
+      </p>
 
       {/* Modais */}
       <ConcluirMetaDialog
@@ -352,17 +318,58 @@ const Goals = () => {
   );
 };
 
-const EmptyState = ({
-  title,
-  subtitle,
+const DESEJOS_VISIVEIS = 5;
+
+/** Uma coluna do quadro (protótipo v2): título com contagem + ação. */
+const Coluna = ({
+  titulo,
+  quantidade,
+  tom,
+  acao,
+  children,
 }: {
-  title: string;
-  subtitle: string;
+  titulo: string;
+  quantidade: number;
+  tom: string;
+  acao?: { label: string; onClick: () => void; primaria: boolean };
+  children: React.ReactNode;
 }) => (
-  <div className="mt-4 rounded-[20px] border border-dashed border-line bg-card/50 px-6 py-16 text-center">
-    <p className="text-sm font-semibold text-fg">{title}</p>
-    <p className="mt-1 text-sm text-muted">{subtitle}</p>
-  </div>
+  <section
+    aria-label={titulo}
+    className={cn("flex flex-col gap-[10px] rounded-[24px] p-[14px]", tom)}
+  >
+    <div className="flex items-center justify-between px-[6px] pb-1 pt-1">
+      <h2 className="text-[15px] font-bold">
+        {titulo} <span className="font-semibold text-fg2">{quantidade}</span>
+      </h2>
+      {acao && (
+        <button
+          type="button"
+          onClick={acao.onClick}
+          className={cn(
+            "flex h-8 items-center gap-1 rounded-full px-3 text-[13px] font-bold",
+            acao.primaria ? "bg-primary text-white" : "bg-card text-fg",
+          )}
+        >
+          <Plus className="size-[13px]" strokeWidth={2.6} />
+          {acao.label}
+        </button>
+      )}
+    </div>
+    {children}
+  </section>
+);
+
+const Esqueleto = () => (
+  <>
+    {Array.from({ length: 3 }).map((_, i) => (
+      <Skeleton key={i} className="h-[130px] rounded-[18px]" />
+    ))}
+  </>
+);
+
+const Vazio = ({ texto }: { texto: string }) => (
+  <p className="px-[6px] py-3 text-[13px] text-fg2">{texto}</p>
 );
 
 export default Goals;
