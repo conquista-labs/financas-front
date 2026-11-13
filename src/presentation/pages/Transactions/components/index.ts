@@ -1,9 +1,10 @@
-// Nova identidade (lista + busca + paginação + filtros + form completo)
-export { ActionBar } from "./ActionBar";
-export { ActiveFilterChips } from "./ActiveFilterChips";
+export * from "./DeleteTransactionDialog";
+export * from "./DetailPanel";
+export * from "./FilterBar";
 export type { TransactionFilters } from "./FiltersSheet";
 export { FiltersSheet } from "./FiltersSheet";
+export * from "./ListaPorDia";
 export { MonthSelector } from "./MonthSelector";
+export * from "./SelectionBar";
+export * from "./TotaisPeriodo";
 export { TransactionForm } from "./TransactionForm";
-export { TransactionRow } from "./TransactionRow";
-export { TransactionsList } from "./TransactionsList";

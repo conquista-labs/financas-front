@@ -1,4 +1,5 @@
 import { addMonths, endOfMonth, format, startOfMonth } from "date-fns";
+import { Download, Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -10,6 +11,7 @@ import {
 } from "use-query-params";
 
 import type { TransacaoResponse } from "@/domain/models";
+import { parseAmount } from "@/lib/format";
 import { useQuickAdd } from "@/presentation/components/QuickAdd";
 import {
   useDeleteTransacoesId,
@@ -19,33 +21,41 @@ import {
 import { useDebounce, usePagination } from "@/presentation/hooks/core";
 import { urlRouters } from "@/presentation/router/router.definitions";
 
-import { ActionBar } from "./components/ActionBar";
-import { ActiveFilterChips } from "./components/ActiveFilterChips";
 import {
   type DeleteEscopo,
   DeleteTransactionDialog,
 } from "./components/DeleteTransactionDialog";
+import { DetailPanel } from "./components/DetailPanel";
+import { FilterBar,type FiltrosBarra } from "./components/FilterBar";
 import type { TransactionFilters } from "./components/FiltersSheet";
 import { FiltersSheet } from "./components/FiltersSheet";
+import { ListaPorDia } from "./components/ListaPorDia";
 import { MonthSelector } from "./components/MonthSelector";
-import { TransactionsList } from "./components/TransactionsList";
+import { SelectionBar } from "./components/SelectionBar";
+import { TotaisPeriodo } from "./components/TotaisPeriodo";
+import { ehReceita } from "./transactions.helpers";
+import { useTransacaoMutations } from "./useTransacaoMutations";
+
+const POR_PAGINA = [25, 50, 100];
+const plural = (n: number, s: string, p = `${s}s`) => `${n} ${n === 1 ? s : p}`;
 
 /**
- * Tela de Transações (nova identidade "Nossa Grana"). Fatia 1: lista + busca +
- * paginação + export. Fatia 2: filtros avançados (painel + chips ativos).
- * Preserva a lógica de dados da versão anterior (query params na URL, hooks
- * React Query); só a apresentação muda. Lançamento rápido vem depois.
+ * Transações do "Repaginado": filtros sempre à vista, totais do período,
+ * lista agrupada por dia (com fatura), seleção em lote e o painel de
+ * detalhes que salva sozinho. Filtros e paginação ficam na URL.
  */
 const Transactions = () => {
   const navigate = useNavigate();
   const { openQuickAdd } = useQuickAdd();
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  // Transação aguardando confirmação de exclusão (null = diálogo fechado).
+  const { atualizar, excluir } = useTransacaoMutations();
+  const [cadastroAberto, setCadastroAberto] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<TransacaoResponse | null>(
     null,
   );
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
+  const [abertaId, setAbertaId] = useState<string>();
 
-  const [queryParams, setQueryParams] = useQueryParams({
+  const [q, setQ] = useQueryParams({
     startDate: withDefault(DateParam, startOfMonth(new Date())),
     endDate: DateParam,
     categoriaId: withDefault(StringParam, ""),
@@ -55,154 +65,131 @@ const Transactions = () => {
     tag: withDefault(StringParam, ""),
     search: withDefault(StringParam, ""),
     tipo: withDefault(StringParam, ""),
+    status: withDefault(StringParam, ""),
     createdAtStart: withDefault(StringParam, ""),
     createdAtEnd: withDefault(StringParam, ""),
   });
-
   const { page, pageSize, onChangePage, onChangePageSize } = usePagination();
+  const irParaPagina1 = () => onChangePage({ page: 1, pageSize });
 
-  // Busca com debounce: input local reflete imediato, query dispara após 300ms.
-  const [searchInput, setSearchInput] = useState(queryParams.search ?? "");
-  const debouncedSearch = useDebounce(searchInput, 300);
-
+  // Busca com debounce (input imediato, consulta após 300ms).
+  const [busca, setBusca] = useState(q.search ?? "");
+  const buscaDebounced = useDebounce(busca, 300);
   useEffect(() => {
-    if (debouncedSearch !== queryParams.search) {
-      setQueryParams({ search: debouncedSearch });
-      onChangePage({ page: 1, pageSize });
+    if (buscaDebounced !== q.search) {
+      setQ({ search: buscaDebounced });
+      irParaPagina1();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch]);
+  }, [buscaDebounced]);
 
-  // Filtrar por data de cadastro (createdAt) IGNORA o período por data da
-  // transação: os dois juntos quase sempre têm interseção vazia (uma coisa é
-  // quando a transação aconteceu, outra é quando foi cadastrada). Com cadastro
-  // ativo, não enviamos startDate/endDate — o resultado passa a ser só o
-  // recorte de cadastro.
-  const hasCreatedAtFilter = Boolean(
-    queryParams.createdAtStart || queryParams.createdAtEnd,
-  );
-
-  const formattedParams = useMemo(
+  // Filtrar por cadastro ignora o período da transação (quase nunca se cruzam).
+  const porCadastro = Boolean(q.createdAtStart || q.createdAtEnd);
+  const params = useMemo(
     () => ({
-      ...queryParams,
-      startDate: hasCreatedAtFilter
-        ? ""
-        : format(queryParams.startDate, "yyyy-MM-dd"),
-      endDate:
-        !hasCreatedAtFilter && queryParams.endDate
-          ? format(queryParams.endDate, "yyyy-MM-dd")
-          : "",
+      ...q,
+      startDate: porCadastro ? "" : format(q.startDate, "yyyy-MM-dd"),
+      endDate: !porCadastro && q.endDate ? format(q.endDate, "yyyy-MM-dd") : "",
     }),
-    [queryParams, hasCreatedAtFilter],
+    [q, porCadastro],
   );
 
   const { data, isLoading } = useGetTransacoes({
     page,
     limit: pageSize,
-    ...formattedParams,
+    ...params,
   });
+  // O resume.total soma receitas e despesas juntas; para os cartões, uma
+  // consulta leve (limit 1) por tipo.
+  const entradasQ = useGetTransacoes(
+    { page: 1, limit: 1, ...params, tipo: "receita" },
+    { enabled: params.tipo !== "despesa" },
+  );
+  const saidasQ = useGetTransacoes(
+    { page: 1, limit: 1, ...params, tipo: "despesa" },
+    { enabled: params.tipo !== "receita" },
+  );
+  const entradas =
+    params.tipo === "despesa"
+      ? 0
+      : parseAmount(entradasQ.data?.data?.resume?.total);
+  const saidas =
+    params.tipo === "receita"
+      ? 0
+      : parseAmount(saidasQ.data?.data?.resume?.total);
 
-  const { refetch: fetchRelatorio, isFetching: isExporting } =
+  const { refetch: buscarRelatorio, isFetching: exportando } =
     useGetRelatorioTransacoes(
-      { page, limit: pageSize, ...formattedParams },
+      { page, limit: pageSize, ...params },
       { enabled: false },
     );
+  const { mutate: excluirComEscopo, isPending: excluindo } =
+    useDeleteTransacoesId();
 
-  const {
-    mutate: deleteTransacao,
-    isPending: isDeleting,
-    variables: deletingVars,
-  } = useDeleteTransacoesId();
-  // Id da transação em exclusão (para o spinner na linha certa).
-  const deletingId = isDeleting ? deletingVars?.id : undefined;
+  const linhas = useMemo(
+    () => (data?.data?.rows ?? []) as TransacaoResponse[],
+    [data],
+  );
+  const total = data?.data?.meta?.total ?? 0;
+  const ultimaPagina = Math.max(1, Math.ceil(total / pageSize));
+  const aberta = linhas.find((t) => t.id === abertaId);
 
-  const rows = data?.data?.rows ?? [];
-  const totalItems = data?.data?.meta?.total ?? 0;
-  const periodTotal = data?.data?.resume?.total ?? 0;
-
-  const activeFilterCount = [
-    queryParams.categoriaId,
-    queryParams.pessoaId,
-    queryParams.meioPagamentoId,
-    queryParams.formaPagamento,
-    queryParams.tag,
-    queryParams.tipo,
-    queryParams.createdAtStart,
-    queryParams.createdAtEnd,
-  ].filter(Boolean).length;
-
-  // Filtros (subconjunto dos query params) para o painel e os chips ativos.
-  const filters: TransactionFilters = {
-    tipo: queryParams.tipo,
-    categoriaId: queryParams.categoriaId,
-    pessoaId: queryParams.pessoaId,
-    meioPagamentoId: queryParams.meioPagamentoId,
-    formaPagamento: queryParams.formaPagamento,
-    tag: queryParams.tag,
-    startDate: formattedParams.startDate,
-    endDate: formattedParams.endDate,
-    createdAtStart: queryParams.createdAtStart,
-    createdAtEnd: queryParams.createdAtEnd,
+  // ── Filtros ────────────────────────────────────────────────────────────
+  const filtrosBarra: FiltrosBarra = {
+    tipo: q.tipo,
+    categoriaId: q.categoriaId,
+    pessoaId: q.pessoaId,
+    meioPagamentoId: q.meioPagamentoId,
+    formaPagamento: q.formaPagamento,
+    tag: q.tag,
+    status: q.status,
   };
-
-  const applyFilters = (next: TransactionFilters) => {
-    setQueryParams({
-      tipo: next.tipo,
-      categoriaId: next.categoriaId,
-      pessoaId: next.pessoaId,
-      meioPagamentoId: next.meioPagamentoId,
-      formaPagamento: next.formaPagamento,
-      tag: next.tag,
-      startDate: next.startDate
-        ? new Date(`${next.startDate}T00:00:00`)
-        : undefined,
-      endDate: next.endDate ? new Date(`${next.endDate}T00:00:00`) : undefined,
-      createdAtStart: next.createdAtStart,
-      createdAtEnd: next.createdAtEnd,
-    });
-    onChangePage({ page: 1, pageSize });
-    setFiltersOpen(false);
+  const mudarFiltros = (patch: Partial<FiltrosBarra>) => {
+    setQ(patch);
+    irParaPagina1();
+    setSelecionados(new Set());
   };
-
-  const clearFilters = () => {
-    setQueryParams({
+  const limparTudo = () => {
+    setBusca("");
+    setQ({
+      search: "",
       tipo: "",
       categoriaId: "",
       pessoaId: "",
       meioPagamentoId: "",
       formaPagamento: "",
       tag: "",
+      status: "",
       createdAtStart: "",
       createdAtEnd: "",
     });
-    onChangePage({ page: 1, pageSize });
-    setFiltersOpen(false);
+    irParaPagina1();
+  };
+  const filtrosPainel: TransactionFilters = {
+    ...filtrosBarra,
+    startDate: params.startDate,
+    endDate: params.endDate,
+    createdAtStart: q.createdAtStart,
+    createdAtEnd: q.createdAtEnd,
+  };
+  const aplicarPainel = (f: TransactionFilters) => {
+    setQ({ createdAtStart: f.createdAtStart, createdAtEnd: f.createdAtEnd });
+    irParaPagina1();
+    setCadastroAberto(false);
   };
 
-  const removeFilter = (key: keyof TransactionFilters) => {
-    setQueryParams({ [key]: "" });
-    onChangePage({ page: 1, pageSize });
+  const mudarMes = (passo: number) => {
+    const inicio = startOfMonth(addMonths(q.startDate, passo));
+    setQ({ startDate: inicio, endDate: endOfMonth(inicio) });
+    irParaPagina1();
+    setSelecionados(new Set());
   };
 
-  const navigateMonth = (direction: "prev" | "next") => {
-    const multiplier = direction === "prev" ? -1 : 1;
-    // Navega sempre para o mês inteiro (1º ao último dia), independente de um
-    // recorte de dias que estivesse ativo.
-    const newStart = startOfMonth(addMonths(queryParams.startDate, multiplier));
-    setQueryParams({ startDate: newStart, endDate: endOfMonth(newStart) });
-    onChangePage({ page: 1, pageSize });
-  };
-
-  // Range de dias escolhido no calendário do seletor de período.
-  const applyRange = (start: Date, end: Date) => {
-    setQueryParams({ startDate: start, endDate: end });
-    onChangePage({ page: 1, pageSize });
-  };
-
-  const handleExport = async () => {
+  // ── Ações ──────────────────────────────────────────────────────────────
+  const exportar = async () => {
     try {
-      const { data: report } = await fetchRelatorio();
-      const blob = new Blob([report as unknown as BlobPart], {
+      const { data: relatorio } = await buscarRelatorio();
+      const blob = new Blob([relatorio as unknown as BlobPart], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
       const url = window.URL.createObjectURL(blob);
@@ -218,104 +205,255 @@ const Transactions = () => {
     }
   };
 
-  // Abre a confirmação; a exclusão só acontece no confirmDelete.
-  const handleDelete = (transacao: TransacaoResponse) =>
-    setDeleteTarget(transacao);
-
-  const confirmDelete = (escopo?: DeleteEscopo) => {
+  const confirmarExclusao = (escopo?: DeleteEscopo) => {
     if (!deleteTarget) return;
-    deleteTransacao(
+    excluirComEscopo(
       { id: deleteTarget.id, ...(escopo ? { escopo } : {}) },
       {
         onSuccess: () => {
+          if (deleteTarget.id === abertaId) setAbertaId(undefined);
           setDeleteTarget(null);
           toast.success(
             escopo === "esta_e_futuras"
               ? "Parcelas excluídas"
               : "Transação excluída",
-            {
-              action: {
-                label: "Desfazer",
-                // TODO: re-POST do payload (não há endpoint de restore) — Fatia 2.
-                onClick: () => toast.info("Desfazer virá com o lançamento."),
-              },
-            },
           );
         },
-        onError: (error) => toast.error(error.message),
+        onError: (e) => toast.error(e.message),
       },
     );
   };
 
-  const handleDuplicate = () =>
-    toast.info("Duplicar chega com o lançamento rápido (Fatia 2).");
-
-  const goToEdit = (id: string) =>
-    navigate(
-      `${urlRouters.editTransactions.replace(":id", id)}${window.location.search}`,
+  const selecionadas = linhas.filter((t) => selecionados.has(t.id));
+  const tipos = new Set(
+    selecionadas.map((t) => (ehReceita(t) ? "receita" : "despesa")),
+  );
+  const ids = selecionadas.map((t) => t.id);
+  const emLote = (
+    body: Parameters<typeof atualizar.mutate>[0]["body"],
+    msg: string,
+  ) =>
+    atualizar.mutate(
+      { ids, body },
+      {
+        onSuccess: () =>
+          toast.success(
+            `${plural(ids.length, "transação atualizada", "transações atualizadas")} · ${msg}`,
+          ),
+        onError: () =>
+          toast.error("Algumas não foram atualizadas. Tente de novo."),
+      },
     );
+  const tagEmLote = async (tag: string) => {
+    try {
+      await Promise.all(
+        selecionadas.map((t) =>
+          atualizar.mutateAsync({
+            ids: [t.id],
+            body: { tags: [...new Set([...(t.tags ?? []), tag])] },
+          }),
+        ),
+      );
+      toast.success(
+        `#${tag} em ${plural(ids.length, "transação", "transações")}`,
+      );
+    } catch {
+      toast.error("Não foi possível marcar todas. Tente de novo.");
+    }
+  };
+  const excluirEmLote = () =>
+    excluir.mutate(ids, {
+      onSuccess: () => {
+        toast.success(
+          `${plural(ids.length, "transação excluída", "transações excluídas")}`,
+        );
+        if (abertaId && selecionados.has(abertaId)) setAbertaId(undefined);
+        setSelecionados(new Set());
+      },
+      onError: () => toast.error("Algumas não foram excluídas. Tente de novo."),
+    });
 
   return (
-    <div className="flex flex-col gap-5">
-      {/* Header: título + seletor de mês */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-[30px] font-bold -tracking-[0.025em] text-fg">
-          Transações
-        </h1>
-        <MonthSelector
-          startDate={queryParams.startDate}
-          endDate={queryParams.endDate ?? undefined}
-          onPrev={() => navigateMonth("prev")}
-          onNext={() => navigateMonth("next")}
-          onRangeChange={applyRange}
-          disabled={hasCreatedAtFilter}
+    <div className="flex flex-wrap items-start gap-5 pb-8">
+      <div className="flex min-w-0 flex-[3_1_560px] flex-col gap-[14px]">
+        <header className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-[30px] font-bold -tracking-[0.03em] text-fg">
+            Transações
+          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <MonthSelector
+              startDate={q.startDate}
+              endDate={q.endDate ?? undefined}
+              onPrev={() => mudarMes(-1)}
+              onNext={() => mudarMes(1)}
+              onRangeChange={(inicio, fim) => {
+                setQ({ startDate: inicio, endDate: fim });
+                irParaPagina1();
+              }}
+              disabled={porCadastro}
+            />
+            <button
+              type="button"
+              onClick={exportar}
+              disabled={exportando}
+              className="flex h-[42px] items-center gap-[6px] rounded-full border border-line bg-card px-[14px] text-sm font-semibold hover:border-primary/40 disabled:opacity-60"
+            >
+              <Download className="size-4" />
+              {exportando ? "Exportando…" : "Exportar"}
+            </button>
+            <button
+              type="button"
+              onClick={openQuickAdd}
+              className="flex h-[42px] items-center gap-[6px] rounded-full bg-primary px-4 text-sm font-bold text-white shadow-primary hover:bg-primary-strong"
+            >
+              <Plus className="size-4" strokeWidth={2.6} /> Lançar
+            </button>
+          </div>
+        </header>
+
+        <FilterBar
+          busca={busca}
+          onBuscaChange={setBusca}
+          filtros={filtrosBarra}
+          onChange={mudarFiltros}
+          onLimpar={limparTudo}
+          onMaisFiltros={() => setCadastroAberto(true)}
+          maisFiltrosAtivos={
+            [q.createdAtStart, q.createdAtEnd].filter(Boolean).length
+          }
+        />
+
+        <TotaisPeriodo
+          entradas={entradas}
+          saidas={saidas}
+          quantidade={total}
+          isLoading={isLoading}
+        />
+
+        {selecionadas.length > 0 && (
+          <SelectionBar
+            quantidade={selecionadas.length}
+            tipo={
+              tipos.size === 1
+                ? ([...tipos][0] as "receita" | "despesa")
+                : undefined
+            }
+            ocupado={atualizar.isPending || excluir.isPending}
+            onCategoria={(categoriaId) =>
+              emLote({ categoriaId }, "categoria trocada")
+            }
+            onPessoa={(pessoaId) => emLote({ pessoaId }, "pessoa trocada")}
+            onTag={tagEmLote}
+            onExcluir={excluirEmLote}
+            onCancelar={() => setSelecionados(new Set())}
+          />
+        )}
+
+        <ListaPorDia
+          linhas={linhas}
+          isLoading={isLoading}
+          selecionados={selecionados}
+          abertaId={abertaId}
+          onToggle={(id) =>
+            setSelecionados((prev) => {
+              const s = new Set(prev);
+              if (s.has(id)) s.delete(id);
+              else s.add(id);
+              return s;
+            })
+          }
+          onAbrir={(t) => setAbertaId(t.id === abertaId ? undefined : t.id)}
+          vazio={
+            <p className="px-[18px] py-10 text-center text-sm text-fg2">
+              Nada com esses filtros.{" "}
+              <button
+                type="button"
+                onClick={limparTudo}
+                className="font-semibold text-primary hover:underline dark:text-[#B3A9FF]"
+              >
+                Limpar filtros
+              </button>
+            </p>
+          }
+          rodape={
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line2 px-[18px] py-3 text-[13px] text-fg2">
+              <span className="flex items-center gap-2">
+                Mostrando {linhas.length} de {total} ·
+                <select
+                  aria-label="Por página"
+                  value={pageSize}
+                  onChange={(e) => {
+                    onChangePageSize(Number(e.target.value));
+                    onChangePage({ page: 1, pageSize: Number(e.target.value) });
+                  }}
+                  className="h-[30px] rounded-[8px] border border-line bg-card px-1"
+                >
+                  {POR_PAGINA.map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+                por página
+              </span>
+              <span className="flex items-center gap-[6px]">
+                <span>
+                  Página {page} de {ultimaPagina}
+                </span>
+                <button
+                  type="button"
+                  disabled={page <= 1}
+                  onClick={() => onChangePage({ page: page - 1, pageSize })}
+                  className="h-8 rounded-[9px] border border-line bg-card px-3 font-semibold disabled:opacity-40"
+                >
+                  Anterior
+                </button>
+                <button
+                  type="button"
+                  disabled={page >= ultimaPagina}
+                  onClick={() => onChangePage({ page: page + 1, pageSize })}
+                  className="h-8 rounded-[9px] border border-line bg-card px-3 font-semibold disabled:opacity-40"
+                >
+                  Próxima
+                </button>
+              </span>
+            </div>
+          }
         />
       </div>
 
-      <ActionBar
-        search={searchInput}
-        onSearchChange={setSearchInput}
-        activeFilterCount={activeFilterCount}
-        onOpenFilters={() => setFiltersOpen(true)}
-        onNew={openQuickAdd}
-      />
-
-      <ActiveFilterChips
-        filters={filters}
-        onRemove={removeFilter}
-        onClearAll={clearFilters}
-      />
-
-      <TransactionsList
-        rows={rows}
-        total={periodTotal}
-        totalItems={totalItems}
-        page={page}
-        pageSize={pageSize}
-        isLoading={isLoading}
-        isExporting={isExporting}
-        deletingId={deletingId}
-        onEdit={goToEdit}
-        onDuplicate={handleDuplicate}
-        onDelete={handleDelete}
-        onChangePage={(p) => onChangePage({ page: p, pageSize })}
-        onChangePageSize={(size) => onChangePageSize(size)}
-        onExport={handleExport}
-      />
+      {aberta && (
+        <div className="min-w-0 flex-[1_1_320px] lg:sticky lg:top-6">
+          <DetailPanel
+            key={aberta.id}
+            transacao={aberta}
+            onFechar={() => setAbertaId(undefined)}
+            onExcluir={setDeleteTarget}
+            onFormularioCompleto={(id) =>
+              navigate(
+                `${urlRouters.editTransactions.replace(":id", id)}${window.location.search}`,
+              )
+            }
+          />
+        </div>
+      )}
 
       <FiltersSheet
-        open={filtersOpen}
-        onOpenChange={setFiltersOpen}
-        value={filters}
-        onApply={applyFilters}
-        onClear={clearFilters}
+        open={cadastroAberto}
+        onOpenChange={setCadastroAberto}
+        value={filtrosPainel}
+        onApply={aplicarPainel}
+        onClear={() => {
+          setQ({ createdAtStart: "", createdAtEnd: "" });
+          setCadastroAberto(false);
+        }}
       />
 
       <DeleteTransactionDialog
         target={deleteTarget}
-        isDeleting={isDeleting}
-        onClose={() => !isDeleting && setDeleteTarget(null)}
-        onConfirm={confirmDelete}
+        isDeleting={excluindo}
+        onClose={() => !excluindo && setDeleteTarget(null)}
+        onConfirm={confirmarExclusao}
       />
     </div>
   );
