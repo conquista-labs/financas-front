@@ -1,4 +1,3 @@
-import { addDays, format } from "date-fns";
 import { LogOut, Moon, Search, Sun } from "lucide-react";
 import type { ReactElement } from "react";
 
@@ -9,16 +8,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/presentation/components/ui";
-import {
-  useGetCaixaEntradaResumo,
-  useGetTransacoes,
-  usePostLogoutGoogle,
-} from "@/presentation/hooks/api";
+import { usePostLogoutGoogle } from "@/presentation/hooks/api";
 import { useAuthStore } from "@/presentation/store";
-import { useExtratoPendentes } from "@/presentation/store/filaExtrato";
 
 import { QUICK_ADD_SHORTCUT_LABEL, useQuickAdd } from "../../QuickAdd";
-import { NAV_ITEMS, type NavBadge } from "../appShell.definitions";
+import { NAV_ITEMS } from "../appShell.definitions";
+import { useNavCounts } from "../useNavCounts";
 import { useSidebar } from "../useSidebar";
 import { aside, brandTile, footerButton, searchBar } from "./sidebar.styles";
 import { SidebarNavItem } from "./SidebarNavItem";
@@ -54,32 +49,7 @@ export const Sidebar = () => {
   const { darkMode, setDarkMode } = useTheme();
   const { auth, resetState } = useAuthStore();
   const { mutate: logout, isPending } = usePostLogoutGoogle();
-  // Pendentes da fila de revisão — atualiza a cada 2 min e ao voltar à aba.
-  const { data: resumo } = useGetCaixaEntradaResumo({
-    refetchInterval: 2 * 60 * 1000,
-  });
-  // Revisar = pendentes do banco + linhas de extrato esperando no navegador.
-  const extratoPendentes = useExtratoPendentes();
-  // Agenda = contas atrasadas + que vencem nos próximos 7 dias (mesmo
-  // critério do "Pede atenção"). limit 1: só o total da paginação importa.
-  const hojeISO = format(new Date(), "yyyy-MM-dd");
-  const { data: atrasadas } = useGetTransacoes({
-    page: 1,
-    limit: 1,
-    status: "atrasada",
-  });
-  const { data: proximas } = useGetTransacoes({
-    page: 1,
-    limit: 1,
-    status: "pendente",
-    startDate: hojeISO,
-    endDate: format(addDays(new Date(), 7), "yyyy-MM-dd"),
-  });
-  const counts: Record<NavBadge, number | undefined> = {
-    revisar: (resumo?.data.pendentes ?? 0) + extratoPendentes,
-    agenda:
-      (atrasadas?.data?.meta?.total ?? 0) + (proximas?.data?.meta?.total ?? 0),
-  };
+  const counts = useNavCounts();
 
   const user = auth?.user;
   const fullName = user?.nome ?? "Usuário";
