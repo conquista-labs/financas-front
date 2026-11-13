@@ -2,6 +2,7 @@ export { Calendar } from "./Calendar";
 export * from "./Goals";
 export { Home } from "./Home";
 export { Login } from "./Login";
+export * from "./Mais";
 export { NotFound } from "./NotFound";
 export * from "./Patrimony";
 export * from "./Registers";

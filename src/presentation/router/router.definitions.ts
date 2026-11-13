@@ -34,6 +34,9 @@ export const urlRouters = {
   // o que veio do banco e do extrato. `?importar=1` abre o painel de extrato.
   revisar: "/revisar",
   revisarImportar: "/revisar?importar=1",
+  // Mobile: a aba "Mais" reúne o que não cabe na barra (Agenda, Patrimônio,
+  // Metas, Ajustes, tema e sair).
+  mais: "/mais",
   error: "/error",
 };
 

@@ -1,6 +1,7 @@
 import {
   ArrowLeftRight,
   CalendarDays,
+  Ellipsis,
   House,
   Inbox,
   Landmark,
@@ -63,28 +64,33 @@ export const NAV_ITEMS: NavItem[] = [
 ];
 
 /**
- * Itens da bottom tab bar mobile (fiéis ao protótipo): Início, Extrato, Agenda,
- * Patri. — labels curtos. O FAB central (Lançar) não é um item de rota; fica
- * no meio da barra, renderizado à parte.
+ * Itens da barra inferior mobile (Repaginado): Início, Transações, Revisar e
+ * Mais. O "Lançar" (+) fica no meio, renderizado à parte; o resto das telas
+ * (Agenda, Patrimônio, Metas, Ajustes) mora no "Mais".
  */
 export const TAB_ITEMS: NavItem[] = [
   { id: "home", label: "Início", to: urlRouters.home, icon: House },
   {
     id: "transactions",
-    label: "Extrato",
+    label: "Transações",
     to: urlRouters.transactions,
     icon: ArrowLeftRight,
   },
   {
-    id: "agenda",
-    label: "Agenda",
-    to: urlRouters.agenda,
-    icon: CalendarDays,
+    id: "revisar",
+    label: "Revisar",
+    to: urlRouters.revisar,
+    icon: Inbox,
+    badge: "revisar",
   },
-  {
-    id: "patrimony",
-    label: "Patri.",
-    to: urlRouters.patrimony,
-    icon: Landmark,
-  },
+  { id: "mais", label: "Mais", to: urlRouters.mais, icon: Ellipsis },
+];
+
+/** Telas que ficam dentro do "Mais" (a aba "Mais" acende nelas). */
+export const ROTAS_DO_MAIS = [
+  urlRouters.mais,
+  urlRouters.agenda,
+  urlRouters.patrimony,
+  urlRouters.goals,
+  urlRouters.ajustes,
 ];

@@ -8,6 +8,7 @@ import {
   EditTransactions,
   Goals,
   Home,
+  Mais,
   NotFound,
   Patrimony,
   Registers,
@@ -108,6 +109,14 @@ const PrivateRoute: React.FC = () => (
         element={
           <Suspense>
             <Goals />
+          </Suspense>
+        }
+      />
+      <Route
+        path={urlRouters.mais}
+        element={
+          <Suspense>
+            <Mais />
           </Suspense>
         }
       />

@@ -1,67 +1,73 @@
 import { Plus } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+
+import { cn } from "@/lib/utils";
 
 import { useQuickAdd } from "../../QuickAdd";
-import { TAB_ITEMS } from "../appShell.definitions";
-import { tabItem } from "./mobile.styles";
+import {
+  type NavItem,
+  ROTAS_DO_MAIS,
+  TAB_ITEMS,
+} from "../appShell.definitions";
+import { useNavCounts } from "../useNavCounts";
 
 /**
- * Bottom tab bar mobile (nova identidade "Nossa Grana"). Fixa no rodapé, com
- * blur, 4 itens de rota (Início, Extrato, Agenda, Patri.) e o FAB central
- * "Lançar" elevado. Visível só < 900px (lg:hidden). O FAB é placeholder até o
- * modal de Lançamento Rápido existir (etapa de Transações).
+ * Barra inferior mobile do "Repaginado": escura e flutuante (nos dois temas),
+ * com Início, Transações, o "+" de Lançar no meio, Revisar (com contador) e
+ * Mais. Visível só abaixo de lg.
  */
 export const MobileTabBar = () => {
   const { openQuickAdd } = useQuickAdd();
+  const { pathname } = useLocation();
+  const counts = useNavCounts();
+
+  const ativo = (item: NavItem) =>
+    item.id === "mais"
+      ? ROTAS_DO_MAIS.some((r) => pathname.startsWith(r))
+      : item.to === "/"
+        ? pathname === "/"
+        : pathname.startsWith(item.to);
+
+  const aba = (item: NavItem) => {
+    const n = item.badge ? counts[item.badge] : undefined;
+    const on = ativo(item);
+    return (
+      <NavLink
+        key={item.id}
+        to={item.to}
+        aria-current={on ? "page" : undefined}
+        aria-label={n ? `${item.label} (${n})` : item.label}
+        className={cn(
+          "relative flex min-h-12 flex-col items-center justify-center gap-[3px] text-[10.5px] font-semibold transition-colors",
+          on ? "text-white" : "text-[#8E8A9C]",
+        )}
+      >
+        <item.icon className="size-[21px]" strokeWidth={on ? 2.2 : 1.9} />
+        <span>{item.label}</span>
+        {!!n && (
+          <span className="absolute left-1/2 top-[2px] ml-[6px] min-w-[18px] rounded-full bg-white px-[5px] text-center text-[10px] font-bold leading-[16px] text-[#16151C]">
+            {n > 99 ? "99+" : n}
+          </span>
+        )}
+      </NavLink>
+    );
+  };
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-line bg-card/90 px-[6px] pt-[9px] backdrop-blur-md [padding-bottom:calc(9px+env(safe-area-inset-bottom))] lg:hidden">
-      <NavLink
-        to={TAB_ITEMS[0].to}
-        end
-        className={({ isActive }) => tabItem({ active: isActive })}
-      >
-        <TabIcon item={TAB_ITEMS[0]} />
-      </NavLink>
-      <NavLink
-        to={TAB_ITEMS[1].to}
-        className={({ isActive }) => tabItem({ active: isActive })}
-      >
-        <TabIcon item={TAB_ITEMS[1]} />
-      </NavLink>
-
-      {/* FAB central "Lançar" — abre o Lançamento Rápido */}
+    <nav
+      aria-label="Navegação"
+      className="fixed inset-x-3 z-40 grid h-[68px] grid-cols-5 items-center rounded-[24px] bg-sidebar shadow-[0_18px_40px_-16px_rgba(23,22,27,.6)] [bottom:calc(12px+env(safe-area-inset-bottom))] dark:shadow-[inset_0_0_0_1px_#2B2A34] lg:hidden"
+    >
+      {TAB_ITEMS.slice(0, 2).map(aba)}
       <button
         type="button"
         aria-label="Lançar"
         onClick={openQuickAdd}
-        className="-mt-6 flex size-[54px] items-center justify-center rounded-full bg-primary text-white shadow-[0_12px_24px_-8px_rgba(91,75,224,0.9)]"
+        className="mx-auto grid size-[52px] place-items-center rounded-[18px] bg-primary text-white transition-colors hover:bg-primary-strong"
       >
         <Plus className="size-[26px]" strokeWidth={2.6} />
       </button>
-
-      <NavLink
-        to={TAB_ITEMS[2].to}
-        className={({ isActive }) => tabItem({ active: isActive })}
-      >
-        <TabIcon item={TAB_ITEMS[2]} />
-      </NavLink>
-      <NavLink
-        to={TAB_ITEMS[3].to}
-        className={({ isActive }) => tabItem({ active: isActive })}
-      >
-        <TabIcon item={TAB_ITEMS[3]} />
-      </NavLink>
+      {TAB_ITEMS.slice(2).map(aba)}
     </nav>
-  );
-};
-
-const TabIcon = ({ item }: { item: (typeof TAB_ITEMS)[number] }) => {
-  const { icon: Icon, label } = item;
-  return (
-    <>
-      <Icon className="size-[22px]" strokeWidth={1.9} />
-      <span>{label}</span>
-    </>
   );
 };
