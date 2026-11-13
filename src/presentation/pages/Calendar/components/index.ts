@@ -1,5 +1,5 @@
 export { CalendarKpis } from "./CalendarKpis";
-export { ContasAPagarTab } from "./ContasAPagarTab";
-export { DayTransactionsDialog } from "./DayTransactionsDialog";
+export { ContasCard } from "./ContasCard";
+export { DiaDetalhe } from "./DiaDetalhe";
 export { MonthCalendarGrid } from "./MonthCalendarGrid";
 export { WeekSummary } from "./WeekSummary";

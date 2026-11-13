@@ -37,3 +37,33 @@ describe("QuickAddProvider — atalho ⌘K", () => {
     expect(screen.getByText("fechado")).toBeInTheDocument();
   });
 });
+
+describe("QuickAddProvider — preset", () => {
+  const ProbePreset = () => {
+    const { open, preset, openQuickAddCom, closeQuickAdd } = useQuickAdd();
+    return (
+      <>
+        <span>{open ? "aberto" : "fechado"}</span>
+        <span>preset:{preset?.status ?? "nenhum"}</span>
+        <button onClick={() => openQuickAddCom({ status: "pendente" })}>
+          nova conta
+        </button>
+        <button onClick={closeQuickAdd}>fechar</button>
+      </>
+    );
+  };
+
+  it("⌘K depois de um preset abre sem o preset", () => {
+    render(
+      <QuickAddProvider>
+        <ProbePreset />
+      </QuickAddProvider>,
+    );
+    fireEvent.click(screen.getByText("nova conta"));
+    expect(screen.getByText("preset:pendente")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("fechar"));
+    fireEvent.keyDown(window, { key: "k", metaKey: true });
+    expect(screen.getByText("aberto")).toBeInTheDocument();
+    expect(screen.getByText("preset:nenhum")).toBeInTheDocument();
+  });
+});
