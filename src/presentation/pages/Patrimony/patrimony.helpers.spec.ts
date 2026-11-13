@@ -8,6 +8,7 @@ import {
   toRequest,
 } from "./components/PatrimonyFormDialog/patrimonyForm.definitions";
 import {
+  fatiasDaBarra,
   linhasDaLista,
   mostraVariacao,
   resumoPorGrupo,
@@ -122,8 +123,8 @@ describe("resumoPorGrupo (abas)", () => {
     const grupos = resumoPorGrupo([finCasa, casa, carro, xp, fgts, caixinha]);
     expect(grupos.map((g) => g.grupo)).toEqual([
       "imoveis",
-      "veiculos",
       "reservas",
+      "veiculos",
     ]);
     expect(grupos[0]).toMatchObject({
       valor: 800000,
@@ -131,8 +132,20 @@ describe("resumoPorGrupo (abas)", () => {
       liquido: 620000,
     });
     expect(grupos[0].linhas.map((r) => r.id)).toEqual(["casa"]);
-    expect(grupos[2].linhas.map((r) => r.id)).toEqual(["fgts", "cx", "xp"]);
-    expect(grupos[2].liquido).toBe(41000);
+    expect(grupos[1].linhas.map((r) => r.id)).toEqual(["fgts", "cx", "xp"]);
+    expect(grupos[1].liquido).toBe(41000);
+  });
+
+  it("a barra de composição só leva grupos com saldo positivo", () => {
+    const emp = item({
+      id: "emp",
+      tipo: "passivo",
+      categoria: "emprestimo",
+      saldoDevedor: 9000,
+    });
+    const fatias = fatiasDaBarra(resumoPorGrupo([finCasa, casa, fgts, emp]));
+    expect(fatias.map((f) => f.grupo)).toEqual(["imoveis", "reservas"]);
+    expect(fatias[0].valor).toBe(620000);
   });
 
   it("dívida solta tem grupo próprio, e grupo vazio não aparece", () => {

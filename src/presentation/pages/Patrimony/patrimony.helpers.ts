@@ -64,11 +64,10 @@ export const linhasDaLista = (rows: Patrimonio[]): Patrimonio[] => {
   return [...ativos, ...passivosSoltos];
 };
 
-/** Abas da página. "resumo" é o consolidado; as outras são grupos. */
-export type Aba = "resumo" | "imoveis" | "veiculos" | "reservas" | "dividas";
-export type Grupo = Exclude<Aba, "resumo">;
+/** Grupos da página, na ordem em que aparecem. */
+export type Grupo = "imoveis" | "veiculos" | "reservas" | "dividas";
 
-export const GRUPOS: Grupo[] = ["imoveis", "veiculos", "reservas", "dividas"];
+export const GRUPOS: Grupo[] = ["imoveis", "reservas", "veiculos", "dividas"];
 
 export const GRUPO_LABEL: Record<Grupo, string> = {
   imoveis: "Imóveis",
@@ -77,14 +76,26 @@ export const GRUPO_LABEL: Record<Grupo, string> = {
   dividas: "Dívidas",
 };
 
-/** Categoria sugerida ao criar um item a partir da aba. */
-export const CATEGORIA_DA_ABA: Record<Aba, string> = {
-  resumo: "",
-  imoveis: "imovel",
-  veiculos: "veiculo",
-  reservas: "investimento",
-  dividas: "divida",
+export const COR_DO_GRUPO: Record<Grupo, string> = {
+  imoveis: "#5B4BE0",
+  reservas: "#12A66A",
+  veiculos: "#2E8BD8",
+  dividas: "#E5484D",
 };
+
+/** Botões "+ Imóvel / + Veículo…" do topo e a categoria que cada um já escolhe. */
+export const NOVOS: { label: string; categoria: string }[] = [
+  { label: "Imóvel", categoria: "imovel" },
+  { label: "Veículo", categoria: "veiculo" },
+  { label: "Investimento", categoria: "investimento" },
+  { label: "Dívida", categoria: "divida" },
+];
+
+/** Fatias da barra de composição: só grupos com saldo positivo de vocês. */
+export const fatiasDaBarra = (grupos: ResumoGrupo[]) =>
+  grupos
+    .filter((g) => g.liquido > 0)
+    .map((g) => ({ grupo: g.grupo, valor: g.liquido }));
 
 /**
  * Em que grupo um item cai. Financiamento ligado a um bem vai com o bem (a
