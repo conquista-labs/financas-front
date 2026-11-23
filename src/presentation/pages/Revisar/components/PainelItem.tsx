@@ -1,3 +1,4 @@
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   ArrowDown,
   ArrowUp,
@@ -16,7 +17,6 @@ import type { TransacaoResponse } from "@/domain/models";
 import { formatCurrency, parseAmount } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Combobox, type ComboboxOption } from "@/presentation/components";
-import { Skeleton } from "@/presentation/components/ui";
 import {
   useGetCaixaEntradaCandidatas,
   useGetTransacoes,
@@ -165,13 +165,16 @@ const Candidatas = ({
   const [busca, setBusca] = useState("");
   const termo = useDebounce(busca.trim(), 300);
   const buscando = termo.length >= 2;
+  // Enquanto digita, os resultados anteriores ficam na tela (esmaecidos)
+  // até chegarem os novos — sem piscar nem esqueleto.
   const achadas = useGetTransacoes(
     { page: 1, limit: 6, search: termo, tipo },
-    { enabled: buscando },
+    { enabled: buscando, placeholderData: keepPreviousData },
   );
   // Trocou de item na fila: limpa a busca.
   useEffect(() => setBusca(""), [id]);
   const resultados = (achadas.data?.data?.rows ?? []) as TransacaoResponse[];
+  const trocando = achadas.isPlaceholderData;
 
   return (
     <div className="rounded-[14px] bg-bg px-[14px] py-3">
@@ -198,12 +201,12 @@ const Candidatas = ({
       </div>
 
       {buscando ? (
-        achadas.isLoading ? (
-          <div className="mt-2 flex flex-col gap-[6px]" aria-busy="true">
-            {[0, 1, 2].map((i) => (
-              <Skeleton key={i} className="h-[46px] rounded-[10px]" />
-            ))}
-          </div>
+        // Primeira busca (ou a anterior não achou nada): só uma linha
+        // discreta; o spinner do campo já indica que está buscando.
+        achadas.isLoading || (trocando && !resultados.length) ? (
+          <p className="mt-2 text-[12.5px] text-muted" aria-busy="true">
+            Buscando…
+          </p>
         ) : achadas.isError ? (
           <p className="mt-2 text-[12.5px] text-danger">
             Não foi possível buscar agora.
@@ -213,7 +216,13 @@ const Candidatas = ({
             Nenhum lançamento com &quot;{termo}&quot;.
           </p>
         ) : (
-          <div className="mt-2 flex flex-col gap-[6px]">
+          <div
+            aria-busy={trocando || undefined}
+            className={cn(
+              "mt-2 flex flex-col gap-[6px] transition-opacity",
+              trocando && "opacity-60",
+            )}
+          >
             {resultados.map((t) => (
               <LinhaCandidata
                 key={t.id}
