@@ -12,6 +12,10 @@ import {
   linhasDaLista,
   mostraVariacao,
   resumoPorGrupo,
+  rotuloPosicao,
+  serieDoHistorico,
+  taxaDaPosicao,
+  totaisDasPosicoes,
   valorDivida,
 } from "./patrimony.helpers";
 
@@ -218,5 +222,50 @@ describe('mostraVariacao ("desde a compra")', () => {
         item({ valorAtual: 100, valorInicial: 50, pluggyItemId: "x" }),
       ),
     ).toBe(false);
+  });
+});
+
+describe("detalhes do investimento", () => {
+  it("rotuloPosicao: subtipo, senão o tipo, senão Outro", () => {
+    expect(rotuloPosicao({ tipo: "FIXED_INCOME", subtipo: "TREASURY" })).toBe(
+      "Tesouro Direto",
+    );
+    expect(rotuloPosicao({ tipo: "MUTUAL_FUND", subtipo: null })).toBe("Fundo");
+    expect(rotuloPosicao({ tipo: "XYZ" })).toBe("Outro");
+  });
+
+  it("taxaDaPosicao: % do CDI, IPCA + pré, só pré, nada", () => {
+    expect(taxaDaPosicao({ taxa: 110, indexador: "cdi" })).toBe("110% do CDI");
+    expect(taxaDaPosicao({ indexador: "IPCA", taxaPrefixada: 6.2 })).toBe(
+      "IPCA + 6,2% a.a.",
+    );
+    expect(taxaDaPosicao({ taxaPrefixada: 12.5 })).toBe("12,5% a.a.");
+    expect(taxaDaPosicao({})).toBeNull();
+  });
+
+  it("totaisDasPosicoes: soma só quem informa; null se ninguém", () => {
+    const base = { id: "1", nome: "x", tipo: "FIXED_INCOME", saldo: 0 };
+    expect(
+      totaisDasPosicoes([
+        { ...base, valorAplicado: 1000, rendimento: 120 },
+        { ...base, valorAplicado: 500, rendimento: null },
+      ]),
+    ).toEqual({ aplicado: 1500, rendimento: 120 });
+    expect(totaisDasPosicoes([base])).toEqual({
+      aplicado: null,
+      rendimento: null,
+    });
+  });
+
+  it("serieDoHistorico: ordena do mais antigo e converte o valor", () => {
+    expect(
+      serieDoHistorico([
+        { mesReferencia: "2026-11", valor: "1200.50" },
+        { mesReferencia: "2026-10", valor: 1000 },
+      ]),
+    ).toEqual([
+      { mes: "2026-10", valor: 1000 },
+      { mes: "2026-11", valor: 1200.5 },
+    ]);
   });
 });

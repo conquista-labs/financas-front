@@ -26,6 +26,10 @@ export interface MeioPagamento {
    */
   diaVencimento?: number | null;
   /**
+   * Pendentes com este meio viram "paga" sozinhas quando o vencimento passa
+   */
+  baixaAutomatica?: boolean;
+  /**
    * Número de transações usando este meio
    */
   totalLancamentos: number;

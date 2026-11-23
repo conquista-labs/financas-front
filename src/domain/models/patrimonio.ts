@@ -60,7 +60,27 @@ export interface Patrimonio {
     subtipo?: string | null;
     saldo: number;
     dataVencimento?: string | null;
+    /** Detalhes da corretora (nulos quando ela não informa). */
+    valorAplicado?: number | null;
+    valorBruto?: number | null;
+    rendimento?: number | null;
+    /** IR + IOF. */
+    impostos?: number | null;
+    /** Ex.: 110 (% do indexador). */
+    taxa?: number | null;
+    /** Ex.: "CDI", "IPCA". */
+    indexador?: string | null;
+    /** % a.a. */
+    taxaPrefixada?: number | null;
+    /** Rentabilidade nos últimos 12 meses (%). */
+    rentab12m?: number | null;
+    emissor?: string | null;
+    dataAplicacao?: string | null;
+    carenciaAte?: string | null;
+    isentoIr?: boolean | null;
   }>;
+  /** Histórico mensal (GET /patrimonios/:id): últimos 12 meses, mais novo antes. */
+  snapshots?: Array<{ mesReferencia: string; valor: number | string }>;
 }
 export namespace Patrimonio {
   export type TipoEnum = "ativo" | "passivo";

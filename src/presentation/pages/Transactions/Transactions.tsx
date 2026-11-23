@@ -329,7 +329,12 @@ const Transactions = () => {
           entradas={entradas}
           saidas={saidas}
           quantidade={total}
-          isLoading={isLoading}
+          // Entradas/saídas vêm de consultas próprias: sem isso, piscam R$ 0,00.
+          isLoading={
+            isLoading ||
+            (params.tipo !== "despesa" && entradasQ.isLoading) ||
+            (params.tipo !== "receita" && saidasQ.isLoading)
+          }
         />
 
         {selecionadas.length > 0 && (

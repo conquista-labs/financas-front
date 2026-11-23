@@ -11,7 +11,12 @@ import {
   usePatrimonioMutations,
 } from "@/presentation/hooks/api";
 
-import { GrupoCard, PatrimonioHero, PatrimonyFormDialog } from "./components";
+import {
+  GrupoCard,
+  InvestimentoDetalhe,
+  PatrimonioHero,
+  PatrimonyFormDialog,
+} from "./components";
 import {
   COR_DO_GRUPO,
   evolucaoRange,
@@ -57,6 +62,9 @@ const Patrimony = () => {
   );
 
   const openEdit = (item: Patrimonio) => setDialog({ open: true, item });
+  // Painel de detalhes do investimento (id: os dados vêm sempre da lista atual).
+  const [detalheId, setDetalheId] = useState<string | null>(null);
+  const detalhe = rows.find((r) => r.id === detalheId) ?? null;
 
   const handleDelete = (item: Patrimonio) =>
     remove.mutate(item.id, {
@@ -96,7 +104,8 @@ const Patrimony = () => {
       <PatrimonioHero
         resumo={resumo.data?.data}
         pontos={pontos}
-        isLoading={resumo.isLoading}
+        // O gráfico de 12 meses vem de outra consulta: espera as duas.
+        isLoading={resumo.isLoading || evolucao.isLoading}
       />
 
       {fatias.length > 1 && (
@@ -142,10 +151,20 @@ const Patrimony = () => {
               deletingId={remove.isPending ? remove.variables : undefined}
               onEdit={openEdit}
               onDelete={handleDelete}
+              onDetalhes={(item) => setDetalheId(item.id)}
             />
           ))}
         </div>
       )}
+
+      <InvestimentoDetalhe
+        item={detalhe}
+        onOpenChange={(open) => !open && setDetalheId(null)}
+        onEdit={(item) => {
+          setDetalheId(null);
+          openEdit(item);
+        }}
+      />
 
       <PatrimonyFormDialog
         item={dialog.item}

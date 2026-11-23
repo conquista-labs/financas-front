@@ -34,10 +34,9 @@ import {
 import { monthNavButton } from "./home.styles";
 import {
   dataPorExtenso,
-  diasDasTransacoes,
   itensAtencao,
   saudacao,
-  serieSaldoDoMes,
+  serieSaldoDoAno,
 } from "./inicio.helpers";
 
 const ISO = "yyyy-MM-dd";
@@ -59,13 +58,6 @@ const Home = () => {
   const stats = useGetQuickStats({ ano, mes });
   const orcamento = useGetAnalyticsOrcamento({ ano, mes });
   const meios = useGetAnalyticsMeiosPagamento({ ano, mes });
-  // Todas as transações do mês, para a linha do saldo dia a dia.
-  const doPeriodo = useGetTransacoes({
-    page: 1,
-    limit: 1000,
-    startDate: format(new Date(ano, mes - 1, 1), ISO),
-    endDate: format(new Date(ano, mes, 0), ISO),
-  });
   const ultimas = useGetTransacoes({ page: 1, limit: 6 });
 
   // ── "Pede atenção" (sempre sobre hoje, não sobre o mês escolhido) ──────
@@ -102,7 +94,6 @@ const Home = () => {
         stats,
         orcamento,
         meios,
-        doPeriodo,
         ultimas,
         caixa,
         atrasadas,
@@ -118,11 +109,7 @@ const Home = () => {
   const doMes = saldosMes[mes - 1];
   const porCategoria = resumo.data?.data?.despesasPorCategoriaMes ?? [];
   const orcamentoRows = orcamento.data?.data?.orcamentoCategorias ?? [];
-  const diasNoMes = new Date(ano, mes, 0).getDate();
-  const { pontos, corte } = serieSaldoDoMes(
-    diasDasTransacoes(doPeriodo.data?.data?.rows ?? [], diasNoMes),
-    { ano, mes, hoje },
-  );
+  const { pontos, corte } = serieSaldoDoAno(saldosMes, { ano, hoje });
 
   const extratoPend = extrato.filter((l) => l.status === "pendente");
   const atencao = itensAtencao({
@@ -161,8 +148,13 @@ const Home = () => {
       metas: urlRouters.goals,
     },
   });
+  // Teto estourado e metas atingidas também entram no "Pede atenção".
   const carregandoAtencao =
-    caixa.isLoading || atrasadas.isLoading || proximas.isLoading;
+    caixa.isLoading ||
+    atrasadas.isLoading ||
+    proximas.isLoading ||
+    orcamento.isLoading ||
+    metas.isLoading;
 
   const primeiroNome = (auth.user?.nome ?? "").split(" ")[0];
   const mesNome = format(new Date(ano, mes - 1, 1), "MMMM", { locale: ptBR });
@@ -217,15 +209,15 @@ const Home = () => {
         <div className="min-w-0 flex-[2_1_540px]">
           <HeroSaldo
             mesNome={mesNome}
-            // Como no protótipo: o que sobrou no mês (entrou − saiu).
-            saldo={
-              doMes ? (doMes.receita ?? 0) - (doMes.despesa ?? 0) : undefined
-            }
+            // Saldo acumulado no fim do mês (mesma coluna "Saldo" da tabela).
+            saldo={doMes?.valor}
             receitas={doMes?.receita}
             despesas={doMes?.despesa}
+            ano={ano}
+            mes={mes}
+            onSelectMonth={setMes}
             pontos={pontos}
             corte={corte}
-            diasNoMes={diasNoMes}
             isLoading={resumo.isLoading}
           />
         </div>
@@ -238,11 +230,11 @@ const Home = () => {
           orçamento primeiro; a tabela do ano vai para o fim. */}
       <div className="order-last lg:order-none">
         <AnoMesAMes
-        saldosMes={saldosMes}
-        porCategoria={porCategoria}
-        mes={mes}
-        onSelectMonth={setMes}
-        isLoading={resumo.isLoading}
+          saldosMes={saldosMes}
+          porCategoria={porCategoria}
+          mes={mes}
+          onSelectMonth={setMes}
+          isLoading={resumo.isLoading}
         />
       </div>
 

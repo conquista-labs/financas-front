@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addDays, format } from "date-fns";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import type { TransacaoResponse } from "@/domain/models";
@@ -11,6 +12,7 @@ import { Skeleton } from "@/presentation/components/ui";
 import { useGetTransacoes } from "@/presentation/hooks/api";
 
 import type { TransacaoDoMes } from "../agenda.helpers";
+import { BaixaEmLoteDialog } from "./BaixaEmLoteDialog";
 
 const ISO = "yyyy-MM-dd";
 /** "2026-11-05..." → "05/11". */
@@ -49,7 +51,11 @@ const Conta = ({
           : "border-line bg-card hover:border-success disabled:opacity-50",
       )}
     >
-      {paga && <Check className="size-[14px]" strokeWidth={3} />}
+      {paga ? (
+        <Check className="size-[14px]" strokeWidth={3} />
+      ) : (
+        ocupado && <Loader2 className="size-[13px] animate-spin text-fg2" />
+      )}
     </button>
     <span className="min-w-0 flex-1">
       <span
@@ -74,14 +80,20 @@ const Conta = ({
 const Grupo = ({
   titulo,
   tom,
+  acao,
   children,
 }: {
   titulo: string;
   tom: string;
+  /** Ação à direita do título (ex.: "Marcar todas como pagas"). */
+  acao?: React.ReactNode;
   children: React.ReactNode;
 }) => (
   <div>
-    <p className={cn("mb-1 text-[12px] font-bold", tom)}>{titulo}</p>
+    <div className="mb-1 flex items-center justify-between gap-2">
+      <p className={cn("text-[12px] font-bold", tom)}>{titulo}</p>
+      {acao}
+    </div>
     <ul className="border-t border-line2">{children}</ul>
   </div>
 );
@@ -92,10 +104,14 @@ const Grupo = ({
  */
 export const ContasCard = ({
   pagasDoMes,
+  carregandoMes,
 }: {
   pagasDoMes: TransacaoDoMes[];
+  /** As pagas do mês vêm da consulta do mês (da página). */
+  carregandoMes?: boolean;
 }) => {
   const queryClient = useQueryClient();
+  const [baixaEmLote, setBaixaEmLote] = useState(false);
   const hoje = new Date();
   const atrasadas = useGetTransacoes({
     page: 1,
@@ -130,7 +146,8 @@ export const ContasCard = ({
   const listaProximas = (proximas.data?.data?.rows ??
     []) as TransacaoResponse[];
   const totalAtrasadas = atrasadas.data?.data?.meta?.total ?? 0;
-  const carregando = atrasadas.isLoading || proximas.isLoading;
+  const carregando =
+    atrasadas.isLoading || proximas.isLoading || !!carregandoMes;
   const vazio =
     !listaAtrasadas.length && !listaProximas.length && !pagasDoMes.length;
 
@@ -146,7 +163,21 @@ export const ContasCard = ({
       ) : (
         <>
           {listaAtrasadas.length > 0 && (
-            <Grupo titulo="Em atraso" tom="text-danger">
+            <Grupo
+              titulo="Em atraso"
+              tom="text-danger"
+              acao={
+                listaAtrasadas.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setBaixaEmLote(true)}
+                    className="text-[12px] font-semibold text-primary hover:underline"
+                  >
+                    Marcar todas como pagas
+                  </button>
+                )
+              }
+            >
               {listaAtrasadas.slice(0, 5).map((t) => (
                 <Conta
                   key={t.id}
@@ -192,6 +223,11 @@ export const ContasCard = ({
           )}
         </>
       )}
+      <BaixaEmLoteDialog
+        open={baixaEmLote}
+        onOpenChange={setBaixaEmLote}
+        totalAtrasadas={totalAtrasadas}
+      />
     </section>
   );
 };

@@ -74,10 +74,19 @@ export const TransactionForm = ({
   const backToList = () =>
     navigate(`${urlRouters.transactions}${location.search}`);
 
-  const { data: enums } = useGetEnums();
-  const { data: categorias } = useGetCategorias(OPT_LIMIT);
-  const { data: pessoas } = useGetPessoas(OPT_LIMIT);
-  const { data: meios } = useGetMeiosPagamento(OPT_LIMIT);
+  const { data: enums, isLoading: carregandoEnums } = useGetEnums();
+  const { data: categorias, isLoading: carregandoCategorias } =
+    useGetCategorias(OPT_LIMIT);
+  const { data: pessoas, isLoading: carregandoPessoas } =
+    useGetPessoas(OPT_LIMIT);
+  const { data: meios, isLoading: carregandoMeios } =
+    useGetMeiosPagamento(OPT_LIMIT);
+  // Opções ainda chegando: os selects mostram "Carregando…".
+  const carregandoOpcoes =
+    carregandoEnums ||
+    carregandoCategorias ||
+    carregandoPessoas ||
+    carregandoMeios;
   const { data: tagsData } = useGetTags();
 
   const {
@@ -175,6 +184,7 @@ export const TransactionForm = ({
         {/* Grid 2 colunas */}
         <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2">
           <ControlledSelect
+            loading={carregandoOpcoes}
             name="categoriaId"
             label="Categoria"
             placeholder="Selecione a categoria"
@@ -183,6 +193,7 @@ export const TransactionForm = ({
             error={errors.categoriaId?.message}
           />
           <ControlledSelect
+            loading={carregandoOpcoes}
             name="pessoaId"
             label="Pessoa"
             placeholder="Selecione a pessoa"
@@ -191,6 +202,7 @@ export const TransactionForm = ({
             error={errors.pessoaId?.message}
           />
           <ControlledSelect
+            loading={carregandoOpcoes}
             name="meioPagamentoId"
             label="Meio de pagamento"
             placeholder="Selecione o meio"
@@ -216,6 +228,7 @@ export const TransactionForm = ({
             }}
           />
           <ControlledSelect
+            loading={carregandoOpcoes}
             name="formaPagamento"
             label="Forma de pagamento"
             placeholder="Selecione a forma"
@@ -475,6 +488,8 @@ const FieldError = ({ children }: { children?: React.ReactNode }) =>
   ) : null;
 
 interface ControlledSelectProps {
+  /** Opções ainda carregando. */
+  loading?: boolean;
   name: keyof TransactionFormValues;
   label: string;
   placeholder: string;
@@ -494,6 +509,7 @@ const ControlledSelect = ({
   options,
   error,
   onValueChange,
+  loading,
 }: ControlledSelectProps) => (
   <div>
     <span className={labelCls}>{label}</span>
@@ -502,6 +518,7 @@ const ControlledSelect = ({
       control={control}
       render={({ field }) => (
         <Combobox
+          loading={loading}
           options={options}
           value={field.value || undefined}
           onChange={(v) => {

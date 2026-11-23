@@ -180,21 +180,28 @@ const Goals = () => {
             Do &quot;a gente quer&quot; ao &quot;conseguimos&quot;.
           </p>
         </div>
-        <div className="flex flex-wrap gap-[10px] text-[13px]">
-          <span className="rounded-[16px] border border-line bg-card px-[14px] py-[10px]">
-            <strong className="font-display text-[17px]">
-              {metasRows.length}
-            </strong>{" "}
-            {metasRows.length === 1 ? "meta" : "metas"} ·{" "}
-            {formatCurrency(totalMetas)}
-          </span>
-          <span className="rounded-[16px] bg-success/10 px-[14px] py-[10px] text-success">
-            <strong className="font-display text-[17px]">
-              {conquistasDoAno}
-            </strong>{" "}
-            {conquistasDoAno === 1 ? "conquista" : "conquistas"} em {anoAtual}
-          </span>
-        </div>
+        {metas.isLoading || realizados.isLoading ? (
+          <div className="flex flex-wrap gap-[10px]" aria-busy="true">
+            <Skeleton className="h-[44px] w-[170px] rounded-[16px]" />
+            <Skeleton className="h-[44px] w-[190px] rounded-[16px]" />
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-[10px] text-[13px]">
+            <span className="rounded-[16px] border border-line bg-card px-[14px] py-[10px]">
+              <strong className="font-display text-[17px]">
+                {metasRows.length}
+              </strong>{" "}
+              {metasRows.length === 1 ? "meta" : "metas"} ·{" "}
+              {formatCurrency(totalMetas)}
+            </span>
+            <span className="rounded-[16px] bg-success/10 px-[14px] py-[10px] text-success">
+              <strong className="font-display text-[17px]">
+                {conquistasDoAno}
+              </strong>{" "}
+              {conquistasDoAno === 1 ? "conquista" : "conquistas"} em {anoAtual}
+            </span>
+          </div>
+        )}
       </header>
 
       <div
@@ -256,6 +263,13 @@ const Goals = () => {
                     archiveDesejo.variables === desejo.id
                   }
                   onToggleVote={handleToggleVote}
+                  votando={
+                    vote.isPending && vote.variables?.id === desejo.id
+                      ? vote.variables.pessoaId
+                      : unvote.isPending && unvote.variables?.id === desejo.id
+                        ? unvote.variables.pessoaId
+                        : undefined
+                  }
                   onPromote={openPromote}
                   onEdit={openEditDesejo}
                   onArchive={handleArchiveDesejo}

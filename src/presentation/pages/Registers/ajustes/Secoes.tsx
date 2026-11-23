@@ -228,6 +228,9 @@ export const SecaoCategorias = ({ abrir }: { abrir: AbrirCadastro }) => {
             onFavorito={() =>
               toggleFavorito.mutate({ id: c.id, favorito: !c.favorito })
             }
+            favoritando={
+              toggleFavorito.isPending && toggleFavorito.variables?.id === c.id
+            }
             onEditar={() =>
               abrir("categoria", {
                 id: c.id,
@@ -274,6 +277,9 @@ export const SecaoPessoas = ({ abrir }: { abrir: AbrirCadastro }) => {
           favorito={p.favorito}
           onFavorito={() =>
             toggleFavorito.mutate({ id: p.id, favorito: !p.favorito })
+          }
+          favoritando={
+            toggleFavorito.isPending && toggleFavorito.variables?.id === p.id
           }
           onEditar={() =>
             abrir("pessoa", {
@@ -324,6 +330,7 @@ export const SecaoMeios = ({ abrir }: { abrir: AbrirCadastro }) => {
             m.tipo === "credito" && m.diaVencimento
               ? `vence dia ${m.diaVencimento}`
               : null,
+            m.baixaAutomatica ? "baixa automática" : null,
           ]
             .filter(Boolean)
             .join(" · ")}
@@ -331,12 +338,16 @@ export const SecaoMeios = ({ abrir }: { abrir: AbrirCadastro }) => {
           onFavorito={() =>
             toggleFavorito.mutate({ id: m.id, favorito: !m.favorito })
           }
+          favoritando={
+            toggleFavorito.isPending && toggleFavorito.variables?.id === m.id
+          }
           onEditar={() =>
             abrir("meio", {
               id: m.id,
               nome: m.nome,
               tipo: m.tipo,
               diaVencimento: m.diaVencimento,
+              baixaAutomatica: m.baixaAutomatica,
               favorito: m.favorito,
             })
           }
@@ -535,8 +546,8 @@ export const SecaoTags = () => {
 
 // ── Bancos conectados ──────────────────────────────────────────────────────
 const ConfigConta = ({ c }: { c: ContaVinculada }) => {
-  const { data: pessoas } = useGetPessoas(OPT);
-  const { data: meios } = useGetMeiosPagamento(OPT);
+  const { data: pessoas, isLoading: carregandoPessoas } = useGetPessoas(OPT);
+  const { data: meios, isLoading: carregandoMeios } = useGetMeiosPagamento(OPT);
   const { atualizar } = useContaVinculadaMutations();
   const salvar = (body: Parameters<typeof atualizar.mutate>[0]["body"]) =>
     atualizar.mutate(
@@ -545,11 +556,19 @@ const ConfigConta = ({ c }: { c: ContaVinculada }) => {
     );
 
   return (
-    <div className="grid grid-cols-1 gap-3 bg-card2 px-[18px] py-4 sm:grid-cols-3">
+    <div
+      aria-busy={atualizar.isPending || undefined}
+      className={cn(
+        "grid grid-cols-1 gap-3 bg-card2 px-[18px] py-4 transition-opacity sm:grid-cols-3",
+        // Salvando: trava os campos até a API responder.
+        atualizar.isPending && "pointer-events-none opacity-60",
+      )}
+    >
       <label className="flex flex-col gap-[5px] text-xs font-semibold text-fg2">
         Titular
         <Combobox
           inline
+          loading={carregandoPessoas}
           options={(pessoas?.data?.rows ?? []).map((p) => ({
             value: p.id,
             label: p.nome,
@@ -565,6 +584,7 @@ const ConfigConta = ({ c }: { c: ContaVinculada }) => {
         Meio de pagamento
         <Combobox
           inline
+          loading={carregandoMeios}
           options={(meios?.data?.rows ?? []).map((m) => ({
             value: m.id,
             label: m.nome,

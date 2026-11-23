@@ -4,3 +4,4 @@ export * from "./getTransacoesIdFactory";
 export * from "./patchTransacoesFactory";
 export * from "./postTransacoesFactory";
 export * from "./postTransacoesIdPagarFactory";
+export * from "./postTransacoesPagarLoteFactory";

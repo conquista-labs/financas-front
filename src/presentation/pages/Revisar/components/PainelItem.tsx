@@ -6,14 +6,22 @@ import {
   Link2,
   Loader2,
   RotateCcw,
+  Search,
   Trash2,
   Unlink,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { formatCurrency } from "@/lib/format";
+import type { TransacaoResponse } from "@/domain/models";
+import { formatCurrency, parseAmount } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Combobox, type ComboboxOption } from "@/presentation/components";
-import { useGetCaixaEntradaCandidatas } from "@/presentation/hooks/api";
+import { Skeleton } from "@/presentation/components/ui";
+import {
+  useGetCaixaEntradaCandidatas,
+  useGetTransacoes,
+} from "@/presentation/hooks/api";
+import { useDebounce } from "@/presentation/hooks/core";
 import type { LinhaExtrato } from "@/presentation/store/filaExtrato";
 
 import { isoDate, numParcelas } from "../extrato/extrato.helpers";
@@ -71,6 +79,8 @@ export interface PainelOpcoes {
   pessoas: ComboboxOption[];
   meios: ComboboxOption[];
   formas: ComboboxOption[];
+  /** Opções ainda carregando (os selects mostram "Carregando…"). */
+  carregando?: boolean;
 }
 
 export interface PainelAcoes {
@@ -98,22 +108,132 @@ interface PainelItemProps extends PainelAcoes {
   onProximo: () => void;
 }
 
-/** "Já lancei?": transações com o mesmo valor por perto, para ligar. */
+/** Uma transação que dá para ligar ao lançamento do banco. */
+const LinhaCandidata = ({
+  titulo,
+  detalhe,
+  valor,
+  onLigar,
+  ocupado,
+}: {
+  titulo: string;
+  detalhe: string;
+  valor?: number;
+  onLigar: () => void;
+  ocupado?: boolean;
+}) => (
+  <div className="flex items-center gap-3 rounded-[10px] bg-card px-3 py-2">
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-[13px] font-semibold">{titulo}</p>
+      <p className="truncate text-[11.5px] text-fg2">{detalhe}</p>
+    </div>
+    {valor !== undefined && (
+      <span className="shrink-0 font-display text-[13px] font-bold tabular-nums">
+        {formatCurrency(valor)}
+      </span>
+    )}
+    <button
+      type="button"
+      onClick={onLigar}
+      disabled={ocupado}
+      className="text-[13px] font-bold text-primary hover:underline disabled:opacity-50 dark:text-[#B3A9FF]"
+    >
+      Ligar
+    </button>
+  </div>
+);
+
+/**
+ * "Já lancei?": transações com o mesmo valor por perto, para ligar — e uma
+ * busca por descrição para achar o lançamento quando o valor ou a data não
+ * batem (ex.: lançado com outro valor, ou há mais de 45 dias).
+ */
 const Candidatas = ({
   id,
+  tipo,
   onLigar,
+  ocupado,
 }: {
   id: string;
+  tipo: "receita" | "despesa";
   onLigar: (transacaoId: string) => void;
+  ocupado?: boolean;
 }) => {
   const { data, isLoading, isError } = useGetCaixaEntradaCandidatas(id);
   const lista = data?.data ?? [];
+
+  const [busca, setBusca] = useState("");
+  const termo = useDebounce(busca.trim(), 300);
+  const buscando = termo.length >= 2;
+  const achadas = useGetTransacoes(
+    { page: 1, limit: 6, search: termo, tipo },
+    { enabled: buscando },
+  );
+  // Trocou de item na fila: limpa a busca.
+  useEffect(() => setBusca(""), [id]);
+  const resultados = (achadas.data?.data?.rows ?? []) as TransacaoResponse[];
+
   return (
     <div className="rounded-[14px] bg-bg px-[14px] py-3">
-      <p className="text-[12.5px] font-semibold text-fg2">
-        Já lancei? Mesmo valor, até 45 dias
-      </p>
-      {isLoading ? (
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[12.5px] font-semibold text-fg2">
+          {buscando
+            ? "Buscando nos lançamentos"
+            : "Já lancei? Mesmo valor, até 45 dias"}
+        </p>
+        <label className="flex h-8 w-full items-center gap-[6px] rounded-[10px] bg-card px-[10px] sm:w-[220px]">
+          <Search className="size-[14px] shrink-0 text-muted" />
+          <input
+            type="search"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar outro lançamento…"
+            aria-label="Buscar lançamento para ligar"
+            className="min-w-0 flex-1 bg-transparent text-[12.5px] outline-none placeholder:text-muted"
+          />
+          {buscando && achadas.isFetching && (
+            <Loader2 className="size-[14px] shrink-0 animate-spin text-muted" />
+          )}
+        </label>
+      </div>
+
+      {buscando ? (
+        achadas.isLoading ? (
+          <div className="mt-2 flex flex-col gap-[6px]" aria-busy="true">
+            {[0, 1, 2].map((i) => (
+              <Skeleton key={i} className="h-[46px] rounded-[10px]" />
+            ))}
+          </div>
+        ) : achadas.isError ? (
+          <p className="mt-2 text-[12.5px] text-danger">
+            Não foi possível buscar agora.
+          </p>
+        ) : !resultados.length ? (
+          <p className="mt-2 text-[12.5px] text-muted">
+            Nenhum lançamento com &quot;{termo}&quot;.
+          </p>
+        ) : (
+          <div className="mt-2 flex flex-col gap-[6px]">
+            {resultados.map((t) => (
+              <LinhaCandidata
+                key={t.id}
+                titulo={`${t.descricao} · ${diaMes(t.data)}`}
+                detalhe={[
+                  t.categoria?.nome,
+                  t.meioPagamento?.nome,
+                  t.pessoa?.nome,
+                  t.status === "pendente" ? "pendente, vira paga" : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+                valor={parseAmount(t.valor)}
+                onLigar={() => onLigar(t.id)}
+                ocupado={ocupado}
+              />
+            ))}
+          </div>
+        )
+      ) : isLoading ? (
         <p className="mt-2 flex items-center gap-2 text-[12.5px] text-muted">
           <Loader2 className="size-4 animate-spin" /> Procurando…
         </p>
@@ -123,35 +243,24 @@ const Candidatas = ({
         </p>
       ) : !lista.length ? (
         <p className="mt-2 text-[12.5px] text-muted">
-          Nenhuma transação com esse valor por perto.
+          Nenhuma transação com esse valor por perto. Use a busca acima.
         </p>
       ) : (
         <div className="mt-2 flex flex-col gap-[6px]">
           {lista.slice(0, 3).map((t) => (
-            <div
+            <LinhaCandidata
               key={t.id}
-              className="flex items-center gap-3 rounded-[10px] bg-card px-3 py-2"
-            >
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-semibold">
-                  {t.descricao} · {diaMes(t.data)}
-                </p>
-                <p className="truncate text-[11.5px] text-fg2">
-                  {[t.categoria, t.meioPagamento, t.pessoa]
-                    .filter(Boolean)
-                    .join(" · ")}
-                  {t.mesmoMeio && " · mesmo meio"}
-                  {t.status === "pendente" && " · pendente, vira paga"}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => onLigar(t.id)}
-                className="text-[13px] font-bold text-primary hover:underline dark:text-[#B3A9FF]"
-              >
-                Ligar
-              </button>
-            </div>
+              titulo={`${t.descricao} · ${diaMes(t.data)}`}
+              detalhe={
+                [t.categoria, t.meioPagamento, t.pessoa]
+                  .filter(Boolean)
+                  .join(" · ") +
+                (t.mesmoMeio ? " · mesmo meio" : "") +
+                (t.status === "pendente" ? " · pendente, vira paga" : "")
+              }
+              onLigar={() => onLigar(t.id)}
+              ocupado={ocupado}
+            />
           ))}
         </div>
       )}
@@ -190,6 +299,21 @@ export const PainelItem = ({
   const data = b?.data ?? isoDate(e!.data);
   const descricao = b ? (edit?.descricao ?? b.descricao) : e!.descricao;
   const pendente = visao === "pendente";
+  // Qual ação foi clicada: ela ganha o spinner enquanto `ocupado`.
+  const [clicada, setClicada] = useState<string | null>(null);
+  useEffect(() => {
+    if (!ocupado) setClicada(null);
+  }, [ocupado]);
+  const icone = (acao: string, padrao: React.ReactNode, cls = "size-4") =>
+    ocupado && clicada === acao ? (
+      <Loader2 className={cn(cls, "animate-spin")} />
+    ) : (
+      padrao
+    );
+  const clicar = (acao: string, fn: () => void) => () => {
+    setClicada(acao);
+    fn();
+  };
 
   const categoriaId = b ? categoriaDe(b, edit) : e!.categoriaId;
   const pessoaId = b ? pessoaDe(b, edit) : e!.pessoaId;
@@ -325,6 +449,7 @@ export const PainelItem = ({
         <div className="grid grid-cols-1 gap-[10px] sm:grid-cols-2">
           <Campo label="Categoria">
             <Combobox
+              loading={opcoes.carregando}
               inline
               options={opcoes.categorias[tipo]}
               value={categoriaId || undefined}
@@ -339,6 +464,7 @@ export const PainelItem = ({
           </Campo>
           <Campo label="Pessoa">
             <Combobox
+              loading={opcoes.carregando}
               inline
               options={opcoes.pessoas}
               value={pessoaId || undefined}
@@ -354,6 +480,7 @@ export const PainelItem = ({
           </Campo>
           <Campo label="Meio de pagamento">
             <Combobox
+              loading={opcoes.carregando}
               inline
               options={opcoes.meios}
               value={meioId || undefined}
@@ -370,6 +497,7 @@ export const PainelItem = ({
           {e && (
             <Campo label="Forma de pagamento">
               <Combobox
+                loading={opcoes.carregando}
                 inline
                 options={opcoes.formas}
                 value={e.formaPagamento || undefined}
@@ -385,7 +513,15 @@ export const PainelItem = ({
       )}
 
       {b && pendente && (
-        <Candidatas id={b.id} onLigar={(id) => onJaLancei(id)} />
+        <Candidatas
+          id={b.id}
+          tipo={tipo}
+          onLigar={(id) => {
+            setClicada("ja-lancei");
+            onJaLancei(id);
+          }}
+          ocupado={ocupado}
+        />
       )}
 
       {/* Ações (no celular ficam presas embaixo, acima da barra de abas) */}
@@ -394,15 +530,20 @@ export const PainelItem = ({
           <>
             <button
               type="button"
-              onClick={onAceitar}
+              onClick={clicar("aceitar", onAceitar)}
               disabled={ocupado}
               className="flex h-12 min-w-[120px] flex-1 items-center justify-center gap-2 rounded-[13px] bg-primary px-5 text-[15px] font-bold text-white transition-colors hover:bg-primary-strong disabled:opacity-60"
             >
-              <Check className="size-[18px]" strokeWidth={2.6} /> Aceitar
+              {icone(
+                "aceitar",
+                <Check className="size-[18px]" strokeWidth={2.6} />,
+                "size-[18px]",
+              )}{" "}
+              Aceitar
             </button>
             <button
               type="button"
-              onClick={() => onJaLancei()}
+              onClick={clicar("ja-lancei", () => onJaLancei())}
               disabled={ocupado}
               title={
                 b
@@ -411,25 +552,25 @@ export const PainelItem = ({
               }
               className="flex h-12 items-center gap-2 rounded-[13px] border border-line bg-card px-4 text-sm font-semibold disabled:opacity-60"
             >
-              <Link2 className="size-4" />
+              {icone("ja-lancei", <Link2 className="size-4" />)}
               <span className="max-sm:sr-only">Já lancei</span>
             </button>
             <button
               type="button"
-              onClick={onIgnorar}
+              onClick={clicar("ignorar", onIgnorar)}
               disabled={ocupado}
               className="flex h-12 items-center gap-2 rounded-[13px] border border-line bg-card px-4 text-sm font-semibold disabled:opacity-60"
             >
-              <EyeOff className="size-4" />
+              {icone("ignorar", <EyeOff className="size-4" />)}
               <span className="max-sm:sr-only">Ignorar</span>
             </button>
             <button
               type="button"
-              onClick={onExcluir}
+              onClick={clicar("excluir", onExcluir)}
               disabled={ocupado}
               className="flex h-12 items-center gap-2 rounded-[13px] bg-danger/10 px-4 text-sm font-semibold text-danger disabled:opacity-60"
             >
-              <Trash2 className="size-4" />
+              {icone("excluir", <Trash2 className="size-4" />)}
               <span className="max-sm:sr-only">Excluir</span>
             </button>
           </>
@@ -437,19 +578,19 @@ export const PainelItem = ({
           <>
             <button
               type="button"
-              onClick={onRestaurar}
+              onClick={clicar("restaurar", onRestaurar)}
               disabled={ocupado}
               className="flex h-11 items-center gap-2 rounded-[13px] bg-primary px-5 text-sm font-bold text-white disabled:opacity-60"
             >
-              <RotateCcw className="size-4" /> Restaurar
+              {icone("restaurar", <RotateCcw className="size-4" />)} Restaurar
             </button>
             <button
               type="button"
-              onClick={onExcluir}
+              onClick={clicar("excluir", onExcluir)}
               disabled={ocupado}
               className="flex h-11 items-center gap-2 rounded-[13px] bg-danger/10 px-4 text-sm font-semibold text-danger disabled:opacity-60"
             >
-              <Trash2 className="size-4" /> Excluir
+              {icone("excluir", <Trash2 className="size-4" />)} Excluir
             </button>
           </>
         ) : (
@@ -457,11 +598,11 @@ export const PainelItem = ({
           VINCULOS_DESFAZIVEIS.has(b.motivo) && (
             <button
               type="button"
-              onClick={onDesvincular}
+              onClick={clicar("desvincular", onDesvincular)}
               disabled={ocupado}
               className="flex h-11 items-center gap-2 rounded-[13px] border border-line bg-card px-4 text-sm font-semibold disabled:opacity-60"
             >
-              <Unlink className="size-4" /> Desvincular
+              {icone("desvincular", <Unlink className="size-4" />)} Desvincular
             </button>
           )
         )}
