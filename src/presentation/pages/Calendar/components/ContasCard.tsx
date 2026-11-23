@@ -90,7 +90,8 @@ const Grupo = ({
   children: React.ReactNode;
 }) => (
   <div>
-    <div className="mb-1 flex items-center justify-between gap-2">
+    {/* Título fixo no topo enquanto a lista rola por dentro do card. */}
+    <div className="sticky top-0 z-[1] flex items-center justify-between gap-2 bg-card pb-1">
       <p className={cn("text-[12px] font-bold", tom)}>{titulo}</p>
       {acao}
     </div>
@@ -161,7 +162,9 @@ export const ContasCard = ({
           Nenhuma conta pendente. Use "+ Nova conta" para agendar.
         </p>
       ) : (
-        <>
+        // Lista longa (ex.: muitas compras no cartão) rola por dentro do
+        // card em vez de esticar a página.
+        <div className="nice-scroll -mr-2 flex max-h-[min(520px,65vh)] flex-col gap-4 overflow-y-auto pr-2">
           {listaAtrasadas.length > 0 && (
             <Grupo
               titulo="Em atraso"
@@ -221,7 +224,7 @@ export const ContasCard = ({
               ))}
             </Grupo>
           )}
-        </>
+        </div>
       )}
       <BaixaEmLoteDialog
         open={baixaEmLote}
