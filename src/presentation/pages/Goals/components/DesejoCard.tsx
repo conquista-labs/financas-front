@@ -19,6 +19,8 @@ interface DesejoCardProps {
   pessoas: Pessoa[];
   isArchiving?: boolean;
   onToggleVote: (desejo: DesejoResponse, pessoaId: string) => void;
+  /** Voto sendo salvo neste desejo (pessoaId): trava os corações. */
+  votando?: string;
   onPromote: (desejo: DesejoResponse) => void;
   onEdit: (desejo: DesejoResponse) => void;
   onArchive: (desejo: DesejoResponse) => void;
@@ -49,6 +51,7 @@ export const DesejoCard = ({
   pessoas,
   isArchiving,
   onToggleVote,
+  votando,
   onPromote,
   onEdit,
   onArchive,
@@ -107,20 +110,26 @@ export const DesejoCard = ({
               key={p.id}
               type="button"
               onClick={() => onToggleVote(desejo, p.id)}
+              disabled={!!votando}
+              aria-busy={votando === p.id || undefined}
               aria-pressed={ativo}
               aria-label={`${p.nome} ${ativo ? "quer" : "não votou"}`}
               className={cn(
-                "flex items-center gap-1 rounded-full border px-[9px] py-1 text-[12px] font-semibold transition-colors",
+                "flex items-center gap-1 rounded-full border px-[9px] py-1 text-[12px] font-semibold transition-colors disabled:opacity-70",
                 ativo
                   ? "border-danger/30 bg-danger/10 text-danger"
                   : "border-line bg-card text-fg2 hover:border-danger/30",
               )}
             >
-              <Heart
-                className="size-3"
-                strokeWidth={2.2}
-                fill={ativo ? "currentColor" : "none"}
-              />
+              {votando === p.id ? (
+                <Loader2 className="size-3 animate-spin" />
+              ) : (
+                <Heart
+                  className="size-3"
+                  strokeWidth={2.2}
+                  fill={ativo ? "currentColor" : "none"}
+                />
+              )}
               {p.nome}
             </button>
           );

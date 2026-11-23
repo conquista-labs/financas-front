@@ -51,9 +51,13 @@ export const DetailPanel = ({
   onFormularioCompleto,
 }: DetailPanelProps) => {
   const { atualizar, pagar } = useTransacaoMutations();
-  const { data: categorias } = useGetCategorias(OPT);
-  const { data: pessoas } = useGetPessoas(OPT);
-  const { data: meios } = useGetMeiosPagamento(OPT);
+  const { data: categorias, isLoading: carregandoCategorias } =
+    useGetCategorias(OPT);
+  const { data: pessoas, isLoading: carregandoPessoas } = useGetPessoas(OPT);
+  const { data: meios, isLoading: carregandoMeios } = useGetMeiosPagamento(OPT);
+  // Opções ainda chegando: os selects mostram "Carregando…".
+  const carregandoOpcoes =
+    carregandoCategorias || carregandoPessoas || carregandoMeios;
 
   const [descricao, setDescricao] = useState(t.descricao);
   const [valor, setValor] = useState(mascarar(t.valor));
@@ -137,6 +141,7 @@ export const DetailPanel = ({
 
       <Linha label="Categoria">
         <Combobox
+          loading={carregandoOpcoes}
           inline
           options={(categorias?.data?.rows ?? [])
             .filter((c) => c.tipo === tipo)
@@ -151,6 +156,7 @@ export const DetailPanel = ({
       </Linha>
       <Linha label="Pessoa">
         <Combobox
+          loading={carregandoOpcoes}
           inline
           options={(pessoas?.data?.rows ?? []).map((p) => ({
             value: p.id,
@@ -164,6 +170,7 @@ export const DetailPanel = ({
       </Linha>
       <Linha label="Meio">
         <Combobox
+          loading={carregandoOpcoes}
           inline
           options={(meios?.data?.rows ?? []).map((m) => ({
             value: m.id,

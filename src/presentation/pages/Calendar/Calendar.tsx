@@ -113,8 +113,11 @@ const Calendar = () => {
         </section>
 
         <div className="flex min-w-0 flex-[1_1_320px] flex-col gap-4">
-          <ContasCard pagasDoMes={contasPagas(transacoes)} />
-          <WeekSummary weeks={semanas} />
+          <ContasCard
+            pagasDoMes={contasPagas(transacoes)}
+            carregandoMes={isLoading}
+          />
+          <WeekSummary weeks={semanas} isLoading={isLoading} />
         </div>
       </div>
     </div>

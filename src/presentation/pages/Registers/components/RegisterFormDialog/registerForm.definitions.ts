@@ -1,4 +1,4 @@
-import { number, object, string } from "yup";
+import { boolean, number, object, string } from "yup";
 
 /** Tipos de meio de pagamento (espelha o enum do backend). */
 export const MEIO_TIPOS = [
@@ -49,6 +49,7 @@ export const schemas = {
         then: (s) => s.required("Informe o dia de vencimento"),
         otherwise: (s) => s.optional(),
       }),
+    baixaAutomatica: boolean().optional(),
   }),
 } as const;
 
@@ -62,7 +63,13 @@ export interface RegisterFormValues {
   /** Meio de pagamento: tipo (credito/debito/...) e dia de vencimento (só crédito). */
   tipoMeio?: string;
   diaVencimento?: number | string;
+  /** Meio: baixa automática no vencimento. Vazio = padrão do tipo. */
+  baixaAutomatica?: boolean;
 }
+
+/** Cartão e débito pagam sozinhos (fatura / débito em conta). */
+export const baixaAutomaticaPadrao = (tipoMeio?: string) =>
+  tipoMeio === "credito" || tipoMeio === "debito";
 
 export const emptyForm: Record<string, RegisterFormValues> = {
   categoria: {

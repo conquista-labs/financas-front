@@ -18,6 +18,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Skeleton,
 } from "@/presentation/components/ui";
 import {
   useGetCategorias,
@@ -96,9 +97,15 @@ export const QuickAddModal = () => {
   const [todasCats, setTodasCats] = useState(false);
   const [salvo, setSalvo] = useState<string | null>(null);
 
-  const { data: categoriasResp } = useGetCategorias(OPT_LIMIT);
-  const { data: pessoasResp } = useGetPessoas(OPT_LIMIT);
-  const { data: meiosResp } = useGetMeiosPagamento(OPT_LIMIT);
+  const { data: categoriasResp, isLoading: carregandoCategoriasResp } =
+    useGetCategorias(OPT_LIMIT);
+  const { data: pessoasResp, isLoading: carregandoPessoasResp } =
+    useGetPessoas(OPT_LIMIT);
+  const { data: meiosResp, isLoading: carregandoMeiosResp } =
+    useGetMeiosPagamento(OPT_LIMIT);
+  // Opções ainda chegando: os selects mostram "Carregando…".
+  const carregandoOpcoes =
+    carregandoCategoriasResp || carregandoPessoasResp || carregandoMeiosResp;
   const postTransacao = usePostTransacoes();
   const postRecorrencia = usePostRecorrencias();
   const salvando = postTransacao.isPending || postRecorrencia.isPending;
@@ -530,13 +537,28 @@ export const QuickAddModal = () => {
                       type="search"
                       value={buscaCat}
                       onChange={(e) => setBuscaCat(e.target.value)}
-                      placeholder={`Buscar entre ${catsDoTipo.length} categorias`}
+                      placeholder={
+                        carregandoCategoriasResp
+                          ? "Carregando categorias…"
+                          : `Buscar entre ${catsDoTipo.length} categorias`
+                      }
                       aria-label="Buscar categoria"
                       className="min-w-0 flex-1 bg-transparent text-[12.5px] outline-none placeholder:text-muted"
                     />
                   </label>
                 </div>
-                <div className="flex flex-wrap gap-[6px]">
+                <div
+                  className="flex flex-wrap gap-[6px]"
+                  aria-busy={carregandoCategoriasResp || undefined}
+                >
+                  {carregandoCategoriasResp &&
+                    [88, 64, 104, 72, 96, 58].map((w, i) => (
+                      <Skeleton
+                        key={i}
+                        className="h-8 rounded-full"
+                        style={{ width: w }}
+                      />
+                    ))}
                   {catsVisiveis.map((c) => (
                     <button
                       key={c.id}
@@ -604,6 +626,7 @@ export const QuickAddModal = () => {
                 <div className="flex flex-col gap-[5px]">
                   <span className={fieldLabel}>Meio</span>
                   <Combobox
+                    loading={carregandoOpcoes}
                     inline
                     options={meioOpts}
                     value={meioPagamentoId || undefined}

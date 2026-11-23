@@ -28,8 +28,11 @@ export const SelectionBar = ({
   onExcluir,
   onCancelar,
 }: SelectionBarProps) => {
-  const { data: categorias } = useGetCategorias(OPT);
-  const { data: pessoas } = useGetPessoas(OPT);
+  const { data: categorias, isLoading: carregandoCategorias } =
+    useGetCategorias(OPT);
+  const { data: pessoas, isLoading: carregandoPessoas } = useGetPessoas(OPT);
+  // Opções ainda chegando: os selects mostram "Carregando…".
+  const carregandoOpcoes = carregandoCategorias || carregandoPessoas;
   const [tag, setTag] = useState<string | null>(null);
   const [confirmando, setConfirmando] = useState(false);
 
@@ -40,6 +43,7 @@ export const SelectionBar = ({
       </span>
       {tipo && (
         <Combobox
+          loading={carregandoOpcoes}
           options={(categorias?.data?.rows ?? [])
             .filter((c) => c.tipo === tipo)
             .map((c) => ({ value: c.id, label: c.nome }))}
@@ -52,6 +56,7 @@ export const SelectionBar = ({
         />
       )}
       <Combobox
+        loading={carregandoOpcoes}
         options={(pessoas?.data?.rows ?? []).map((p) => ({
           value: p.id,
           label: p.nome,

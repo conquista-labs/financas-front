@@ -1,5 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { X } from "lucide-react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -9,12 +10,14 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Switch,
 } from "@/presentation/components/ui";
 import type { CadastroKind } from "@/presentation/hooks/api";
 import { useCadastroMutations } from "@/presentation/hooks/api";
 
 import { ColorPickerField } from "./ColorPickerField";
 import {
+  baixaAutomaticaPadrao,
   emptyForm,
   MEIO_TIPOS,
   type RegisterFormValues,
@@ -32,6 +35,8 @@ export interface RegisterItem {
   favorito?: boolean;
   /** Meio de pagamento: dia de vencimento da fatura (só crédito). */
   diaVencimento?: number | null;
+  /** Meio de pagamento: baixa automática no vencimento. */
+  baixaAutomatica?: boolean;
 }
 
 interface RegisterFormDialogProps {
@@ -66,34 +71,48 @@ export const RegisterFormDialog = ({
   const { create, update } = useCadastroMutations(kind);
   const isEdit = !!item;
 
+  // Valores salvos do item (ou o vazio do tipo, ao criar).
+  const iniciais = useMemo(
+    () =>
+      ({
+        ...emptyForm[kind],
+        ...(item
+          ? {
+              nome: item.nome,
+              tipo: item.tipo,
+              tetoGasto: item.tetoGasto != null ? String(item.tetoGasto) : "",
+              cor: item.cor,
+              email: item.email ?? "",
+              favorito: item.favorito,
+              // Para meio, `item.tipo` carrega o tipo do meio (credito/debito/...).
+              ...(kind === "meio"
+                ? {
+                    tipoMeio: item.tipo ?? "outro",
+                    diaVencimento: item.diaVencimento ?? "",
+                    baixaAutomatica: item.baixaAutomatica,
+                  }
+                : {}),
+            }
+          : {}),
+      }) as RegisterFormValues,
+    [kind, item],
+  );
+
   const {
     control,
     handleSubmit,
+    reset,
     watch,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: yupResolver(schemas[kind]) as never,
-    values: {
-      ...emptyForm[kind],
-      ...(item
-        ? {
-            nome: item.nome,
-            tipo: item.tipo,
-            tetoGasto: item.tetoGasto != null ? String(item.tetoGasto) : "",
-            cor: item.cor,
-            email: item.email ?? "",
-            favorito: item.favorito,
-            // Para meio, `item.tipo` carrega o tipo do meio (credito/debito/...).
-            ...(kind === "meio"
-              ? {
-                  tipoMeio: item.tipo ?? "outro",
-                  diaVencimento: item.diaVencimento ?? "",
-                }
-              : {}),
-          }
-        : {}),
-    } as RegisterFormValues,
+    values: iniciais,
   });
+
+  // Ao (re)abrir, descarta o que foi mexido e não salvo (Cancelar).
+  useEffect(() => {
+    if (open) reset(iniciais);
+  }, [open, iniciais, reset]);
 
   const close = () => onOpenChange(false);
 
@@ -118,6 +137,7 @@ export const RegisterFormDialog = ({
       nome: v.nome,
       tipo: v.tipoMeio ?? "outro",
       ...(dia != null ? { diaVencimento: dia } : {}),
+      baixaAutomatica: v.baixaAutomatica ?? baixaAutomaticaPadrao(v.tipoMeio),
     };
   };
 
@@ -311,6 +331,40 @@ export const RegisterFormDialog = ({
                   )}
                 </div>
               )}
+
+              <Controller
+                name="baixaAutomatica"
+                control={control}
+                render={({ field }) => {
+                  // Sem escolha explícita, segue o padrão do tipo.
+                  const ligada =
+                    field.value ?? baixaAutomaticaPadrao(watch("tipoMeio"));
+                  return (
+                    <div className="mt-4 flex items-start justify-between gap-4 rounded-[11px] border border-line bg-card px-3 py-[11px]">
+                      <label
+                        htmlFor="baixa-automatica"
+                        className="cursor-pointer"
+                      >
+                        <span className="block text-sm font-semibold text-fg">
+                          Baixa automática no vencimento
+                        </span>
+                        <span className="mt-[2px] block text-[11.5px] leading-relaxed text-muted">
+                          Contas em aberto neste meio viram pagas sozinhas
+                          quando a data passa. Bom para cartão, débito
+                          automático e cheque pré-datado.
+                        </span>
+                      </label>
+                      <Switch
+                        id="baixa-automatica"
+                        checked={ligada}
+                        onCheckedChange={field.onChange}
+                        aria-label="Baixa automática no vencimento"
+                        className="mt-[2px]"
+                      />
+                    </div>
+                  );
+                }}
+              />
             </>
           )}
 

@@ -22,12 +22,12 @@ export const useNavCounts = (): Record<NavBadge, number | undefined> => {
   const extratoPendentes = useExtratoPendentes();
   // limit 1: só o total da paginação importa.
   const hojeISO = format(new Date(), "yyyy-MM-dd");
-  const { data: atrasadas } = useGetTransacoes({
+  const { data: atrasadas, isLoading: l1 } = useGetTransacoes({
     page: 1,
     limit: 1,
     status: "atrasada",
   });
-  const { data: proximas } = useGetTransacoes({
+  const { data: proximas, isLoading: l2 } = useGetTransacoes({
     page: 1,
     limit: 1,
     status: "pendente",
@@ -36,7 +36,11 @@ export const useNavCounts = (): Record<NavBadge, number | undefined> => {
   });
   return {
     revisar: (resumo?.data.pendentes ?? 0) + extratoPendentes,
+    // Undefined enquanto carrega: a tela não mostra "0 contas" de mentira.
     agenda:
-      (atrasadas?.data?.meta?.total ?? 0) + (proximas?.data?.meta?.total ?? 0),
+      l1 || l2
+        ? undefined
+        : (atrasadas?.data?.meta?.total ?? 0) +
+          (proximas?.data?.meta?.total ?? 0),
   };
 };

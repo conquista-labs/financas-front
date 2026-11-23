@@ -1,4 +1,11 @@
-import { CopyX, RefreshCw, Search, Trash2, Upload } from "lucide-react";
+import {
+  CopyX,
+  Loader2,
+  RefreshCw,
+  Search,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -147,8 +154,22 @@ const Revisar = () => {
         value: f.value ?? "",
         label: f.label ?? "",
       })),
+      carregando:
+        categorias.isLoading ||
+        pessoas.isLoading ||
+        meios.isLoading ||
+        enums.isLoading,
     };
-  }, [categorias.data, pessoas.data, meios.data, enums.data]);
+  }, [
+    categorias.data,
+    pessoas.data,
+    meios.data,
+    enums.data,
+    categorias.isLoading,
+    pessoas.isLoading,
+    meios.isLoading,
+    enums.isLoading,
+  ]);
   const nomeCategoria = useMemo(
     () =>
       new Map((categorias.data?.data?.rows ?? []).map((c) => [c.id, c.nome])),
@@ -587,6 +608,15 @@ const Revisar = () => {
       : undefined;
 
   const carregando = lista.isLoading && fonte !== "extrato";
+  // Trocou visão/página/filtro: a lista antiga fica na tela até chegar a nova.
+  const trocandoLista = lista.isPlaceholderData && fonte !== "extrato";
+  // Uma ação em lote em andamento trava as outras (sem clique duplo).
+  const emLoteOcupado =
+    ocupados.size > 0 ||
+    m.aceitar.isPending ||
+    m.vincular.isPending ||
+    m.ignorar.isPending ||
+    m.excluir.isPending;
   const possiveisDup = (r?.possiveisDuplicadas ?? 0) + extDup.length;
 
   return (
@@ -695,6 +725,7 @@ const Revisar = () => {
         ))}
         <span className="flex-1" />
         <Combobox
+          loading={opcoes.carregando}
           options={opcoes.pessoas}
           value={pessoaFiltro || undefined}
           onChange={(v) => {
@@ -775,13 +806,18 @@ const Revisar = () => {
                 <button
                   type="button"
                   onClick={() => aceitar(selecionadosItens)}
-                  className="h-[30px] rounded-full bg-primary px-3 font-bold text-white"
+                  disabled={emLoteOcupado}
+                  className="flex h-[30px] items-center gap-[6px] rounded-full bg-primary px-3 font-bold text-white disabled:opacity-60"
                 >
+                  {m.aceitar.isPending && (
+                    <Loader2 className="size-[14px] animate-spin" />
+                  )}
                   Aceitar ({selecionadosItens.length})
                 </button>
                 <div className="flex w-full flex-wrap items-center gap-2 pt-1">
                   {tipoEmLote && (
                     <Combobox
+                      loading={opcoes.carregando}
                       options={opcoes.categorias[tipoEmLote]}
                       value=""
                       onChange={(v) => emLote({ categoriaId: v })}
@@ -792,6 +828,7 @@ const Revisar = () => {
                     />
                   )}
                   <Combobox
+                    loading={opcoes.carregando}
                     options={opcoes.meios}
                     value=""
                     onChange={(v) => emLote({ meioPagamentoId: v })}
@@ -801,6 +838,7 @@ const Revisar = () => {
                     contentClassName="min-w-[220px]"
                   />
                   <Combobox
+                    loading={opcoes.carregando}
                     options={opcoes.pessoas}
                     value=""
                     onChange={(v) => emLote({ pessoaId: v })}
@@ -813,21 +851,24 @@ const Revisar = () => {
                   <button
                     type="button"
                     onClick={() => jaLancei(selecionadosItens)}
-                    className="h-[30px] rounded-full border border-line px-3 font-semibold"
+                    disabled={emLoteOcupado}
+                    className="h-[30px] rounded-full border border-line px-3 font-semibold disabled:opacity-50"
                   >
                     Já lancei
                   </button>
                   <button
                     type="button"
                     onClick={() => ignorar(selecionadosItens)}
-                    className="h-[30px] rounded-full border border-line px-3 font-semibold"
+                    disabled={emLoteOcupado}
+                    className="h-[30px] rounded-full border border-line px-3 font-semibold disabled:opacity-50"
                   >
                     Ignorar
                   </button>
                   <button
                     type="button"
                     onClick={() => excluir(selecionadosItens)}
-                    className="h-[30px] rounded-full border border-line px-3 font-semibold hover:text-danger"
+                    disabled={emLoteOcupado}
+                    className="h-[30px] rounded-full border border-line px-3 font-semibold hover:text-danger disabled:opacity-50"
                   >
                     Excluir
                   </button>
@@ -850,7 +891,11 @@ const Revisar = () => {
                     title="Mesmo valor e dia de uma transação que já existe. Dá para restaurar em Ignorados."
                     className="flex h-[30px] items-center gap-[6px] rounded-full border border-warning/40 px-3 font-semibold text-warning hover:bg-warning/10 disabled:opacity-50"
                   >
-                    <CopyX className="size-[14px]" />
+                    {m.ignorarParecidas.isPending ? (
+                      <Loader2 className="size-[14px] animate-spin" />
+                    ) : (
+                      <CopyX className="size-[14px]" />
+                    )}
                     Ignorar {possiveisDup} que parece
                     {possiveisDup === 1 ? "" : "m"} já lançada
                     {possiveisDup === 1 ? "" : "s"}
@@ -872,13 +917,17 @@ const Revisar = () => {
                       onClick={limparIgnorados}
                       disabled={m.limparIgnorados.isPending}
                       className={cn(
-                        "flex h-[30px] items-center gap-[6px] rounded-full border px-3 font-semibold",
+                        "flex h-[30px] items-center gap-[6px] rounded-full border px-3 font-semibold disabled:opacity-60",
                         confirmandoLimpar
                           ? "border-danger bg-danger text-white"
                           : "border-line text-fg2 hover:text-danger",
                       )}
                     >
-                      <Trash2 className="size-[14px]" />
+                      {m.limparIgnorados.isPending ? (
+                        <Loader2 className="size-[14px] animate-spin" />
+                      ) : (
+                        <Trash2 className="size-[14px]" />
+                      )}
                       {confirmandoLimpar
                         ? "Excluir todos os ignorados"
                         : "Limpar ignorados"}
@@ -891,7 +940,11 @@ const Revisar = () => {
 
           <div
             ref={listaRef}
-            className="nice-scroll max-h-[640px] overflow-y-auto"
+            aria-busy={trocandoLista || undefined}
+            className={cn(
+              "nice-scroll max-h-[640px] overflow-y-auto transition-opacity",
+              trocandoLista && "pointer-events-none opacity-50",
+            )}
           >
             {carregando ? (
               Array.from({ length: 7 }).map((_, i) => (

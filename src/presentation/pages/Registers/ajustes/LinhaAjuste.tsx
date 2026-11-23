@@ -1,4 +1,4 @@
-import { Pencil, Star, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { maskCurrencyInput, parseAmount } from "@/lib/format";
@@ -86,6 +86,8 @@ interface LinhaAjusteProps {
   extra?: React.ReactNode;
   favorito?: boolean;
   onFavorito?: () => void;
+  /** Favorito sendo salvo: estrela com spinner, sem clique duplo. */
+  favoritando?: boolean;
   onEditar?: () => void;
   editarLabel?: string;
   onExcluir?: () => void;
@@ -111,6 +113,7 @@ export const LinhaAjuste = ({
   extra,
   favorito,
   onFavorito,
+  favoritando,
   onEditar,
   editarLabel = "Editar",
   onExcluir,
@@ -166,6 +169,8 @@ export const LinhaAjuste = ({
             <button
               type="button"
               onClick={onFavorito}
+              disabled={favoritando}
+              aria-busy={favoritando || undefined}
               aria-pressed={!!favorito}
               aria-label={
                 favorito ? `Tirar ${nome} das favoritas` : `Favoritar ${nome}`
@@ -175,7 +180,11 @@ export const LinhaAjuste = ({
                 favorito ? "text-star" : "text-muted",
               )}
             >
-              <Star className={cn("size-[16px]", favorito && "fill-star")} />
+              {favoritando ? (
+                <Loader2 className="size-[16px] animate-spin" />
+              ) : (
+                <Star className={cn("size-[16px]", favorito && "fill-star")} />
+              )}
             </button>
           )}
           {onEditar && (

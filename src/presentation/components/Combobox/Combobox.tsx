@@ -1,5 +1,5 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -47,6 +47,11 @@ interface ComboboxProps {
    * espremidas/quebradas (ex.: selects compactos da revisão de importação).
    */
   contentClassName?: string;
+  /**
+   * Opções ainda carregando: mostra "Carregando…" (no botão e na lista) em
+   * vez de "Nada encontrado." ou de parecer que nada foi escolhido.
+   */
+  loading?: boolean;
 }
 
 const contentCls =
@@ -68,9 +73,12 @@ export const Combobox = ({
   inline = false,
   className,
   contentClassName,
+  loading = false,
 }: ComboboxProps) => {
   const [open, setOpen] = useState(false);
   const selected = options.find((o) => o.value === value);
+  // Só conta como carregando enquanto não há opções para mostrar.
+  const carregando = loading && options.length === 0;
 
   const select = (next: string) => {
     onChange(next);
@@ -86,7 +94,15 @@ export const Combobox = ({
       <Command>
         <CommandInput placeholder={searchPlaceholder} />
         <CommandList>
-          <CommandEmpty>{emptyMessage}</CommandEmpty>
+          <CommandEmpty>
+            {carregando ? (
+              <span className="inline-flex items-center gap-2 text-muted">
+                <Loader2 className="size-4 animate-spin" /> Carregando…
+              </span>
+            ) : (
+              emptyMessage
+            )}
+          </CommandEmpty>
           <CommandGroup>
             {clearLabel && (
               <CommandItem
@@ -144,6 +160,7 @@ export const Combobox = ({
           type="button"
           role="combobox"
           aria-expanded={open}
+          aria-busy={carregando || undefined}
           className={cn(
             "flex w-full items-center justify-between gap-2 rounded-[11px] border border-line bg-card px-3 py-[11px] text-sm outline-none",
             selected ? "text-fg" : "text-muted",
@@ -151,9 +168,16 @@ export const Combobox = ({
           )}
         >
           <span className="truncate">
-            {selected?.label ?? clearLabel ?? placeholder}
+            {selected?.label ??
+              (carregando && value ? "Carregando…" : null) ??
+              clearLabel ??
+              placeholder}
           </span>
-          <ChevronDown className="size-4 shrink-0 text-muted" />
+          {carregando ? (
+            <Loader2 className="size-4 shrink-0 animate-spin text-muted" />
+          ) : (
+            <ChevronDown className="size-4 shrink-0 text-muted" />
+          )}
         </button>
       </PopoverTrigger>
       {inline ? (

@@ -29,4 +29,8 @@ export interface EditMeioPagamentoRequest {
    * Dia (1-31) de vencimento da fatura (só para tipo credito)
    */
   diaVencimento?: number;
+  /**
+   * Pendentes com este meio viram "paga" sozinhas quando o vencimento passa (padrão: crédito e débito)
+   */
+  baixaAutomatica?: boolean;
 }

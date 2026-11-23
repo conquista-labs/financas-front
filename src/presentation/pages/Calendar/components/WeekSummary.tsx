@@ -1,10 +1,18 @@
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/presentation/components/ui";
 
 import type { WeekSummary as WeekSummaryData } from "../calendar.helpers";
 
 /** "Por semana": barra do gasto + saldo de cada semana do mês. */
-export const WeekSummary = ({ weeks }: { weeks: WeekSummaryData[] }) => {
+export const WeekSummary = ({
+  weeks,
+  isLoading,
+}: {
+  weeks: WeekSummaryData[];
+  isLoading?: boolean;
+}) => {
+  if (isLoading) return <Skeleton className="h-[180px] rounded-[22px]" />;
   if (weeks.length === 0) return null;
 
   return (

@@ -64,10 +64,19 @@ export const FiltersSheet = ({
     if (open) setDraft(value);
   }, [open, value]);
 
-  const { data: enums } = useGetEnums();
-  const { data: categorias } = useGetCategorias(OPT_LIMIT);
-  const { data: pessoas } = useGetPessoas(OPT_LIMIT);
-  const { data: meios } = useGetMeiosPagamento(OPT_LIMIT);
+  const { data: enums, isLoading: carregandoEnums } = useGetEnums();
+  const { data: categorias, isLoading: carregandoCategorias } =
+    useGetCategorias(OPT_LIMIT);
+  const { data: pessoas, isLoading: carregandoPessoas } =
+    useGetPessoas(OPT_LIMIT);
+  const { data: meios, isLoading: carregandoMeios } =
+    useGetMeiosPagamento(OPT_LIMIT);
+  // Opções ainda chegando: os selects mostram "Carregando…".
+  const carregandoOpcoes =
+    carregandoEnums ||
+    carregandoCategorias ||
+    carregandoPessoas ||
+    carregandoMeios;
   const { data: tags } = useGetTags();
 
   const set = (patch: Partial<TransactionFilters>) =>
@@ -137,6 +146,7 @@ export const FiltersSheet = ({
 
         {/* Pessoa */}
         <FilterSelect
+          loading={carregandoOpcoes}
           label="Pessoa"
           placeholder="Todas"
           value={draft.pessoaId}
@@ -146,6 +156,7 @@ export const FiltersSheet = ({
 
         {/* Meio de pagamento */}
         <FilterSelect
+          loading={carregandoOpcoes}
           label="Meio de pagamento"
           placeholder="Todos"
           value={draft.meioPagamentoId}
@@ -158,6 +169,7 @@ export const FiltersSheet = ({
 
         {/* Forma de pagamento */}
         <FilterSelect
+          loading={carregandoOpcoes}
           label="Forma de pagamento"
           placeholder="Todas"
           value={draft.formaPagamento}
@@ -170,6 +182,7 @@ export const FiltersSheet = ({
 
         {/* Tag */}
         <FilterSelect
+          loading={carregandoOpcoes}
           label="Tag"
           placeholder="Todas"
           value={draft.tag}
@@ -224,6 +237,8 @@ export const FiltersSheet = ({
 };
 
 interface FilterSelectProps {
+  /** Opções ainda carregando. */
+  loading?: boolean;
   label: string;
   placeholder: string;
   value: string;
@@ -241,11 +256,13 @@ const FilterSelect = ({
   value,
   onValueChange,
   options,
+  loading,
 }: FilterSelectProps) => (
   <div>
     <span className={filterLabel()}>{label}</span>
     <Combobox
       inline
+      loading={loading}
       options={options}
       value={value || undefined}
       onChange={onValueChange}

@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 
+import { Skeleton } from "@/presentation/components/ui";
 import {
   useGetTransacoesId,
   usePatchTransacoesId,
@@ -25,7 +26,13 @@ const Edit = () => {
     { onSuccess }: { onSuccess: () => void },
   ) => mutate(toRequest(values), { onSuccess });
 
-  if (isLoading) return null;
+  if (isLoading)
+    return (
+      <div className="flex flex-col gap-4" aria-busy="true">
+        <Skeleton className="h-[34px] w-[220px] rounded-[10px]" />
+        <Skeleton className="h-[480px] rounded-card" />
+      </div>
+    );
 
   return (
     <TransactionForm

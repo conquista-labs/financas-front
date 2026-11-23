@@ -63,9 +63,39 @@ export const ListaPorDia = ({
           por dentro; o rodapé (paginação) fica sempre visível. */}
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isLoading ? (
-          <div className="flex flex-col gap-2 p-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-[52px] rounded-[12px]" />
+          // Imita a lista (cabeçalho do dia + linhas) e preenche a altura
+          // disponível: no desktop largo a lista vai até o fim da tela, então
+          // gera dias de sobra e corta o que não cabe; no celular, só 3 dias.
+          <div
+            aria-busy="true"
+            aria-label="Carregando transações"
+            className="h-full overflow-hidden max-xl:[&>*:nth-child(n+4)]:hidden"
+          >
+            {Array.from({ length: 10 }).map((_, d) => (
+              <div key={d}>
+                <div className="flex justify-between gap-3 border-y border-line2 bg-card2 px-[18px] py-[12px] first:border-t-0">
+                  <Skeleton className="h-3 w-[140px] rounded-full" />
+                  <Skeleton className="h-3 w-[72px] rounded-full" />
+                </div>
+                {Array.from({ length: d % 2 ? 2 : 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 px-[18px] py-[11px]"
+                  >
+                    <Skeleton className="size-9 shrink-0 rounded-[11px]" />
+                    <div className="flex min-w-0 flex-1 flex-col gap-[6px]">
+                      <Skeleton
+                        className={cn(
+                          "h-3 rounded-full",
+                          i % 2 ? "w-[45%]" : "w-[60%]",
+                        )}
+                      />
+                      <Skeleton className="h-[10px] w-[30%] rounded-full" />
+                    </div>
+                    <Skeleton className="h-3 w-[84px] shrink-0 rounded-full" />
+                  </div>
+                ))}
+              </div>
             ))}
           </div>
         ) : !grupos.length ? (
