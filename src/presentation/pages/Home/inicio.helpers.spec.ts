@@ -1,10 +1,9 @@
 import {
   dataPorExtenso,
-  diasDasTransacoes,
   itensAtencao,
   percentualGuardado,
   saudacao,
-  serieSaldoDoMes,
+  serieSaldoDoAno,
 } from "./inicio.helpers";
 
 const rotas = {
@@ -49,29 +48,30 @@ describe("percentualGuardado", () => {
   });
 });
 
-describe("serieSaldoDoMes", () => {
-  const dias = [
-    { dia: 2, totalReceitas: 0, totalDespesas: 50 },
-    { dia: 1, totalReceitas: 0, totalDespesas: 100 },
-    { dia: 5, totalReceitas: 9800, totalDespesas: 0 },
-    { dia: 30, totalReceitas: 0, totalDespesas: 2800 },
+describe("serieSaldoDoAno", () => {
+  const meses = [
+    { valor: 1000, receita: 5000, despesa: 4000 },
+    { valor: 700, receita: 3000, despesa: 3300 },
+    { valor: 1200.5, receita: 2000.5, despesa: 1500 },
   ];
 
-  it("acumula em ordem de dia", () => {
-    const { pontos } = serieSaldoDoMes(dias, {
+  it("usa o saldo do fim de cada mês e quanto mudou no mês", () => {
+    const { pontos } = serieSaldoDoAno(meses, {
       ano: 2026,
-      mes: 11,
-      hoje: new Date(2026, 10, 12),
+      hoje: new Date(2026, 1, 10),
     });
-    expect(pontos.map((p) => p.saldo)).toEqual([-100, -150, 9650, 6850]);
+    expect(pontos).toEqual([
+      { mes: 1, saldo: 1000, delta: 1000 },
+      { mes: 2, saldo: 700, delta: -300 },
+      { mes: 3, saldo: 1200.5, delta: 500.5 },
+    ]);
   });
 
-  it("corte: hoje no mês atual, fim no passado, 0 no futuro", () => {
-    const hoje = new Date(2026, 10, 12);
-    expect(serieSaldoDoMes(dias, { ano: 2026, mes: 11, hoje }).corte).toBe(12);
-    expect(serieSaldoDoMes(dias, { ano: 2026, mes: 10, hoje }).corte).toBe(30);
-    expect(serieSaldoDoMes(dias, { ano: 2026, mes: 12, hoje }).corte).toBe(0);
-    expect(serieSaldoDoMes(dias, { ano: 2025, mes: 12, hoje }).corte).toBe(30);
+  it("corte: mês de hoje no ano atual, 12 no passado, 0 no futuro", () => {
+    const hoje = new Date(2026, 10, 23);
+    expect(serieSaldoDoAno(meses, { ano: 2026, hoje }).corte).toBe(11);
+    expect(serieSaldoDoAno(meses, { ano: 2025, hoje }).corte).toBe(12);
+    expect(serieSaldoDoAno(meses, { ano: 2027, hoje }).corte).toBe(0);
   });
 });
 
@@ -159,40 +159,5 @@ describe("itensAtencao", () => {
     ]);
     expect(itens[3].titulo).toBe("Reserva de emergência chegou lá");
     expect(itens[0].detalhe).toBe("1 lançamento do banco ou extrato");
-  });
-});
-
-describe("diasDasTransacoes", () => {
-  it("soma por dia pelo tipo da categoria; fora do mês é ignorado", () => {
-    const dias = diasDasTransacoes(
-      [
-        {
-          data: "2026-11-05T12:00:00.000Z",
-          valor: 9800,
-          categoria: { tipo: "receita" },
-        },
-        {
-          data: "2026-11-05T12:00:00.000Z",
-          valor: 100,
-          categoria: { tipo: "despesa" },
-        },
-        {
-          data: "2026-11-30",
-          valor: "R$ 2.800,00",
-          categoria: { tipo: "despesa" },
-        },
-        { data: "2026-11-07", valor: 50, categoria: null },
-        { data: "2026-11-31", valor: 1, categoria: { tipo: "despesa" } },
-      ],
-      30,
-    );
-    expect(dias).toHaveLength(30);
-    expect(dias[4]).toEqual({
-      dia: 5,
-      totalReceitas: 9800,
-      totalDespesas: 100,
-    });
-    expect(dias[6].totalDespesas).toBe(50);
-    expect(dias[29].totalDespesas).toBe(2800);
   });
 });

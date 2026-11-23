@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-import { formatCurrency, parseAmount } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 
 /** "Bom dia" até 11h59, "Boa tarde" até 17h59, "Boa noite" depois. */
 export const saudacao = (agora: Date) => {
@@ -26,64 +26,34 @@ export const percentualGuardado = (saldo?: number, receita?: number) =>
     ? Math.round((saldo / receita) * 100)
     : null;
 
-/**
- * Entradas e saídas por dia do mês a partir das transações (todas — o
- * endpoint de calendário só traz as marcadas com "lembrar-me"). O tipo vem da
- * categoria; sem categoria conta como despesa, como na API.
- */
-export const diasDasTransacoes = (
-  transacoes: {
-    data: string;
-    valor: number | string;
-    categoria?: { tipo?: string } | null;
-  }[],
-  diasNoMes: number,
-) => {
-  const dias = Array.from({ length: diasNoMes }, (_, i) => ({
-    dia: i + 1,
-    totalReceitas: 0,
-    totalDespesas: 0,
-  }));
-  for (const t of transacoes) {
-    const dia = Number(t.data.slice(8, 10));
-    const d = dias[dia - 1];
-    if (!d) continue;
-    const v = parseAmount(t.valor);
-    if (t.categoria?.tipo === "receita") d.totalReceitas += v;
-    else d.totalDespesas += v;
-  }
-  return dias;
-};
-
 export interface PontoSaldo {
-  dia: number;
+  /** 1–12 */
+  mes: number;
+  /** Saldo acumulado no fim do mês. */
   saldo: number;
+  /** Quanto o saldo mudou no mês (entrou − saiu). */
+  delta: number;
 }
 
 /**
- * Saldo acumulado dia a dia no mês (entradas − saídas). `corte` é o último
- * dia "real": até ele a linha é cheia; depois, só contas a pagar/receber já
- * agendadas, desenhadas tracejadas como previsão.
- * - mês passado: corte = último dia (tudo real);
- * - mês futuro: corte = 0 (tudo previsão);
- * - mês atual: corte = hoje.
+ * Saldo no fim de cada mês do ano (o mesmo da coluna "Saldo" da tabela).
+ * `corte` é o último mês "real": até ele a linha é cheia; depois, só o que já
+ * está lançado para frente, desenhado tracejado como previsão.
+ * - ano passado: corte = 12 (tudo real);
+ * - ano futuro: corte = 0 (tudo previsão);
+ * - ano atual: corte = mês de hoje.
  */
-export const serieSaldoDoMes = (
-  dias: { dia: number; totalReceitas: number; totalDespesas: number }[],
-  { ano, mes, hoje }: { ano: number; mes: number; hoje: Date },
+export const serieSaldoDoAno = (
+  saldosMes: { valor: number; receita: number; despesa: number }[],
+  { ano, hoje }: { ano: number; hoje: Date },
 ): { pontos: PontoSaldo[]; corte: number } => {
-  let acumulado = 0;
-  const pontos = [...dias]
-    .sort((a, b) => a.dia - b.dia)
-    .map((d) => {
-      acumulado += (d.totalReceitas ?? 0) - (d.totalDespesas ?? 0);
-      return { dia: d.dia, saldo: Math.round(acumulado * 100) / 100 };
-    });
-  const ultimoDia = pontos.at(-1)?.dia ?? 0;
-  const atual = ano * 12 + (mes - 1);
-  const deHoje = hoje.getFullYear() * 12 + hoje.getMonth();
-  const corte =
-    atual < deHoje ? ultimoDia : atual > deHoje ? 0 : hoje.getDate();
+  const pontos = saldosMes.slice(0, 12).map((m, i) => ({
+    mes: i + 1,
+    saldo: m.valor ?? 0,
+    delta: Math.round(((m.receita ?? 0) - (m.despesa ?? 0)) * 100) / 100,
+  }));
+  const anoHoje = hoje.getFullYear();
+  const corte = ano < anoHoje ? 12 : ano > anoHoje ? 0 : hoje.getMonth() + 1;
   return { pontos, corte };
 };
 
