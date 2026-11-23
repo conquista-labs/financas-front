@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/presentation/components/ui";
 
 import type { PontoSaldo } from "../../inicio.helpers";
-import { percentualGuardado } from "../../inicio.helpers";
+import { escalaDoSaldo, percentualGuardado } from "../../inicio.helpers";
 
 const MESES = [
   "janeiro",
@@ -43,14 +43,16 @@ const W = 600;
 const H = 90;
 const PAD = 8;
 
-/** Coordenadas SVG da série (y invertido, com folga em cima e embaixo). */
+/**
+ * Coordenadas SVG da série (y invertido, com folga em cima e embaixo). A
+ * escala é comprimida (ver `escalaDoSaldo`) para um mês alto não achatar o resto.
+ */
 const coords = (pontos: PontoSaldo[]) => {
   const valores = pontos.map((p) => p.saldo);
-  const min = Math.min(0, ...valores);
-  const max = Math.max(0, ...valores);
-  const faixa = max - min || 1;
+  const min = Math.min(...valores);
+  const escala = escalaDoSaldo(valores);
   const x = (mes: number) => ((mes - 1) / 11) * W;
-  const y = (v: number) => PAD + (1 - (v - min) / faixa) * (H - PAD * 2);
+  const y = (v: number) => PAD + (1 - escala(v)) * (H - PAD * 2);
   return {
     pts: pontos.map((p) => ({ ...p, x: x(p.mes), y: y(p.saldo) })),
     // Linha do zero só quando a série fica negativa em algum mês.

@@ -57,6 +57,24 @@ export const serieSaldoDoAno = (
   return { pontos, corte };
 };
 
+/**
+ * Escala vertical do gráfico do saldo: devolve v → posição de 0 (base) a 1
+ * (topo). Comprimida ("symlog": sinal × log(1 + |v|/k), com k = 1% do maior
+ * valor) para um mês muito alto — ex.: janeiro com R$ 48 mil — não achatar os
+ * outros meses numa linha reta. Mantém a ordem e o sinal; o hover mostra os
+ * valores exatos. A faixa vai do menor ao maior valor da série (o zero só
+ * entra se algum mês ficar negativo).
+ */
+export const escalaDoSaldo = (valores: number[]) => {
+  const k = Math.max(1, Math.max(0, ...valores.map(Math.abs)) / 100);
+  const f = (v: number) => Math.sign(v) * Math.log10(1 + Math.abs(v) / k);
+  const fs = valores.map(f);
+  const lo = Math.min(...fs);
+  const hi = Math.max(...fs);
+  const faixa = hi - lo;
+  return (v: number) => (faixa > 0 ? (f(v) - lo) / faixa : 0.5);
+};
+
 export type TomAtencao = "primary" | "danger" | "warning" | "success";
 
 export interface ItemAtencao {

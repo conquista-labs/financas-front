@@ -1,5 +1,6 @@
 import {
   dataPorExtenso,
+  escalaDoSaldo,
   itensAtencao,
   percentualGuardado,
   saudacao,
@@ -72,6 +73,35 @@ describe("serieSaldoDoAno", () => {
     expect(serieSaldoDoAno(meses, { ano: 2026, hoje }).corte).toBe(11);
     expect(serieSaldoDoAno(meses, { ano: 2025, hoje }).corte).toBe(12);
     expect(serieSaldoDoAno(meses, { ano: 2027, hoje }).corte).toBe(0);
+  });
+});
+
+describe("escalaDoSaldo", () => {
+  // Saldos reais de 2026: janeiro bem acima dos outros meses.
+  const ano = [
+    48699, 23548, 11101, 3588, 1823, 3027, 3421, 6222, 297, 3930, 2393, 5450,
+  ];
+
+  it("menor valor na base, maior no topo, ordem preservada", () => {
+    const y = escalaDoSaldo(ano);
+    expect(y(297)).toBe(0);
+    expect(y(48699)).toBe(1);
+    expect(y(3588)).toBeGreaterThan(y(1823));
+    expect(y(6222)).toBeGreaterThan(y(5450));
+  });
+
+  it("um mês muito alto não achata os outros", () => {
+    const y = escalaDoSaldo(ano);
+    // De abril a dezembro (R$ 297 a R$ 6.222) ocupa boa parte da altura;
+    // numa escala linear seriam ~12%.
+    expect(y(6222) - y(297)).toBeGreaterThan(0.4);
+  });
+
+  it("com negativos o zero fica dentro da faixa; série constante no meio", () => {
+    const y = escalaDoSaldo([-2000, 500, 8000]);
+    expect(y(0)).toBeGreaterThan(0);
+    expect(y(0)).toBeLessThan(1);
+    expect(escalaDoSaldo([100, 100])(100)).toBe(0.5);
   });
 });
 
