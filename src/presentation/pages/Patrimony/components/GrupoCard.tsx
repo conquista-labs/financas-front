@@ -1,4 +1,4 @@
-import { Landmark, Loader2, Pencil, Trash2 } from "lucide-react";
+import { Eye, Landmark, Loader2, Pencil, Trash2 } from "lucide-react";
 
 import type { Patrimonio } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
@@ -36,6 +36,8 @@ interface GrupoCardProps {
   deletingId?: string;
   onEdit: (item: Patrimonio) => void;
   onDelete: (item: Patrimonio) => void;
+  /** Investimentos: abre o painel de detalhes. */
+  onDetalhes?: (item: Patrimonio) => void;
 }
 
 /**
@@ -49,6 +51,7 @@ export const GrupoCard = ({
   deletingId,
   onEdit,
   onDelete,
+  onDetalhes,
 }: GrupoCardProps) => {
   const porId = new Map(rows.map((r) => [r.id, r]));
   const temDivida = grupo.divida > 0;
@@ -96,6 +99,9 @@ export const GrupoCard = ({
             ? item.valorInicial - valorDivida(item)
             : 0;
         const d = delta(item);
+        // Investimentos e reservas têm painel de detalhes.
+        const detalhavel =
+          !!onDetalhes && isAtivo && grupo.grupo === "reservas";
 
         // Linha de baixo: o que é / desde quando / juros / quanto é de vocês.
         const posicoes = item.posicoes ?? [];
@@ -140,7 +146,25 @@ export const GrupoCard = ({
         return (
           <div key={item.id} className="mt-[10px] border-t border-line2 pt-3">
             <div className="flex items-start gap-[10px]">
-              <div className="min-w-0 flex-1">
+              <div
+                className={cn(
+                  "min-w-0 flex-1",
+                  detalhavel &&
+                    "-m-1 cursor-pointer rounded-[10px] p-1 transition-colors hover:bg-bg",
+                )}
+                {...(detalhavel && {
+                  role: "button",
+                  tabIndex: 0,
+                  "aria-label": `Ver detalhes de ${item.descricao}`,
+                  onClick: () => onDetalhes!(item),
+                  onKeyDown: (e: React.KeyboardEvent) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onDetalhes!(item);
+                    }
+                  },
+                })}
+              >
                 <p className="flex min-w-0 items-center gap-[6px] text-[14.5px] font-semibold">
                   <span className="truncate" title={item.descricao}>
                     {item.descricao}
@@ -199,6 +223,12 @@ export const GrupoCard = ({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[220px]">
+                  {detalhavel && (
+                    <DropdownMenuItem onSelect={() => onDetalhes!(item)}>
+                      <Eye className="size-4" strokeWidth={1.9} />
+                      Ver detalhes
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onSelect={() => onEdit(item)}>
                     <Pencil className="size-4" strokeWidth={1.9} />
                     Editar

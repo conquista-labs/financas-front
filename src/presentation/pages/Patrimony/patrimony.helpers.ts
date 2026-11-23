@@ -180,3 +180,89 @@ export const evolucaoRange = (hoje: Date) => {
     granularidade: "mensal" as const,
   };
 };
+
+type Posicao = NonNullable<Patrimonio["posicoes"]>[number];
+
+const ROTULO_SUBTIPO: Record<string, string> = {
+  CDB: "CDB",
+  LCI: "LCI",
+  LCA: "LCA",
+  LC: "LC",
+  LF: "Letra financeira",
+  CRI: "CRI",
+  CRA: "CRA",
+  DEBENTURES: "Debênture",
+  CORPORATE_DEBT: "Crédito privado",
+  TREASURY: "Tesouro Direto",
+  STOCK: "Ação",
+  BDR: "BDR",
+  REAL_ESTATE_FUND: "FII",
+  DERIVATIVES: "Derivativo",
+  OPTION: "Opção",
+  ETF: "ETF",
+  INVESTMENT_FUND: "Fundo",
+  MULTIMARKET_FUND: "Fundo multimercado",
+  FIXED_INCOME_FUND: "Fundo de renda fixa",
+  STOCK_FUND: "Fundo de ações",
+  ETF_FUND: "Fundo de ETF",
+  OFFSHORE_FUND: "Fundo no exterior",
+  FIP_FUND: "FIP",
+  EXCHANGE_FUND: "Fundo cambial",
+  FI_INFRA: "Fundo de infraestrutura",
+  FI_AGRO: "Fiagro",
+  STRUCTURED_NOTE: "COE",
+  RETIREMENT: "Previdência",
+};
+
+const ROTULO_TIPO: Record<string, string> = {
+  FIXED_INCOME: "Renda fixa",
+  MUTUAL_FUND: "Fundo",
+  EQUITY: "Renda variável",
+  ETF: "ETF",
+  COE: "COE",
+  SECURITY: "Previdência",
+};
+
+/** Nome do produto em português: "CDB", "Tesouro Direto", "FII"… */
+export const rotuloPosicao = (p: Pick<Posicao, "tipo" | "subtipo">): string =>
+  (p.subtipo && ROTULO_SUBTIPO[p.subtipo]) || ROTULO_TIPO[p.tipo] || "Outro";
+
+const pct = (v: number) =>
+  v.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+
+/**
+ * Taxa contratada como se fala: "110% do CDI", "IPCA + 6,2% a.a.",
+ * "12,5% a.a.". Null quando a corretora não informa.
+ */
+export const taxaDaPosicao = (
+  p: Pick<Posicao, "taxa" | "indexador" | "taxaPrefixada">,
+): string | null => {
+  const ind = p.indexador?.toUpperCase() ?? null;
+  const { taxa, taxaPrefixada: pre } = p;
+  if (ind && taxa != null && /CDI|SELIC|\bDI\b/.test(ind))
+    return `${pct(taxa)}% do ${ind}`;
+  if (ind && pre != null) return `${ind} + ${pct(pre)}% a.a.`;
+  if (ind && taxa != null) return `${ind} + ${pct(taxa)}%`;
+  if (pre != null) return `${pct(pre)}% a.a.`;
+  return ind;
+};
+
+/** Soma do aplicado e do rendimento das posições que informam (null se nenhuma). */
+export const totaisDasPosicoes = (posicoes: Posicao[]) => {
+  const soma = (k: "valorAplicado" | "rendimento") => {
+    const vs = posicoes
+      .map((p) => p[k])
+      .filter((v): v is number => typeof v === "number");
+    return vs.length ? vs.reduce((a, b) => a + b, 0) : null;
+  };
+  return { aplicado: soma("valorAplicado"), rendimento: soma("rendimento") };
+};
+
+/** Snapshots (mais novo antes, valor pode vir como string) → série em ordem. */
+export const serieDoHistorico = (
+  snapshots: { mesReferencia: string; valor: number | string }[] = [],
+) =>
+  [...snapshots]
+    .map((s) => ({ mes: s.mesReferencia, valor: Number(s.valor) }))
+    .filter((s) => Number.isFinite(s.valor))
+    .sort((a, b) => a.mes.localeCompare(b.mes));

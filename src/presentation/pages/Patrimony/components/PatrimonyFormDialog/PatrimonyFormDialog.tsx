@@ -58,10 +58,15 @@ export const PatrimonyFormDialog = ({
   const { create, update } = usePatrimonioMutations();
   const isEdit = !!item;
 
-  const { data: enums } = useGetEnums();
-  const { data: pessoasData } = useGetPessoas(OPT_LIMIT);
+  const { data: enums, isLoading: carregandoEnums } = useGetEnums();
+  const { data: pessoasData, isLoading: carregandoPessoasData } =
+    useGetPessoas(OPT_LIMIT);
   // Mesma query da página (mesmo cache): os bens que um financiamento pode pagar.
-  const { data: patrimoniosData } = useGetPatrimonios(LISTA_COMPLETA);
+  const { data: patrimoniosData, isLoading: carregandoPatrimoniosData } =
+    useGetPatrimonios(LISTA_COMPLETA);
+  // Opções ainda chegando: os selects mostram "Carregando…".
+  const carregandoOpcoes =
+    carregandoEnums || carregandoPessoasData || carregandoPatrimoniosData;
 
   const categoriaOpts: ComboboxOption[] = (
     enums?.data?.categoriaPatrimonio ?? []
@@ -171,6 +176,7 @@ export const PatrimonyFormDialog = ({
               control={control}
               render={({ field }) => (
                 <Combobox
+                  loading={carregandoOpcoes}
                   options={categoriaOpts}
                   value={field.value}
                   onChange={field.onChange}
@@ -291,6 +297,7 @@ export const PatrimonyFormDialog = ({
                 control={control}
                 render={({ field }) => (
                   <Combobox
+                    loading={carregandoOpcoes}
                     options={pessoaOpts}
                     value={field.value}
                     onChange={field.onChange}
@@ -317,6 +324,7 @@ export const PatrimonyFormDialog = ({
                   control={control}
                   render={({ field }) => (
                     <Combobox
+                      loading={carregandoOpcoes}
                       options={bemOpts}
                       value={field.value}
                       onChange={field.onChange}
