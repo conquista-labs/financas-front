@@ -98,10 +98,23 @@ interface EntradaAtencao {
     primeira?: { descricao: string; valor: number };
   };
   /** Categorias acima de 100% do teto no mês. */
-  estouradas: { nome: string; realizado: number; orcado: number }[];
+  estouradas: {
+    nome: string;
+    realizado: number;
+    orcado: number;
+    categoriaId?: string;
+  }[];
+  /** Mês analisado (AAAA-MM-DD): o teto leva às transações dele. */
+  periodo?: { inicio: string; fim: string };
   /** Metas ativas que já atingiram o alvo. */
   metasAtingidas: { titulo: string }[];
-  rotas: { revisar: string; agenda: string; ajustes: string; metas: string };
+  rotas: {
+    revisar: string;
+    agenda: string;
+    ajustes: string;
+    metas: string;
+    transacoes?: string;
+  };
 }
 
 const plural = (n: number, s: string, p = `${s}s`) => (n === 1 ? s : p);
@@ -163,7 +176,16 @@ export const itensAtencao = (e: EntradaAtencao): ItemAtencao[] => {
           : `${e.estouradas.length} categorias passaram do teto`,
       detalhe: `${pior.nome}: ${formatCurrency(pior.realizado)} de ${formatCurrency(pior.orcado)} (${pct}%)`,
       tom: "warning",
-      href: e.rotas.ajustes,
+      // O que explica o estouro são os gastos: abre Transações filtrada pela
+      // categoria mais estourada no mês. Sem esses dados, cai em Ajustes.
+      href:
+        pior.categoriaId && e.periodo && e.rotas.transacoes
+          ? `${e.rotas.transacoes}?${new URLSearchParams({
+              categoriaId: pior.categoriaId,
+              startDate: e.periodo.inicio,
+              endDate: e.periodo.fim,
+            })}`
+          : e.rotas.ajustes,
     });
   }
 

@@ -12,6 +12,7 @@ const rotas = {
   agenda: "/agenda",
   ajustes: "/ajustes",
   metas: "/metas",
+  transacoes: "/transactions",
 };
 const vazio = {
   paraRevisar: 0,
@@ -171,6 +172,36 @@ describe("itensAtencao", () => {
     });
     expect(item.titulo).toBe("2 categorias passaram do teto");
     expect(item.detalhe).toMatch(/^Restaurantes: .* \(123%\)$/);
+  });
+
+  it("teto: leva às transações da categoria mais estourada no mês", () => {
+    const [item] = itensAtencao({
+      ...vazio,
+      estouradas: [
+        {
+          nome: "Casa",
+          realizado: 5207,
+          orcado: 1000,
+          categoriaId: "cat-casa",
+        },
+        {
+          nome: "Lazer",
+          realizado: 1100,
+          orcado: 1000,
+          categoriaId: "cat-lazer",
+        },
+      ],
+      periodo: { inicio: "2026-11-01", fim: "2026-11-30" },
+    });
+    expect(item.href).toBe(
+      "/transactions?categoriaId=cat-casa&startDate=2026-11-01&endDate=2026-11-30",
+    );
+    // Sem categoria/período, continua indo para Ajustes.
+    const [semDados] = itensAtencao({
+      ...vazio,
+      estouradas: [{ nome: "Casa", realizado: 5207, orcado: 1000 }],
+    });
+    expect(semDados.href).toBe("/ajustes");
   });
 
   it("meta atingida e ordem dos itens", () => {
