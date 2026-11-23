@@ -137,7 +137,12 @@ const Home = () => {
         nome: o.categoriaNome,
         realizado: o.valorRealizado,
         orcado: o.valorOrcado,
+        categoriaId: o.categoriaId,
       })),
+    periodo: {
+      inicio: format(new Date(ano, mes - 1, 1), ISO),
+      fim: format(new Date(ano, mes, 0), ISO),
+    },
     metasAtingidas: (metas.data?.data ?? [])
       .filter((m) => m.status === "ativa" && m.percentual >= 100)
       .map((m) => ({ titulo: m.titulo })),
@@ -146,6 +151,7 @@ const Home = () => {
       agenda: urlRouters.agenda,
       ajustes: urlRouters.ajustes,
       metas: urlRouters.goals,
+      transacoes: urlRouters.transactions,
     },
   });
   // Teto estourado e metas atingidas também entram no "Pede atenção".
