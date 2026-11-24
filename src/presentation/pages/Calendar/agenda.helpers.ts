@@ -15,7 +15,7 @@ export interface TransacaoDoMes {
   tags?: string[];
   categoria?: { id: string; nome: string; cor?: string; tipo?: string } | null;
   pessoa?: { id: string; nome: string } | null;
-  meioPagamento?: { id: string; nome: string } | null;
+  meioPagamento?: { id: string; nome: string; tipo?: string } | null;
 }
 
 const diaDe = (data: string) => Number(data.slice(8, 10));
@@ -103,3 +103,70 @@ export const valorCurto = (n: number) => {
       : String(Math.round(k));
   return `${sinal}${txt}k`;
 };
+
+type ContaAgrupavel = {
+  id: string;
+  valor: number | string;
+  data: string;
+  meioPagamento?: { id: string; nome: string; tipo?: string } | null;
+};
+
+export type ItemDeContas<T> =
+  | { tipo: "conta"; t: T }
+  | {
+      tipo: "fatura";
+      /** meioPagamentoId|AAAA-MM-DD */
+      chave: string;
+      meio: string;
+      data: string;
+      itens: T[];
+      total: number;
+    };
+
+/**
+ * Junta as compras no cartão de crédito que vencem na mesma fatura (mesmo
+ * cartão e mesma data) numa linha só — a fatura é o que se paga de verdade.
+ * Uma compra sozinha na data continua como conta. Mantém a ordem por data.
+ */
+export const agruparPorFatura = <T extends ContaAgrupavel>(
+  contas: T[],
+): ItemDeContas<T>[] => {
+  const faturas = new Map<string, T[]>();
+  for (const t of contas)
+    if (t.meioPagamento?.tipo === "credito") {
+      const chave = `${t.meioPagamento.id}|${t.data.slice(0, 10)}`;
+      faturas.set(chave, [...(faturas.get(chave) ?? []), t]);
+    }
+  const vistas = new Set<string>();
+  const itens: ItemDeContas<T>[] = [];
+  for (const t of contas) {
+    const chave =
+      t.meioPagamento?.tipo === "credito"
+        ? `${t.meioPagamento.id}|${t.data.slice(0, 10)}`
+        : null;
+    const grupo = chave ? faturas.get(chave)! : null;
+    if (!chave || !grupo || grupo.length < 2) {
+      itens.push({ tipo: "conta", t });
+      continue;
+    }
+    if (vistas.has(chave)) continue;
+    vistas.add(chave);
+    itens.push({
+      tipo: "fatura",
+      chave,
+      meio: t.meioPagamento!.nome,
+      data: t.data.slice(0, 10),
+      itens: grupo,
+      total:
+        Math.round(grupo.reduce((s, x) => s + parseAmount(x.valor), 0) * 100) /
+        100,
+    });
+  }
+  const dataDe = (i: ItemDeContas<T>) =>
+    i.tipo === "fatura" ? i.data : i.t.data;
+  return itens.sort((a, b) => dataDe(a).localeCompare(dataDe(b)));
+};
+
+/** Quantas contas (transações) há nos itens — fatura conta as compras. */
+export const contasNosItens = <T>(itens: ItemDeContas<T>[]) =>
+  itens.reduce((n, i) => n + (i.tipo === "fatura" ? i.itens.length : 1), 0);
