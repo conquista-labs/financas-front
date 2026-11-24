@@ -1,94 +1,76 @@
-import { ChartNoAxesColumn, Menu } from "lucide-react";
-
-import banner from "@/presentation/assets/images/banner.png";
-
 /**
- * Painel de marca (coluna esquerda) do login "Nossa Grana". Foto do casal ao
- * fundo com dois overlays (gradiente roxo + brilho radial), em layout de fluxo
- * (flex column, space-between) — NÃO position:absolute com offsets fixos, para
- * não colidir em telas baixas. Some abaixo de 860px (só o cartão fica).
+ * Painel de marca (coluna esquerda) do login no layout Repaginado: fundo
+ * "tinta" da sidebar, dois cartões de amostra levemente inclinados (saldo do
+ * mês e o que pede atenção) e a headline. Layout em fluxo (flex column,
+ * space-between) para não colidir em telas baixas. Some abaixo de 860px —
+ * no celular o LoginCard mostra a marca no topo.
  */
 export const BrandPanel = () => {
   return (
-    <div className="relative hidden min-h-screen flex-[1.05] flex-col justify-between overflow-hidden px-12 pb-14 pt-11 min-[860px]:flex">
-      {/* foto + overlays */}
-      <img
-        src={banner}
-        alt="Casal cuidando das finanças"
-        className="absolute inset-0 size-full object-cover"
-      />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(155deg,rgba(43,35,80,0.72)_0%,rgba(91,75,224,0.55)_55%,rgba(91,75,224,0.35)_100%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_80%_at_10%_0%,rgba(255,255,255,0.14),transparent_45%)]" />
-
-      {/* topo: chip de marca */}
-      <div className="relative flex items-center gap-[11px] text-white">
-        <div className="flex size-10 items-center justify-center rounded-[12px] bg-white/15 backdrop-blur-sm">
-          <ChartNoAxesColumn
-            className="size-[22px] text-white"
-            strokeWidth={2.4}
-          />
+    <section
+      aria-label="Nossa Grana"
+      className="relative hidden min-h-screen flex-[1.15] flex-col justify-between gap-10 overflow-hidden border-r border-sidebar-edge bg-sidebar p-12 text-white min-[860px]:flex"
+    >
+      <div className="flex items-center gap-[10px]">
+        <div className="grid size-[38px] place-items-center rounded-[12px] bg-primary font-display text-lg font-bold">
+          N
         </div>
-        <span className="font-display text-[19px] font-bold tracking-[0.01em]">
-          Nossa Grana
-        </span>
+        <span className="font-display text-xl font-bold">Nossa Grana</span>
       </div>
 
-      {/* meio: cards "glass" flutuantes */}
-      <div className="relative my-6 flex flex-wrap items-start gap-[14px]">
-        <div className="w-[250px] animate-om-float rounded-[20px] border border-white/25 bg-white/15 p-5 text-white shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)] backdrop-blur-lg">
-          <span className="text-[12.5px] opacity-85">Saldo do mês</span>
-          <div className="mt-[3px] font-display text-[30px] font-bold -tracking-[0.02em]">
-            R$ 6.240
-          </div>
-          <div className="mt-3 flex gap-[6px]">
-            <div className="flex-1">
-              <div className="h-[6px] overflow-hidden rounded-pill bg-white/30">
-                <div className="h-full w-[64%] rounded-pill bg-[#7BE0B0]" />
-              </div>
-              <span className="text-[10.5px] opacity-80">Receitas</span>
-            </div>
-            <div className="flex-1">
-              <div className="h-[6px] overflow-hidden rounded-pill bg-white/30">
-                <div className="h-full w-[48%] rounded-pill bg-[#FF9DA0]" />
-              </div>
-              <span className="text-[10.5px] opacity-80">Despesas</span>
-            </div>
+      <div aria-hidden="true" className="relative h-[300px]">
+        {/* a animação mexe em transform; a inclinação fica num div interno */}
+        <div className="absolute left-0 top-[10px] w-[300px] animate-om-float">
+          <div className="-rotate-3 rounded-[22px] border border-white/[0.08] bg-[#23212D] px-[22px] py-5">
+            <p className="text-[12.5px] text-[#B9B5C6]">Saldo do mês</p>
+            <p className="mb-3 mt-[6px] font-display text-[34px] font-bold -tracking-[0.03em]">
+              R$ 3.482
+            </p>
+            <svg
+              viewBox="0 0 260 50"
+              width="100%"
+              height="44"
+              preserveAspectRatio="none"
+            >
+              <polyline
+                fill="none"
+                stroke="#7B6CF0"
+                strokeWidth="3"
+                strokeLinejoin="round"
+                points="0,40 40,42 70,32 100,14 160,18 260,24"
+              />
+            </svg>
           </div>
         </div>
 
-        <div className="animate-om-floatb self-end rounded-[18px] border border-white/25 bg-white/15 p-[15px] text-white shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)] backdrop-blur-lg">
-          <div className="flex items-center gap-[9px]">
-            <span className="flex size-[34px] items-center justify-center rounded-[10px] bg-white/20">
-              <Menu className="size-[17px]" strokeWidth={2} />
-            </span>
-            <div className="leading-tight">
-              <div className="text-[13px] font-semibold">Orçamento</div>
-              <div className="text-[11px] opacity-80">no controle ✓</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* base: headline + chips de features */}
-      <div className="relative">
-        <h2 className="mb-4 font-display text-[40px] font-bold leading-[1.12] -tracking-[0.025em] text-white">
-          Cuidar do que é
-          <br />
-          nosso, todos os dias.
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {["Importe extratos", "Orçamento por categoria", "Patrimônio"].map(
-            (feature) => (
-              <span
-                key={feature}
-                className="rounded-pill border border-white/25 bg-white/[0.18] px-[13px] py-[6px] text-[12.5px] font-semibold text-white"
-              >
-                {feature}
+        <div className="absolute left-[250px] top-[150px] w-[250px] animate-om-floatb">
+          <div className="rotate-2 rounded-[20px] bg-white px-[18px] py-4 text-[#17161B] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]">
+            <p className="text-xs font-bold text-[#5E5C68]">Pede atenção</p>
+            <p className="mt-2 flex items-center gap-2 text-[13.5px] font-semibold">
+              <span className="grid size-[26px] place-items-center rounded-[8px] bg-[#EEEBFB] text-xs font-bold text-[#4536C9]">
+                30
               </span>
-            ),
-          )}
+              para revisar
+            </p>
+            <p className="mt-[6px] flex items-center gap-2 text-[13.5px] font-semibold">
+              <span className="grid size-[26px] place-items-center rounded-[8px] bg-[#E3F5EC] text-xs text-[#0B7F50]">
+                ★
+              </span>
+              Reserva chegou lá
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+
+      <div>
+        <h2 className="max-w-[520px] font-display text-[50px] font-bold leading-[1.04] -tracking-[0.035em]">
+          Cuidar do que é nosso, todos os dias.
+        </h2>
+        <p className="mt-[14px] max-w-[440px] text-base leading-normal text-[#B9B5C6]">
+          O dinheiro da casa num lugar só: o que entrou, o que saiu, o que vem
+          por aí e o que vocês estão construindo juntos.
+        </p>
+      </div>
+    </section>
   );
 };
