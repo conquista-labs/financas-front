@@ -3,13 +3,12 @@ import { Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import Logo from "@/presentation/assets/images/logo.svg?react";
 import { usePostLoginWithGoogle } from "@/presentation/hooks/api";
 import { urlRouters } from "@/presentation/router/router.definitions";
 import { useAuthStore } from "@/presentation/store";
 
 /**
- * Cartão de login (painel direito) da nova identidade "Nossa Grana".
+ * Coluna de login (painel direito) no layout Repaginado.
  * A lógica de autenticação (Google OAuth auth-code → usePostLoginWithGoogle →
  * setAuth → navigate) é preservada da versão anterior; só a apresentação muda.
  */
@@ -41,51 +40,58 @@ export const LoginCard = () => {
   });
 
   return (
-    <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden p-10">
-      {/* brilhos radiais roxos de fundo */}
-      <div className="pointer-events-none absolute -right-[100px] -top-[120px] size-[360px] rounded-full bg-[radial-gradient(circle,rgba(91,75,224,0.16),transparent_70%)]" />
-      <div className="pointer-events-none absolute -bottom-[140px] -left-[90px] size-[340px] rounded-full bg-[radial-gradient(circle,rgba(155,123,234,0.14),transparent_70%)]" />
-
-      <div className="relative w-full max-w-[380px] animate-om-rise rounded-[26px] border border-line bg-card p-9 shadow-[0_30px_70px_-30px_rgba(43,35,80,0.25)]">
-        <div className="mb-[30px] flex justify-center text-primary-strong">
-          <Logo height={38} />
+    <section className="flex min-w-0 flex-1 flex-col items-center justify-center gap-[22px] px-6 py-12">
+      <div className="flex w-full max-w-[380px] animate-om-rise flex-col gap-[22px]">
+        {/* no celular o painel de marca some: a marca vem para o topo */}
+        <div className="flex items-center gap-[10px] min-[860px]:hidden">
+          <div className="grid size-[34px] place-items-center rounded-[11px] bg-primary font-display text-base font-bold text-white">
+            N
+          </div>
+          <span className="font-display text-lg font-bold text-fg">
+            Nossa Grana
+          </span>
         </div>
 
-        <h1 className="mb-2 text-center font-display text-[27px] font-bold -tracking-[0.02em] text-fg">
-          Bem-vindos de volta! 👋
-        </h1>
-        <p className="mb-[30px] text-center text-[14.5px] leading-relaxed text-fg2">
-          Entre para gerenciar seus gastos e acompanhar as finanças de vocês.
-        </p>
+        <div>
+          <h1 className="font-display text-[32px] font-bold -tracking-[0.03em] text-fg">
+            Bem-vindos de volta
+          </h1>
+          <p className="mt-2 text-[15.5px] leading-normal text-fg2">
+            Entre para ver como estão as finanças de vocês.
+          </p>
+        </div>
 
         <button
           type="button"
           onClick={() => login()}
           disabled={isPending}
-          className="flex w-full items-center justify-center gap-[11px] rounded-[14px] border-[1.5px] border-line bg-card p-[14px] text-[15px] font-semibold text-fg transition-all hover:border-primary hover:shadow-[0_8px_20px_-12px_rgba(91,75,224,0.5)] disabled:opacity-60"
+          className="flex h-14 w-full items-center justify-center gap-3 rounded-[16px] border border-line bg-card text-[15.5px] font-semibold text-fg shadow-[0_8px_20px_-14px_rgba(23,22,27,0.4)] transition-colors hover:border-primary disabled:opacity-60"
         >
-          <GoogleIcon />
-          {isPending ? "Entrando…" : "Entrar com o Google"}
+          {isPending ? (
+            <span
+              aria-hidden="true"
+              className="size-4 animate-om-spin rounded-full border-2 border-line border-t-primary"
+            />
+          ) : (
+            <GoogleIcon />
+          )}
+          {isPending ? "Entrando…" : "Entrar com Google"}
         </button>
 
-        <div className="my-6 flex items-center gap-3">
-          <div className="h-px flex-1 bg-line" />
-          <span className="text-[11.5px] font-medium text-muted">
-            acesso seguro
-          </span>
-          <div className="h-px flex-1 bg-line" />
-        </div>
-
-        <div className="flex items-center justify-center gap-2 text-[12.5px] text-muted">
-          <Lock className="size-[14px]" strokeWidth={1.8} />
-          Seus dados são privados e só de vocês dois.
+        <div className="flex items-start gap-3 rounded-[16px] border border-line bg-card px-4 py-[14px]">
+          <Lock
+            className="mt-0.5 size-[18px] shrink-0 text-primary-strong"
+            strokeWidth={2}
+          />
+          <p className="text-[13.5px] leading-[1.45] text-fg2">
+            <strong className="font-semibold text-fg">Acesso seguro.</strong>{" "}
+            Seus dados são privados e só de vocês dois.
+          </p>
         </div>
       </div>
 
-      <p className="relative mt-[22px] text-center text-xs text-muted">
-        Nossa Grana · Versão 1.0.0
-      </p>
-    </div>
+      <p className="text-[12.5px] text-muted">Nossa Grana · Versão 1.0.0</p>
+    </section>
   );
 };
 
