@@ -1,4 +1,5 @@
 import { Pencil } from "lucide-react";
+import { useState } from "react";
 
 import type { Patrimonio } from "@/domain/models";
 import { formatCurrency } from "@/lib/format";
@@ -18,10 +19,12 @@ import {
   mesAno,
   mostraVariacao,
   rotuloPosicao,
+  serieDiaria,
   serieDoHistorico,
   taxaDaPosicao,
   totaisDasPosicoes,
 } from "../patrimony.helpers";
+import { EvolucaoDiaria } from "./EvolucaoDiaria";
 
 /** "2027-03-15" → "15/03/2027". */
 const dataBr = (iso?: string | null) =>
@@ -73,17 +76,81 @@ const Kpi = ({
   </div>
 );
 
-/** Barras do valor no fim de cada mês (últimos 12). */
-const Evolucao = ({ id }: { id: string }) => {
+/**
+ * Evolução do valor: dia a dia (linha) quando já há dois dias guardados;
+ * mês a mês (barras, últimos 12) para ver mais longe. Com as duas, dá para
+ * alternar.
+ */
+const Evolucao = ({
+  id,
+  sincronizado,
+}: {
+  id: string;
+  sincronizado: boolean;
+}) => {
   const q = useGetPatrimonioId({ id });
-  if (q.isLoading) return <Skeleton className="h-[120px] rounded-[14px]" />;
-  const serie = serieDoHistorico(q.data?.data?.snapshots);
-  if (serie.length < 2)
+  const [escala, setEscala] = useState<"dia" | "mes">("dia");
+  if (q.isLoading) return <Skeleton className="h-[150px] rounded-[14px]" />;
+  const diaria = serieDiaria(q.data?.data?.valoresDiarios);
+  const mensal = serieDoHistorico(q.data?.data?.snapshots);
+  const temDia = diaria.length >= 2;
+  const temMes = mensal.length >= 2;
+  if (!temDia && !temMes)
     return (
       <p className="rounded-[14px] bg-bg px-3 py-4 text-center text-[12.5px] text-fg2">
-        O histórico aparece aqui a partir do segundo mês.
+        {sincronizado
+          ? "A evolução dia a dia aparece aqui a partir de amanhã, com a próxima atualização da corretora."
+          : "A evolução aparece aqui depois da próxima atualização do valor."}
       </p>
     );
+  const verDia = temDia && (escala === "dia" || !temMes);
+  return (
+    <div className="flex flex-col gap-2">
+      {temDia && temMes && (
+        <div
+          role="tablist"
+          aria-label="Escala da evolução"
+          className="flex w-fit gap-1 rounded-full bg-track p-1"
+        >
+          {(
+            [
+              ["dia", "Dia a dia"],
+              ["mes", "Mês a mês"],
+            ] as const
+          ).map(([v, t]) => (
+            <button
+              key={v}
+              type="button"
+              role="tab"
+              aria-selected={(v === "dia") === verDia}
+              onClick={() => setEscala(v)}
+              className={cn(
+                "h-7 rounded-full px-3 text-[12px] font-semibold transition-colors",
+                (v === "dia") === verDia
+                  ? "bg-card text-fg shadow-[0_1px_3px_rgba(0,0,0,.08)]"
+                  : "text-fg2 hover:text-fg",
+              )}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
+      {verDia ? (
+        <EvolucaoDiaria serie={diaria} />
+      ) : (
+        <BarrasMensais serie={mensal} />
+      )}
+    </div>
+  );
+};
+
+/** Barras do valor no fim de cada mês (últimos 12). */
+const BarrasMensais = ({
+  serie,
+}: {
+  serie: { mes: string; valor: number }[];
+}) => {
   const max = Math.max(...serie.map((s) => s.valor), 1);
   return (
     <div className="flex h-[120px] items-end gap-[6px] rounded-[14px] bg-bg px-3 pb-2 pt-3">
@@ -183,7 +250,7 @@ export const InvestimentoDetalhe = ({
 
             <section>
               <h3 className="mb-2 text-[13px] font-bold">Evolução</h3>
-              <Evolucao id={item.id} />
+              <Evolucao id={item.id} sincronizado={sincronizado} />
             </section>
 
             {sincronizado && (
