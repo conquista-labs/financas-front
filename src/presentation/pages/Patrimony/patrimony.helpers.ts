@@ -48,6 +48,22 @@ export const mostraVariacao = (p: Patrimonio): boolean =>
 export const valorDivida = (p: Patrimonio): number =>
   p.saldoDevedor ?? p.valorAtual;
 
+/** Quanto de um bem financiado já é de vocês (0–100). */
+export const pctDeVoces = (valor: number, divida: number): number =>
+  valor > 0 ? Math.max(0, Math.min(100, ((valor - divida) / valor) * 100)) : 0;
+
+/**
+ * Quanto de uma dívida já foi pago: valor original - saldo devedor e o
+ * percentual (0–100). Sem valor original não dá para saber → null.
+ */
+export const pagoDaDivida = (
+  p: Patrimonio,
+): { valor: number; pct: number } | null => {
+  if (!p.valorInicial) return null;
+  const valor = Math.max(0, p.valorInicial - valorDivida(p));
+  return { valor, pct: Math.min(100, (valor / p.valorInicial) * 100) };
+};
+
 /**
  * Itens da lista, uma linha por coisa: o financiamento ligado a um bem não
  * aparece sozinho (vai na linha do bem). Bens primeiro (maior valor antes),
@@ -279,3 +295,16 @@ export const serieDiaria = (
 /** "2026-11-26" → "26/11". */
 export const diaMesCurto = (dia: string) =>
   `${dia.slice(8, 10)}/${dia.slice(5, 7)}`;
+
+/** "faltam 3 anos e 2 meses" a partir dos meses restantes. */
+export const prazo = (meses?: number | null) => {
+  if (meses == null) return null;
+  if (meses <= 0) return "vencido";
+  const a = Math.floor(meses / 12);
+  const m = meses % 12;
+  const partes = [
+    a ? `${a} ${a === 1 ? "ano" : "anos"}` : "",
+    m ? `${m} ${m === 1 ? "mês" : "meses"}` : "",
+  ].filter(Boolean);
+  return `${meses === 1 ? "falta" : "faltam"} ${partes.join(" e ")}`;
+};

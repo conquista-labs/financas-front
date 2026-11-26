@@ -13,7 +13,7 @@ import {
 
 import {
   GrupoCard,
-  InvestimentoDetalhe,
+  PatrimonioDetalhe,
   PatrimonioHero,
   PatrimonyFormDialog,
 } from "./components";
@@ -62,7 +62,7 @@ const Patrimony = () => {
   );
 
   const openEdit = (item: Patrimonio) => setDialog({ open: true, item });
-  // Painel de detalhes do investimento (id: os dados vêm sempre da lista atual).
+  // Painel de detalhes (id: os dados vêm sempre da lista atual).
   const [detalheId, setDetalheId] = useState<string | null>(null);
   const detalhe = rows.find((r) => r.id === detalheId) ?? null;
 
@@ -157,9 +157,11 @@ const Patrimony = () => {
         </div>
       )}
 
-      <InvestimentoDetalhe
+      <PatrimonioDetalhe
         item={detalhe}
+        rows={rows}
         onOpenChange={(open) => !open && setDetalheId(null)}
+        onAbrir={(item) => setDetalheId(item.id)}
         onEdit={(item) => {
           setDetalheId(null);
           openEdit(item);

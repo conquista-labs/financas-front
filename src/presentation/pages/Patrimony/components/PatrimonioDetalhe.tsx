@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { ChevronRight, Pencil } from "lucide-react";
 import { useState } from "react";
 
 import type { Patrimonio } from "@/domain/models";
@@ -18,11 +18,15 @@ import {
   labelMesRef,
   mesAno,
   mostraVariacao,
+  pagoDaDivida,
+  pctDeVoces,
+  prazo,
   rotuloPosicao,
   serieDiaria,
   serieDoHistorico,
   taxaDaPosicao,
   totaisDasPosicoes,
+  valorDivida,
 } from "../patrimony.helpers";
 import { EvolucaoDiaria } from "./EvolucaoDiaria";
 
@@ -79,7 +83,8 @@ const Kpi = ({
 /**
  * Evolução do valor: dia a dia (linha) quando já há dois dias guardados;
  * mês a mês (barras, últimos 12) para ver mais longe. Com as duas, dá para
- * alternar.
+ * alternar — começa no dia a dia só no que muda todo dia (corretora); bens e
+ * dívidas lançados à mão mudam pouco, o mês a mês diz mais.
  */
 const Evolucao = ({
   id,
@@ -89,7 +94,9 @@ const Evolucao = ({
   sincronizado: boolean;
 }) => {
   const q = useGetPatrimonioId({ id });
-  const [escala, setEscala] = useState<"dia" | "mes">("dia");
+  const [escala, setEscala] = useState<"dia" | "mes">(
+    sincronizado ? "dia" : "mes",
+  );
   if (q.isLoading) return <Skeleton className="h-[150px] rounded-[14px]" />;
   const diaria = serieDiaria(q.data?.data?.valoresDiarios);
   const mensal = serieDoHistorico(q.data?.data?.snapshots);
@@ -176,25 +183,90 @@ const BarrasMensais = ({
   );
 };
 
+/** Barra "quanto já é de vocês / já foi pago" (verde sobre vermelho claro). */
+const BarraPago = ({ pct, rotulo }: { pct: number; rotulo: string }) => (
+  <div
+    className="flex h-2 overflow-hidden rounded-full bg-danger/15"
+    role="img"
+    aria-label={rotulo}
+  >
+    <div className="h-full bg-success" style={{ width: `${pct}%` }} />
+  </div>
+);
+
+const jurosTexto = (t?: number | null) =>
+  t ? `${t.toLocaleString("pt-BR")}% a.a.` : null;
+
+/** Link para abrir o painel de outro item (o bem ↔ o financiamento dele). */
+const LinkItem = ({
+  rotulo,
+  nome,
+  onClick,
+}: {
+  rotulo: string;
+  nome: string;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="flex w-full items-center justify-between gap-3 rounded-[14px] bg-bg px-3 py-[10px] text-left text-[13px] transition-colors hover:bg-track"
+  >
+    <span className="min-w-0">
+      <span className="block text-[11.5px] text-fg2">{rotulo}</span>
+      <span className="block truncate font-semibold">{nome}</span>
+    </span>
+    <ChevronRight className="size-4 shrink-0 text-fg2" />
+  </button>
+);
+
 /**
- * Detalhes de um investimento (painel lateral): quanto vale, quanto foi
- * aplicado e rendeu, a evolução mês a mês e — quando vem da corretora — cada
- * posição com taxa, emissor, vencimento e rendimento.
+ * Detalhes de um patrimônio (painel lateral). Em todos: quanto vale (ou
+ * deve), a evolução, de quem é, desde quando e as observações. Por tipo:
+ * - bem: comprado por e quanto valorizou; financiado, quanto já é de vocês
+ *   e o financiamento (com link para ele);
+ * - dívida: valor original, quanto já foi pago, juros, prazo e o bem que ela
+ *   financia (com link);
+ * - investimento da corretora: aplicado, rendeu e cada posição.
  */
-export const InvestimentoDetalhe = ({
+export const PatrimonioDetalhe = ({
   item,
+  rows,
   onOpenChange,
   onEdit,
+  onAbrir,
 }: {
   item: Patrimonio | null;
+  /** Lista inteira: o financiamento de um bem e o bem de um financiamento. */
+  rows: Patrimonio[];
   onOpenChange: (open: boolean) => void;
   onEdit: (item: Patrimonio) => void;
+  /** Troca o painel para outro item. */
+  onAbrir: (item: Patrimonio) => void;
 }) => {
   const posicoes = item?.posicoes ?? [];
   const { aplicado, rendimento } = totaisDasPosicoes(posicoes);
   const sincronizado = !!item?.pluggyItemId;
   const d = item ? delta(item) : 0;
   const manualComVariacao = !!item && mostraVariacao(item);
+  const ativo = item?.tipo === "ativo";
+  const investimento = !!item && item.categoria === "investimento";
+
+  // Bem financiado: o passivo ligado (tem prazo e meses restantes).
+  const fin = ativo ? item?.financiamento : null;
+  const finItem = fin ? rows.find((r) => r.id === fin.id) : undefined;
+  const pctVoces =
+    fin && item ? pctDeVoces(item.valorAtual, fin.saldoDevedor) : 0;
+  // Dívida: o bem que ela financia e quanto já foi pago.
+  const bem =
+    !ativo && item?.bemId ? rows.find((r) => r.id === item.bemId) : undefined;
+  const pago = item && !ativo ? pagoDaDivida(item) : null;
+
+  const desde = item
+    ? sincronizado
+      ? ` · pela corretora${item.sincronizadoEm ? `, atualizado ${new Date(item.sincronizadoEm).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}` : ""}`
+      : ` · desde ${mesAno(item.dataAquisicao)}`
+    : "";
 
   return (
     <Sheet open={!!item} onOpenChange={onOpenChange}>
@@ -202,57 +274,170 @@ export const InvestimentoDetalhe = ({
         {item && (
           <div className="flex flex-col gap-5 p-5 sm:p-6">
             <div className="pr-8">
-              <SheetTitle className="font-display text-[20px] font-bold">
-                {item.descricao}
+              <SheetTitle className="flex items-center gap-2 font-display text-[20px] font-bold">
+                <span className="truncate">{item.descricao}</span>
+                {fin && (
+                  <span className="shrink-0 rounded-full bg-warning/10 px-[7px] py-[2px] text-[11px] font-bold text-warning">
+                    Financiado
+                  </span>
+                )}
               </SheetTitle>
               <SheetDescription className="mt-1 text-[12.5px] text-fg2">
-                {item.categoriaFormatada}
-                {sincronizado
-                  ? ` · pela corretora${item.sincronizadoEm ? `, atualizado ${new Date(item.sincronizadoEm).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}` : ""}`
-                  : ` · desde ${mesAno(item.dataAquisicao)}`}
+                {ativo ? item.categoriaFormatada : "Dívida"}
+                {desde}
               </SheetDescription>
             </div>
 
             <div>
-              <p className="text-[12.5px] text-fg2">Vale hoje</p>
-              <p className="font-display text-[34px] font-bold leading-tight -tracking-[0.02em] tabular-nums">
-                {formatCurrency(item.valorAtual)}
+              <p className="text-[12.5px] text-fg2">
+                {ativo ? "Vale hoje" : "Deve hoje"}
+              </p>
+              <p
+                className={cn(
+                  "font-display text-[34px] font-bold leading-tight -tracking-[0.02em] tabular-nums",
+                  !ativo && "text-danger",
+                )}
+              >
+                {formatCurrency(ativo ? item.valorAtual : valorDivida(item))}
               </p>
             </div>
 
-            {(sincronizado ? aplicado !== null : manualComVariacao) && (
-              <div className="grid grid-cols-2 gap-2">
-                <Kpi
-                  rotulo="Aplicado"
-                  valor={formatCurrency(
-                    (sincronizado ? aplicado : item.valorInicial) ?? 0,
-                  )}
+            {/* Resumo: varia com o tipo. */}
+            {fin ? (
+              <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Kpi
+                    rotulo="De vocês"
+                    valor={formatCurrency(
+                      Math.max(0, item.valorAtual - fin.saldoDevedor),
+                    )}
+                    sub={`${pctTexto(Math.round(pctVoces))} do bem`}
+                    tom="text-success"
+                  />
+                  <Kpi
+                    rotulo="Falta pagar"
+                    valor={formatCurrency(fin.saldoDevedor)}
+                    tom="text-danger"
+                  />
+                </div>
+                <BarraPago
+                  pct={pctVoces}
+                  rotulo={`${Math.round(pctVoces)}% já é de vocês`}
                 />
-                {(() => {
-                  const r = sincronizado ? rendimento : d;
-                  const base = sincronizado ? aplicado : item.valorInicial;
-                  if (r === null || r === undefined) return null;
-                  return (
-                    <Kpi
-                      rotulo="Rendeu"
-                      valor={`${r >= 0 ? "+ " : "- "}${formatCurrency(Math.abs(r))}`}
-                      sub={
-                        base
-                          ? `${r >= 0 ? "+" : ""}${pctTexto((r / base) * 100)} sobre o aplicado`
-                          : undefined
-                      }
-                      tom={r >= 0 ? "text-success" : "text-danger"}
-                    />
-                  );
-                })()}
               </div>
+            ) : !ativo ? (
+              pago && (
+                <div className="flex flex-col gap-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Kpi
+                      rotulo={
+                        item.bemId ? "Valor financiado" : "Valor original"
+                      }
+                      valor={formatCurrency(item.valorInicial ?? 0)}
+                    />
+                    <Kpi
+                      rotulo="Já pago"
+                      valor={formatCurrency(pago.valor)}
+                      sub={`${pctTexto(Math.round(pago.pct))} da dívida`}
+                      tom="text-success"
+                    />
+                  </div>
+                  <BarraPago
+                    pct={pago.pct}
+                    rotulo={`${Math.round(pago.pct)}% já foi pago`}
+                  />
+                </div>
+              )
+            ) : (
+              (sincronizado ? aplicado !== null : manualComVariacao) && (
+                <div className="grid grid-cols-2 gap-2">
+                  <Kpi
+                    rotulo={investimento ? "Aplicado" : "Comprado por"}
+                    valor={formatCurrency(
+                      (sincronizado ? aplicado : item.valorInicial) ?? 0,
+                    )}
+                  />
+                  {(() => {
+                    const r = sincronizado ? rendimento : d;
+                    const base = sincronizado ? aplicado : item.valorInicial;
+                    if (r === null || r === undefined) return null;
+                    const rotulo = investimento
+                      ? "Rendeu"
+                      : r >= 0
+                        ? "Valorizou"
+                        : "Desvalorizou";
+                    return (
+                      <Kpi
+                        rotulo={rotulo}
+                        valor={`${r >= 0 ? "+ " : "- "}${formatCurrency(Math.abs(r))}`}
+                        sub={
+                          base
+                            ? `${r >= 0 ? "+" : ""}${pctTexto((r / base) * 100)} ${investimento ? "sobre o aplicado" : "desde a compra"}`
+                            : undefined
+                        }
+                        tom={r >= 0 ? "text-success" : "text-danger"}
+                      />
+                    );
+                  })()}
+                </div>
+              )
             )}
 
             <section>
-              <h3 className="mb-2 text-[13px] font-bold">Evolução</h3>
+              <h3 className="mb-2 text-[13px] font-bold">
+                {ativo ? "Evolução" : "Evolução do saldo devedor"}
+              </h3>
               <Evolucao id={item.id} sincronizado={sincronizado} />
             </section>
 
+            {/* Financiamento do bem. */}
+            {fin && (
+              <section>
+                <h3 className="mb-1 text-[13px] font-bold">Financiamento</h3>
+                <div className="divide-y divide-line2">
+                  <Linha
+                    rotulo="Deve"
+                    valor={formatCurrency(fin.saldoDevedor)}
+                    tom="text-danger"
+                  />
+                  {fin.valorInicial ? (
+                    <Linha
+                      rotulo="Valor financiado"
+                      valor={formatCurrency(fin.valorInicial)}
+                    />
+                  ) : null}
+                  {jurosTexto(fin.taxaJuros) && (
+                    <Linha rotulo="Juros" valor={jurosTexto(fin.taxaJuros)} />
+                  )}
+                  {fin.dataVencimento && (
+                    <Linha
+                      rotulo="Termina em"
+                      valor={
+                        <>
+                          {dataBr(fin.dataVencimento)}
+                          {prazo(finItem?.mesesRestantes) && (
+                            <span className="block text-[11.5px] font-normal text-fg2">
+                              {prazo(finItem?.mesesRestantes)}
+                            </span>
+                          )}
+                        </>
+                      }
+                    />
+                  )}
+                </div>
+                {finItem && (
+                  <div className="mt-2">
+                    <LinkItem
+                      rotulo="Ver o financiamento"
+                      nome={finItem.descricao}
+                      onClick={() => onAbrir(finItem)}
+                    />
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Posições da corretora. */}
             {sincronizado && (
               <section>
                 <h3 className="mb-2 text-[13px] font-bold">
@@ -370,25 +555,55 @@ export const InvestimentoDetalhe = ({
               </section>
             )}
 
+            {/* Dados gerais (o que veio à mão). */}
             {!sincronizado && (
               <section className="divide-y divide-line2">
-                {item.valorInicial != null && !manualComVariacao && (
+                {ativo && item.valorInicial != null && !manualComVariacao && (
                   <Linha
-                    rotulo="Valor aplicado"
+                    rotulo={investimento ? "Valor aplicado" : "Comprado por"}
                     valor={formatCurrency(item.valorInicial)}
                   />
                 )}
+                {!ativo && item.valorInicial != null && !pago && (
+                  <Linha
+                    rotulo={item.bemId ? "Valor financiado" : "Valor original"}
+                    valor={formatCurrency(item.valorInicial)}
+                  />
+                )}
+                {!ativo && jurosTexto(item.taxaJuros) && (
+                  <Linha rotulo="Juros" valor={jurosTexto(item.taxaJuros)} />
+                )}
                 <Linha
-                  rotulo="Desde"
+                  rotulo={ativo ? "Desde" : "Começou em"}
                   valor={dataBr(item.dataAquisicao) ?? "—"}
                 />
                 {item.dataVencimento && (
                   <Linha
-                    rotulo="Vence em"
-                    valor={dataBr(item.dataVencimento)}
+                    rotulo={ativo ? "Vence em" : "Termina em"}
+                    valor={
+                      <>
+                        {dataBr(item.dataVencimento)}
+                        {!ativo && prazo(item.mesesRestantes) && (
+                          <span className="block text-[11.5px] font-normal text-fg2">
+                            {prazo(item.mesesRestantes)}
+                          </span>
+                        )}
+                      </>
+                    }
                   />
                 )}
+                {item.pessoa?.nome && (
+                  <Linha rotulo="De quem" valor={item.pessoa.nome} />
+                )}
               </section>
+            )}
+
+            {bem && (
+              <LinkItem
+                rotulo="Financia"
+                nome={bem.descricao}
+                onClick={() => onAbrir(bem)}
+              />
             )}
 
             {item.observacoes && (
