@@ -2,7 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type {
   AceitarLancamentosRequest,
+  CaixaEntradaResumo,
+  GetCaixaEntradaResponse,
   IgnorarLancamentosRequest,
+  LancamentoExterno,
   VincularLancamentosRequest,
 } from "@/domain/models";
 import {
@@ -17,20 +20,46 @@ import {
   makePostSincronizacaoExecutarFactory,
 } from "@/main/factories/usecases";
 
+import { type Destino, moverNoResumo, tirarDaLista } from "./revisar.cache";
+
 /**
  * Ações da caixa de entrada (mesmo padrão de useGoalsMutations: só as
  * factories existem, o hook consolida e invalida). Toasts ficam na tela.
+ *
+ * Ações num item (aceitar, ignorar, já lancei, excluir, restaurar,
+ * desvincular) não invalidam a caixa sozinhas: a tela chama `tirarDaFila`
+ * com os que deram certo, no mesmo momento em que pula para o próximo — a
+ * lista e os contadores mudam juntos. Ações em lote (sincronizar, ignorar
+ * parecidas, limpar) só terminam depois que a lista nova chegou.
  */
 export const useRevisarMutations = () => {
   const queryClient = useQueryClient();
 
-  const invalidateCaixa = () => {
-    queryClient.invalidateQueries({ queryKey: ["get-caixa-entrada"] });
-    queryClient.invalidateQueries({ queryKey: ["get-caixa-entrada-resumo"] });
+  const invalidateCaixa = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["get-caixa-entrada"] }),
+      queryClient.invalidateQueries({
+        queryKey: ["get-caixa-entrada-resumo"],
+      }),
+    ]);
+
+  /** Tira da lista e acerta os contadores já; o servidor confirma depois. */
+  const tirarDaFila = (itens: LancamentoExterno[], para: Destino) => {
+    if (!itens.length) return;
+    const ids = new Set(itens.map((l) => l.id));
+    queryClient.setQueriesData<GetCaixaEntradaResponse>(
+      { queryKey: ["get-caixa-entrada"] },
+      (old) => tirarDaLista(old, ids),
+    );
+    queryClient.setQueryData<{ message: string; data: CaixaEntradaResumo }>(
+      ["get-caixa-entrada-resumo"],
+      (old) => old && { ...old, data: moverNoResumo(old.data, itens, para) },
+    );
+    void invalidateCaixa();
   };
+
   // Aceitar cria/paga transações: tudo que mostra transação precisa refazer.
   const invalidateTransacoes = () => {
-    invalidateCaixa();
     for (const key of [
       "get-transacoes",
       "get-calendario",
@@ -50,13 +79,11 @@ export const useRevisarMutations = () => {
   const ignorar = useMutation({
     mutationFn: (body: IgnorarLancamentosRequest) =>
       makePostCaixaEntradaIgnorarFactory().post(body),
-    onSuccess: invalidateCaixa,
   });
 
   const restaurar = useMutation({
     mutationFn: (ids: string[]) =>
       makePostCaixaEntradaRestaurarFactory().post({ ids }),
-    onSuccess: invalidateCaixa,
   });
 
   const ignorarParecidas = useMutation({
@@ -67,7 +94,6 @@ export const useRevisarMutations = () => {
   const desvincular = useMutation({
     mutationFn: (ids: string[]) =>
       makePostCaixaEntradaDesvincularFactory().post({ ids }),
-    onSuccess: invalidateCaixa,
   });
 
   // "Já lancei" pode marcar uma transação pendente como paga.
@@ -80,7 +106,6 @@ export const useRevisarMutations = () => {
   const excluir = useMutation({
     mutationFn: (ids: string[]) =>
       makePostCaixaEntradaExcluirFactory().post({ ids }),
-    onSuccess: invalidateCaixa,
   });
 
   const limparIgnorados = useMutation({
@@ -94,6 +119,7 @@ export const useRevisarMutations = () => {
   });
 
   return {
+    tirarDaFila,
     aceitar,
     ignorar,
     ignorarParecidas,
