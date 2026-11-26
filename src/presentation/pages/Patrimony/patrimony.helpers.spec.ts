@@ -13,6 +13,7 @@ import {
   mostraVariacao,
   resumoPorGrupo,
   rotuloPosicao,
+  serieDiaria,
   serieDoHistorico,
   taxaDaPosicao,
   totaisDasPosicoes,
@@ -266,6 +267,19 @@ describe("detalhes do investimento", () => {
     ).toEqual([
       { mes: "2026-10", valor: 1000 },
       { mes: "2026-11", valor: 1200.5 },
+    ]);
+  });
+
+  it("serieDiaria: ordena do dia mais antigo, corta a hora e descarta lixo", () => {
+    expect(
+      serieDiaria([
+        { data: "2026-11-26T00:00:00.000Z", valor: "2026.28" },
+        { data: "2026-11-25T00:00:00.000Z", valor: 2025.9 },
+        { data: "2026-11-24T00:00:00.000Z", valor: "abc" },
+      ]),
+    ).toEqual([
+      { dia: "2026-11-25", valor: 2025.9 },
+      { dia: "2026-11-26", valor: 2026.28 },
     ]);
   });
 });

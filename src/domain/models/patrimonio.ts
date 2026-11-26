@@ -81,6 +81,8 @@ export interface Patrimonio {
   }>;
   /** Histórico mensal (GET /patrimonios/:id): últimos 12 meses, mais novo antes. */
   snapshots?: Array<{ mesReferencia: string; valor: number | string }>;
+  /** Valor em cada dia (GET /patrimonios/:id): últimos ~120 dias, mais novo antes. */
+  valoresDiarios?: Array<{ data: string; valor: number | string }>;
 }
 export namespace Patrimonio {
   export type TipoEnum = "ativo" | "passivo";

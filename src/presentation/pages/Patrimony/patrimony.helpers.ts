@@ -266,3 +266,16 @@ export const serieDoHistorico = (
     .map((s) => ({ mes: s.mesReferencia, valor: Number(s.valor) }))
     .filter((s) => Number.isFinite(s.valor))
     .sort((a, b) => a.mes.localeCompare(b.mes));
+
+/** Evolução diária, do dia mais antigo ao mais novo ("2026-11-26"). */
+export const serieDiaria = (
+  valores: { data: string; valor: number | string }[] = [],
+) =>
+  [...valores]
+    .map((v) => ({ dia: v.data.slice(0, 10), valor: Number(v.valor) }))
+    .filter((v) => Number.isFinite(v.valor))
+    .sort((a, b) => a.dia.localeCompare(b.dia));
+
+/** "2026-11-26" → "26/11". */
+export const diaMesCurto = (dia: string) =>
+  `${dia.slice(8, 10)}/${dia.slice(5, 7)}`;
