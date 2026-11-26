@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   CopyX,
   Loader2,
@@ -10,7 +11,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
+import type { LancamentoExterno } from "@/domain/models";
+import type { GetCaixaEntradaParams } from "@/domain/usecases";
 import { cn } from "@/lib/utils";
+import { makeGetCaixaEntradaCandidatasFactory } from "@/main/factories/usecases";
 import { Combobox, type ComboboxOption } from "@/presentation/components";
 import { Skeleton } from "@/presentation/components/ui";
 import {
@@ -22,6 +26,7 @@ import {
   useGetMeiosPagamento,
   useGetPessoas,
 } from "@/presentation/hooks/api";
+import { useDebounce } from "@/presentation/hooks/core";
 import {
   type LinhaExtrato,
   useFilaExtrato,
@@ -31,6 +36,7 @@ import { FilaItem } from "./components/FilaItem";
 import { PainelItem, type PainelOpcoes } from "./components/PainelItem";
 import { toConfirmacao } from "./extrato/extrato.helpers";
 import { ImportarExtrato } from "./extrato/ImportarExtrato";
+import type { Destino } from "./revisar.cache";
 import {
   type Fonte,
   type ItemFila,
@@ -85,6 +91,8 @@ const Revisar = () => {
   const [filaNoCelular, setFilaNoCelular] = useState(false);
   const importAberto = searchParams.get("importar") === "1";
   const listaRef = useRef<HTMLDivElement>(null);
+  // Banco e extrato filtram pelo mesmo termo, no mesmo instante.
+  const termo = useDebounce(busca.trim(), 300);
 
   const setImportAberto = (aberto: boolean) =>
     setSearchParams(
@@ -97,14 +105,26 @@ const Revisar = () => {
     );
 
   // ── Dados ──────────────────────────────────────────────────────────────
-  const lista = useGetCaixaEntrada({
-    page,
-    limit: LIMIT,
-    status: visao,
-    ...(fonte === "dica" && { comDica: true }),
-    ...(pessoaFiltro && { pessoaId: pessoaFiltro }),
-    ...(busca.trim() && { busca: busca.trim() }),
-  });
+  const lista = useGetCaixaEntrada(
+    {
+      page,
+      limit: LIMIT,
+      status: visao,
+      ...(fonte === "dica" && { comDica: true }),
+      ...(pessoaFiltro && { pessoaId: pessoaFiltro }),
+      ...(termo && { busca: termo }),
+    },
+    {
+      // Página/busca/filtro: a lista antiga fica (esmaecida) até chegar a
+      // nova. Trocou de visão: esqueleto — mostrar pendentes debaixo da aba
+      // "Ignorados" (com os botões de Ignorados no painel) confunde.
+      placeholderData: (prev, prevQuery) =>
+        (prevQuery?.queryKey[1] as GetCaixaEntradaParams | undefined)
+          ?.status === visao
+          ? prev
+          : undefined,
+    },
+  );
   const resumo = useGetCaixaEntradaResumo();
   const categorias = useGetCategorias(OPT_LIMIT);
   const pessoas = useGetPessoas(OPT_LIMIT);
@@ -125,13 +145,31 @@ const Revisar = () => {
         extrato: extrato.linhas,
         visao,
         fonte,
-        busca,
+        busca: termo,
         pessoaId: pessoaFiltro,
       }),
-    [rowsBanco, extrato.linhas, visao, fonte, busca, pessoaFiltro],
+    [rowsBanco, extrato.linhas, visao, fonte, termo, pessoaFiltro],
   );
   const atual = fila.find((x) => x.id === atualId) ?? fila[0];
   const posicao = atual ? fila.indexOf(atual) + 1 : 0;
+
+  // O próximo item do banco já chega com o "Já lancei?" carregado: depois de
+  // aceitar, o painel novo não pisca "Procurando…".
+  const queryClient = useQueryClient();
+  const proximoBancoId = useMemo(() => {
+    if (visao !== "pendente" || !atual) return undefined;
+    const i = fila.indexOf(atual);
+    return fila.slice(i + 1).find((x) => x.origem === "banco")?.id;
+  }, [fila, atual, visao]);
+  useEffect(() => {
+    if (!proximoBancoId) return;
+    void queryClient.prefetchQuery({
+      queryKey: ["get-caixa-entrada-candidatas", proximoBancoId],
+      queryFn: () =>
+        makeGetCaixaEntradaCandidatasFactory().get({ id: proximoBancoId }),
+      staleTime: 30_000,
+    });
+  }, [proximoBancoId, queryClient]);
 
   // ── Opções ─────────────────────────────────────────────────────────────
   const opcoes = useMemo<PainelOpcoes>(() => {
@@ -233,8 +271,13 @@ const Revisar = () => {
       ids.forEach((id) => (on ? s.add(id) : s.delete(id)));
       return s;
     });
+  /**
+   * Itens que saíram da fila: o painel pula para o próximo e, no mesmo
+   * instante, a lista e os contadores já refletem a ação (otimista).
+   */
   const sair = useCallback(
-    (ids: string[]) => {
+    (ids: string[], banco: LancamentoExterno[] = [], para?: Destino) => {
+      if (para) m.tirarDaFila(banco, para);
       setAtualId((cur) => proximoId(fila, cur ?? fila[0]?.id, ids));
       setSelecionados((prev) => {
         const s = new Set(prev);
@@ -247,6 +290,7 @@ const Revisar = () => {
         return e;
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fila],
   );
   const separar = (itens: ItemFila[]) => ({
@@ -281,6 +325,7 @@ const Revisar = () => {
     ];
     marcarOcupados(ids, true);
     const ok: string[] = [];
+    let bancoOk: LancamentoExterno[] = [];
     const partes: string[] = [];
     try {
       if (bancoProntos.length) {
@@ -310,11 +355,8 @@ const Revisar = () => {
             plural(futurasCriadas, "parcela futura", "parcelas futuras"),
           );
         if (erros.length) toast.error(erros[0].erro);
-        ok.push(
-          ...bancoProntos
-            .map((l) => l.id)
-            .filter((id) => !erros.some((e) => e.id === id)),
-        );
+        bancoOk = bancoProntos.filter((l) => !erros.some((e) => e.id === l.id));
+        ok.push(...bancoOk.map((l) => l.id));
       }
       if (extProntos.length) {
         // Uma chamada por tag (a API aplica uma tag em lote por confirmação).
@@ -343,10 +385,11 @@ const Revisar = () => {
         toast.warning(
           `${plural(semCategoria, "ficou", "ficaram")} sem categoria e não ${semCategoria === 1 ? "foi aceito" : "foram aceitos"}.`,
         );
-      sair(ok);
     } catch {
       toast.error("Não foi possível aceitar. Tente de novo.");
     } finally {
+      // Mesmo se uma parte falhou, o que deu certo sai da fila.
+      sair(ok, bancoOk, "aceito");
       marcarOcupados(ids, false);
     }
   };
@@ -369,7 +412,7 @@ const Revisar = () => {
           toast.success(
             `${plural(res.data.ignorados + ext.length, "ignorado")}. Dá para restaurar em Ignorados.`,
           );
-          sair([...ids, ...ext.map((l) => l.id)]);
+          sair([...ids, ...ext.map((l) => l.id)], banco, "ignorado");
         },
         onError: () => toast.error("Não foi possível ignorar. Tente de novo."),
         onSettled: () => marcarOcupados(ids, false),
@@ -411,10 +454,14 @@ const Revisar = () => {
                 ? erros[0].erro
                 : `${erros.length} sem transação para ligar (ficaram na fila).`,
             );
-          sair([
-            ...ids.filter((id) => !erros.some((e) => e.id === id)),
-            ...ext.map((l) => l.id),
-          ]);
+          const ligados = banco.filter(
+            (l) => !erros.some((e) => e.id === l.id),
+          );
+          sair(
+            [...ligados.map((l) => l.id), ...ext.map((l) => l.id)],
+            ligados,
+            "vinculado",
+          );
         },
         onError: () => toast.error("Não foi possível ligar. Tente de novo."),
         onSettled: () => marcarOcupados(ids, false),
@@ -436,7 +483,7 @@ const Revisar = () => {
         toast.success(
           `${plural(res.data.excluidos + ext.length, "excluído")}. Não volta na sincronização.`,
         );
-        sair([...ids, ...ext.map((l) => l.id)]);
+        sair([...ids, ...ext.map((l) => l.id)], banco, "excluido");
       },
       onError: () => toast.error("Não foi possível excluir. Tente de novo."),
       onSettled: () => marcarOcupados(ids, false),
@@ -449,7 +496,11 @@ const Revisar = () => {
     const ids = banco.map((l) => l.id);
     const fim = () => {
       toast.success("De volta à fila para revisar");
-      sair(itens.map((x) => x.id));
+      sair(
+        itens.map((x) => x.id),
+        banco,
+        "pendente",
+      );
     };
     if (!ids.length) return fim();
     marcarOcupados(ids, true);
@@ -466,7 +517,7 @@ const Revisar = () => {
     m.desvincular.mutate([item.id], {
       onSuccess: () => {
         toast.success("Desvinculado. Voltou para a fila para revisar.");
-        sair([item.id]);
+        sair([item.id], [item.banco], "pendente");
       },
       onError: () => toast.error("Não foi possível desvincular."),
       onSettled: () => marcarOcupados([item.id], false),
@@ -548,15 +599,20 @@ const Revisar = () => {
     navegar,
     atual,
     visao,
+    travado: false,
   });
-  acoesRef.current = { aceitar, ignorar, jaLancei, navegar, atual, visao };
   useEffect(() => {
     const onKey = (ev: KeyboardEvent) => {
       if (ignorarTecla(ev)) return;
       const a = acoesRef.current;
       if (ev.key === "ArrowDown") return (ev.preventDefault(), a.navegar(1));
       if (ev.key === "ArrowUp") return (ev.preventDefault(), a.navegar(-1));
-      if (!a.atual || a.visao !== "pendente" || ocupados.has(a.atual.id))
+      if (
+        !a.atual ||
+        a.travado ||
+        a.visao !== "pendente" ||
+        ocupados.has(a.atual.id)
+      )
         return;
       const k = ev.key.toLowerCase();
       if (k === "a") a.aceitar([a.atual]);
@@ -608,8 +664,18 @@ const Revisar = () => {
       : undefined;
 
   const carregando = lista.isLoading && fonte !== "extrato";
-  // Trocou visão/página/filtro: a lista antiga fica na tela até chegar a nova.
+  // Trocou página/filtro: a lista antiga fica na tela até chegar a nova — e
+  // o painel junto, esmaecido e sem ações (é um item da lista antiga).
   const trocandoLista = lista.isPlaceholderData && fonte !== "extrato";
+  acoesRef.current = {
+    aceitar,
+    ignorar,
+    jaLancei,
+    navegar,
+    atual,
+    visao,
+    travado: trocandoLista || carregando,
+  };
   // Uma ação em lote em andamento trava as outras (sem clique duplo).
   const emLoteOcupado =
     ocupados.size > 0 ||
@@ -877,11 +943,13 @@ const Revisar = () => {
             ) : (
               <>
                 <span className="flex-1 font-semibold text-fg2">
-                  {visao === "pendente"
-                    ? `${fila.length} para revisar${meta && meta.lastPage > 1 && fonte !== "extrato" ? " nesta página" : ""}`
-                    : visao === "vinculado"
-                      ? "Ligados a lançamentos que já existiam"
-                      : "Ignorados ficam aqui para restaurar"}
+                  {carregando
+                    ? "Carregando…"
+                    : visao === "pendente"
+                      ? `${fila.length} para revisar${meta && meta.lastPage > 1 && fonte !== "extrato" ? " nesta página" : ""}`
+                      : visao === "vinculado"
+                        ? "Ligados a lançamentos que já existiam"
+                        : "Ignorados ficam aqui para restaurar"}
                 </span>
                 {visao === "pendente" && possiveisDup > 0 && (
                   <button
@@ -1015,11 +1083,33 @@ const Revisar = () => {
           )}
         </section>
 
+        {carregando && !atual && (
+          <div
+            aria-hidden
+            className="min-w-0 flex-[1.4_1_460px] rounded-[26px] border-2 border-line bg-card p-4 max-lg:hidden sm:p-[22px]"
+          >
+            <Skeleton className="h-4 w-40 rounded-full" />
+            <div className="mt-[18px] flex gap-4">
+              <Skeleton className="h-11 flex-1 rounded-[12px]" />
+              <Skeleton className="h-11 w-32 rounded-[12px]" />
+            </div>
+            <div className="mt-[18px] grid grid-cols-2 gap-[10px]">
+              <Skeleton className="h-[44px] rounded-[12px]" />
+              <Skeleton className="h-[44px] rounded-[12px]" />
+              <Skeleton className="h-[44px] rounded-[12px]" />
+            </div>
+            <Skeleton className="mt-[18px] h-[84px] rounded-[14px]" />
+            <Skeleton className="mt-[18px] h-12 rounded-[13px]" />
+          </div>
+        )}
+
         {atual && (
           <div
+            aria-busy={trocandoLista || undefined}
             className={cn(
-              "min-w-0 flex-[1.4_1_460px] lg:sticky lg:top-6",
+              "min-w-0 flex-[1.4_1_460px] transition-opacity lg:sticky lg:top-6",
               filaNoCelular && "max-lg:hidden",
+              trocandoLista && "pointer-events-none opacity-50",
             )}
           >
             <PainelItem
