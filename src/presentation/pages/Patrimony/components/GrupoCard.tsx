@@ -16,6 +16,7 @@ import {
   GRUPO_LABEL,
   mesAno,
   mostraVariacao,
+  pctDeVoces,
   type ResumoGrupo,
   valorDivida,
 } from "../patrimony.helpers";
@@ -36,7 +37,7 @@ interface GrupoCardProps {
   deletingId?: string;
   onEdit: (item: Patrimonio) => void;
   onDelete: (item: Patrimonio) => void;
-  /** Investimentos: abre o painel de detalhes. */
+  /** Abre o painel de detalhes do item. */
   onDetalhes?: (item: Patrimonio) => void;
 }
 
@@ -84,24 +85,14 @@ export const GrupoCard = ({
         const fin = isAtivo ? item.financiamento : null;
         const passivoDoBem = fin ? porId.get(fin.id) : undefined;
         const divida = fin ? fin.saldoDevedor : 0;
-        const pctDeVoces =
-          fin && item.valorAtual > 0
-            ? Math.max(
-                0,
-                Math.min(
-                  100,
-                  ((item.valorAtual - divida) / item.valorAtual) * 100,
-                ),
-              )
-            : 0;
+        const pctVoces = fin ? pctDeVoces(item.valorAtual, divida) : 0;
         const jaPago =
           !isAtivo && item.valorInicial
             ? item.valorInicial - valorDivida(item)
             : 0;
         const d = delta(item);
-        // Investimentos e reservas têm painel de detalhes.
-        const detalhavel =
-          !!onDetalhes && isAtivo && grupo.grupo === "reservas";
+        // Toda linha abre o painel de detalhes (bem, investimento ou dívida).
+        const detalhavel = !!onDetalhes;
 
         // Linha de baixo: o que é / desde quando / juros / quanto é de vocês.
         const posicoes = item.posicoes ?? [];
@@ -115,7 +106,7 @@ export const GrupoCard = ({
               fin?.taxaJuros
                 ? `juros ${fin.taxaJuros.toLocaleString("pt-BR")}% a.a.`
                 : "",
-              fin ? `${Math.round(pctDeVoces)}% de vocês` : "",
+              fin ? `${Math.round(pctVoces)}% de vocês` : "",
             ]
               .filter(Boolean)
               .join(" · ");
@@ -253,11 +244,11 @@ export const GrupoCard = ({
               <div
                 className="mt-[10px] flex h-2 overflow-hidden rounded-full bg-danger/15"
                 role="img"
-                aria-label={`${Math.round(pctDeVoces)}% já é de vocês`}
+                aria-label={`${Math.round(pctVoces)}% já é de vocês`}
               >
                 <div
                   className="h-full bg-success"
-                  style={{ width: `${pctDeVoces}%` }}
+                  style={{ width: `${pctVoces}%` }}
                 />
               </div>
             )}

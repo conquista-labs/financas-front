@@ -11,6 +11,9 @@ import {
   fatiasDaBarra,
   linhasDaLista,
   mostraVariacao,
+  pagoDaDivida,
+  pctDeVoces,
+  prazo,
   resumoPorGrupo,
   rotuloPosicao,
   serieDiaria,
@@ -281,5 +284,37 @@ describe("detalhes do investimento", () => {
       { dia: "2026-11-25", valor: 2025.9 },
       { dia: "2026-11-26", valor: 2026.28 },
     ]);
+  });
+
+  it("pctDeVoces: parte do bem que já é de vocês, presa entre 0 e 100", () => {
+    expect(pctDeVoces(800_000, 180_000)).toBeCloseTo(77.5);
+    expect(pctDeVoces(100, 150)).toBe(0);
+    expect(pctDeVoces(0, 10)).toBe(0);
+  });
+
+  it("pagoDaDivida: original - saldo devedor; sem original, null", () => {
+    expect(
+      pagoDaDivida(
+        item({
+          tipo: "passivo",
+          valorInicial: 400_000,
+          saldoDevedor: 268_624.4,
+        }),
+      ),
+    ).toEqual({
+      valor: expect.closeTo(131_375.6, 2),
+      pct: expect.closeTo(32.84, 2),
+    });
+    expect(
+      pagoDaDivida(item({ tipo: "passivo", saldoDevedor: 1000 })),
+    ).toBeNull();
+  });
+
+  it("prazo: anos e meses que faltam", () => {
+    expect(prazo(38)).toBe("faltam 3 anos e 2 meses");
+    expect(prazo(12)).toBe("faltam 1 ano");
+    expect(prazo(1)).toBe("falta 1 mês");
+    expect(prazo(0)).toBe("vencido");
+    expect(prazo(undefined)).toBeNull();
   });
 });

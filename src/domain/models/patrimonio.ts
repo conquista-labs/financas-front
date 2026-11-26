@@ -35,6 +35,8 @@ export interface Patrimonio {
    */
   mesesRestantes?: number;
   pessoaId?: string;
+  /** Dono (vem junto na lista). */
+  pessoa?: { id: string; nome: string } | null;
   createdAt: string;
   updatedAt: string;
   /** Conexão Pluggy que atualiza o valorAtual todo dia (investimentos). */
